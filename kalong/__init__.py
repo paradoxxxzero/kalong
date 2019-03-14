@@ -6,7 +6,6 @@ import logging
 import os
 import subprocess
 import sys
-import threading
 import webbrowser
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -15,19 +14,14 @@ import log_colorizer
 from aiohttp import ClientSession, WSMsgType
 from aiohttp.client_exceptions import ClientConnectorError
 
+from .errors import NoServerFoundError
+from .tools import current_origin
+
 protocol = 'http'
 host = 'localhost'
 port = 59999
 
 log = logging.getLogger(__name__)
-
-
-class NoServerFoundError(Exception):
-    pass
-
-
-class CantStartServerError(Exception):
-    pass
 
 
 def forkserver():
@@ -43,9 +37,11 @@ def forkserver():
         if sys.platform[:3] == 'win'
         else {'start_new_session': True}
     )
+    log.warn(os.environ)
     server = subprocess.Popen(
-        [sys.executable, Path(__file__).parent.resolve() / 'server.py'],
+        [sys.executable, '-m', 'kalong'],
         close_fds=True,
+        env=os.environ,
         **popen_args,
     )
     # Raise error here?
@@ -55,16 +51,19 @@ def forkserver():
 @asynccontextmanager
 async def websocket():
     # Here we get the magic cookie of our current thread in current pid
-    origin = f'{os.getpid()}_{threading.get_ident()}'
-    url = lambda side: f'{protocol}://{host}:{port}/{side}/{origin}'
+    origin = current_origin()
+
+    def url(side):
+        return f'{protocol}://{host}:{port}/{side}/{origin}'
 
     async with ClientSession() as session:
         try:
             ws = await session.ws_connect(url('back'))
         except ClientConnectorError:
             # If there are no server available, fork one
+            log.info('No kalong server, starting one')
             forkserver()
-            for delay in [0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1]:
+            for delay in [0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2, 5, 10]:
                 await asyncio.sleep(delay)
                 try:
                     ws = await session.ws_connect(url('back'))
@@ -73,9 +72,10 @@ async def websocket():
                     pass
             else:
                 raise NoServerFoundError()
-        if not webbrowser.open(url('front')):
+        if os.getenv('KALONG_NO_BROWSER') or not webbrowser.open(url('front')):
             log.warn(
-                f'Please open your browser to the following url {url("front")}'
+                'Please open your browser to the following url: '
+                f'{url("front")}'
             )
         try:
             yield ws
@@ -98,13 +98,14 @@ def get_frame(current_frame):
         lastlineno = list(startlnos)[-1][1]
         frames.append(
             {
-                'file': str(Path(filename).resolve()),
+                'key': id(code),
+                'filename': str(Path(filename).resolve()),
                 'function': code.co_name,
-                'flno': code.co_firstlineno,
-                'llno': lastlineno,
-                'lno': lno,
-                'code': line,
-                'current': frame == current_frame,
+                'firstFunctionLineNumber': code.co_firstlineno,
+                'lastFunctionLineNumber': lastlineno,
+                'lineNumber': lno,
+                'lineSource': line,
+                'active': frame == current_frame,
             }
         )
         frame = frame.f_back
@@ -113,14 +114,30 @@ def get_frame(current_frame):
 
 async def communicate(frame):
     async with websocket() as ws:
-        log.info(f'Back connected')
-        log.info(f'Sending frame')
-        await ws.send_json(get_frame(frame))
         async for msg in ws:
             if msg.type == WSMsgType.TEXT:
+                log.warn('CLIENTGOT' + msg.data)
                 data = json.loads(msg.data)
-                log.info(f'Got {msg.data}')
-                await ws.send_json(data)
+                if data['type'] == 'GET_FRAMES':
+                    response = {
+                        'type': 'SET_FRAMES',
+                        'frames': get_frame(frame),
+                    }
+                elif data['type'] == 'GET_FILE':
+                    response = {
+                        'type': 'SET_FILE',
+                        'filename': data['filename'],
+                        'source': ''.join(
+                            linecache.getlines(data['filename'])
+                        ),
+                    }
+                else:
+                    response = {
+                        'type': 'error',
+                        'message': f"Unknown type {data['type']}",
+                    }
+                log.info(f'Got {data} answering with {response}')
+                await ws.send_json(response)
             elif msg.type == WSMsgType.ERROR:
                 log.error(f'WebSocket closed', exc_info=ws.exception())
 
