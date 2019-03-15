@@ -53,7 +53,9 @@ async def websocket(request):
     state = ws.can_prepare(request)
     if not state.ok:
         log.info(f'Sending {side} app for {origin}')
-        return web.FileResponse('build/index.html')
+        return web.FileResponse(
+            Path(__file__).parent / 'assets' / 'index.html'
+        )
 
     await ws.prepare(request)
 
@@ -62,7 +64,6 @@ async def websocket(request):
 
     async for msg in ws:
         if msg.type == WSMsgType.TEXT:
-            log.warn('SERVERGOT' + msg.data)
             data = json.loads(msg.data)
             log.info(f'{side} -> {other_side}: {data}')
             pair = await peer(request.app, other_side, origin)
@@ -91,5 +92,5 @@ def main():
     app['back'] = {}
     app.on_shutdown.append(shutdown)
     app.router.add_get(r'/{side:(front|back)}/{origin}', websocket)
-    app.router.add_static('/assets/', Path(__file__).parent.parent / 'build')
+    app.router.add_static('/assets/', Path(__file__).parent / 'assets')
     web.run_app(app, host=host, port=port)

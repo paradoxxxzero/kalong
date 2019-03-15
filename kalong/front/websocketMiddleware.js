@@ -5,7 +5,9 @@ export default store => {
     `${window.location.protocol.replace(
       'http',
       'ws'
-    )}//${window.location.host.replace(3000, 59999)}${window.location.pathname}`
+    )}//${window.location.host.replace(59998, 59999)}${
+      window.location.pathname
+    }`
   )
   window.ws = ws
   ws.onopen = () => {

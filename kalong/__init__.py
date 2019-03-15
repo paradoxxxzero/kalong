@@ -116,7 +116,6 @@ async def communicate(frame):
     async with websocket() as ws:
         async for msg in ws:
             if msg.type == WSMsgType.TEXT:
-                log.warn('CLIENTGOT' + msg.data)
                 data = json.loads(msg.data)
                 if data['type'] == 'GET_FRAMES':
                     response = {
