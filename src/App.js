@@ -75,127 +75,115 @@ const styles = theme => ({
   },
 })
 
-export default connect(state => ({
+@connect(state => ({
   title: state.title,
   connection: state.connection,
-}))(
-  withWidth()(
-    withStyles(styles, { withTheme: true })(
-      class App extends Component {
-        static isMobile(width) {
-          return ['xs', 'sm'].includes(width)
-        }
+}))
+@withWidth()
+@withStyles(styles, { withTheme: true })
+export default class App extends Component {
+  static isMobile(width) {
+    return ['xs', 'sm'].includes(width)
+  }
 
-        constructor(props) {
-          super(props)
-          this.state = {
-            open: !App.isMobile(props.width),
-          }
-          this.handleDrawerOpen = this.handleDrawerOpen.bind(this)
-          this.handleDrawerClose = this.handleDrawerClose.bind(this)
-        }
+  constructor(props) {
+    super(props)
+    this.state = {
+      open: !App.isMobile(props.width),
+    }
+    this.handleDrawerOpen = this.handleDrawerOpen.bind(this)
+    this.handleDrawerClose = this.handleDrawerClose.bind(this)
+  }
 
-        componentDidUpdate({ width: oldWidth }) {
-          const { width } = this.props
-          const oldMobile = App.isMobile(oldWidth)
-          const mobile = App.isMobile(width)
-          if (mobile !== oldMobile) {
-            if (mobile) {
-              this.handleDrawerClose()
-            } else {
-              this.handleDrawerOpen()
-            }
-          }
-        }
-
-        handleDrawerOpen() {
-          this.setState({ open: true })
-        }
-
-        handleDrawerClose() {
-          this.setState({ open: false })
-        }
-
-        render() {
-          const {
-            classes,
-            theme,
-            container,
-            width,
-            title,
-            connection,
-          } = this.props
-          const { open } = this.state
-          const mobile = ['xs', 'sm'].includes(width)
-          if (connection.state !== 'open') {
-            return <CircularProgress className={classes.progress} />
-          }
-          return (
-            <div className={classes.root}>
-              <CssBaseline />
-              <AppBar
-                position="fixed"
-                className={classNames(classes.appBar, {
-                  [classes.appBarShift]: open && !mobile,
-                })}
-              >
-                <Toolbar>
-                  <IconButton
-                    color="inherit"
-                    onClick={
-                      open ? this.handleDrawerClose : this.handleDrawerOpen
-                    }
-                    className={classes.menuButton}
-                  >
-                    {!mobile && open ? (
-                      theme.direction === 'rtl' ? (
-                        <ChevronRightIcon />
-                      ) : (
-                        <ChevronLeftIcon />
-                      )
-                    ) : (
-                      <MenuIcon />
-                    )}
-                  </IconButton>
-                  <Typography variant="h6" color="inherit" noWrap>
-                    {title}
-                  </Typography>
-                </Toolbar>
-              </AppBar>
-              <Drawer
-                className={classNames(classes.drawer, {
-                  [classes.drawerOpen]: this.state.open,
-                  [classes.drawerClose]: !this.state.open,
-                })}
-                classes={{
-                  paper: classNames({
-                    [classes.drawerOpen]: this.state.open,
-                    [classes.drawerClose]: !this.state.open,
-                  }),
-                }}
-                container={mobile ? container : void 0}
-                variant={mobile ? 'temporary' : 'persistent'}
-                anchor={theme.direction === 'rtl' ? 'right' : 'left'}
-                open={open}
-                onClose={this.handleDrawerClose}
-              >
-                <div className={classes.toolbar}>
-                  <Typography variant="h2" color="inherit" align="center">
-                    Kalong
-                  </Typography>
-                </div>
-                <Divider />
-                <Frames />
-              </Drawer>
-              <main className={classes.content}>
-                <div className={classes.toolbar} />
-                <Source />
-                <Interpreter />
-              </main>
-            </div>
-          )
-        }
+  componentDidUpdate({ width: oldWidth }) {
+    const { width } = this.props
+    const oldMobile = App.isMobile(oldWidth)
+    const mobile = App.isMobile(width)
+    if (mobile !== oldMobile) {
+      if (mobile) {
+        this.handleDrawerClose()
+      } else {
+        this.handleDrawerOpen()
       }
+    }
+  }
+
+  handleDrawerOpen() {
+    this.setState({ open: true })
+  }
+
+  handleDrawerClose() {
+    this.setState({ open: false })
+  }
+
+  render() {
+    const { classes, theme, container, width, title, connection } = this.props
+    const { open } = this.state
+    const mobile = ['xs', 'sm'].includes(width)
+    if (connection.state !== 'open') {
+      return <CircularProgress className={classes.progress} />
+    }
+    return (
+      <div className={classes.root}>
+        <CssBaseline />
+        <AppBar
+          position="fixed"
+          className={classNames(classes.appBar, {
+            [classes.appBarShift]: open && !mobile,
+          })}
+        >
+          <Toolbar>
+            <IconButton
+              color="inherit"
+              onClick={open ? this.handleDrawerClose : this.handleDrawerOpen}
+              className={classes.menuButton}
+            >
+              {!mobile && open ? (
+                theme.direction === 'rtl' ? (
+                  <ChevronRightIcon />
+                ) : (
+                  <ChevronLeftIcon />
+                )
+              ) : (
+                <MenuIcon />
+              )}
+            </IconButton>
+            <Typography variant="h6" color="inherit" noWrap>
+              {title}
+            </Typography>
+          </Toolbar>
+        </AppBar>
+        <Drawer
+          className={classNames(classes.drawer, {
+            [classes.drawerOpen]: this.state.open,
+            [classes.drawerClose]: !this.state.open,
+          })}
+          classes={{
+            paper: classNames({
+              [classes.drawerOpen]: this.state.open,
+              [classes.drawerClose]: !this.state.open,
+            }),
+          }}
+          container={mobile ? container : void 0}
+          variant={mobile ? 'temporary' : 'persistent'}
+          anchor={theme.direction === 'rtl' ? 'right' : 'left'}
+          open={open}
+          onClose={this.handleDrawerClose}
+        >
+          <div className={classes.toolbar}>
+            <Typography variant="h2" color="inherit" align="center">
+              Kalong
+            </Typography>
+          </div>
+          <Divider />
+          <Frames />
+        </Drawer>
+        <main className={classes.content}>
+          <div className={classes.toolbar} />
+          <Source />
+          <Interpreter />
+        </main>
+      </div>
     )
-  )
-)
+  }
+}
