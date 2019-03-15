@@ -36,7 +36,14 @@ export default connect(
       const { frames, files, activeFrame } = this.props
       const current = frames.find(({ key }) => key === activeFrame)
 
-      return <Code>{current && files[current.filename]}</Code>
+      return (
+        <Code
+          source={current && files[current.filename]}
+          readOnly
+          lineNumbers
+          theme="material"
+        />
+      )
     }
   }
 )

@@ -15,6 +15,7 @@ import Typography from '@material-ui/core/Typography'
 import classNames from 'classnames'
 
 import Frames from './Frames'
+import Interpreter from './Interpreter'
 import Source from './Source'
 
 const drawerWidth = 240
@@ -68,7 +69,6 @@ const styles = theme => ({
   },
   content: {
     flexGrow: 1,
-    padding: theme.spacing.unit * 3,
   },
   progress: {
     alignSelf: 'center',
@@ -190,6 +190,7 @@ export default connect(state => ({
               <main className={classes.content}>
                 <div className={classes.toolbar} />
                 <Source />
+                <Interpreter />
               </main>
             </div>
           )
