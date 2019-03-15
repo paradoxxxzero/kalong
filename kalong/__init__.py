@@ -37,7 +37,6 @@ def forkserver():
         if sys.platform[:3] == 'win'
         else {'start_new_session': True}
     )
-    log.warn(os.environ)
     server = subprocess.Popen(
         [sys.executable, '-m', 'kalong'],
         close_fds=True,

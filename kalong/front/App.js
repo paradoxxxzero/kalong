@@ -20,67 +20,68 @@ import Source from './Source'
 
 const drawerWidth = 240
 
-const styles = theme => ({
-  root: {
-    display: 'flex',
-    width: '100vw',
-    height: '100vh',
-    justifyContent: 'center',
-  },
-  drawer: {
-    [theme.breakpoints.up('sm')]: {
-      width: drawerWidth,
-      flexShrink: 0,
-    },
-  },
-  appBar: {
-    zIndex: theme.zIndex.drawer + 1,
-    transition: theme.transitions.create(['margin', 'width'], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-  },
-  appBarShift: {
-    width: `calc(100% - ${drawerWidth}px)`,
-    transition: theme.transitions.create(['margin', 'width'], {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-    marginLeft: drawerWidth,
-  },
-  menuButton: {
-    marginRight: 20,
-  },
-  toolbar: theme.mixins.toolbar,
-  drawerOpen: {
-    width: drawerWidth,
-    transition: theme.transitions.create('width', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  },
-  drawerClose: {
-    transition: theme.transitions.create('width', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-    overflowX: 'hidden',
-    width: 0,
-  },
-  content: {
-    flexGrow: 1,
-  },
-  progress: {
-    alignSelf: 'center',
-  },
-})
-
 @connect(state => ({
   title: state.title,
   connection: state.connection,
 }))
 @withWidth()
-@withStyles(styles, { withTheme: true })
+@withStyles(
+  theme => ({
+    root: {
+      display: 'flex',
+      width: '100vw',
+      height: '100vh',
+      justifyContent: 'center',
+    },
+    drawer: {
+      [theme.breakpoints.up('sm')]: {
+        width: drawerWidth,
+        flexShrink: 0,
+      },
+    },
+    appBar: {
+      zIndex: theme.zIndex.drawer + 1,
+      transition: theme.transitions.create(['margin', 'width'], {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.leavingScreen,
+      }),
+    },
+    appBarShift: {
+      width: `calc(100% - ${drawerWidth}px)`,
+      transition: theme.transitions.create(['margin', 'width'], {
+        easing: theme.transitions.easing.easeOut,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
+      marginLeft: drawerWidth,
+    },
+    menuButton: {
+      marginRight: 20,
+    },
+    toolbar: theme.mixins.toolbar,
+    drawerOpen: {
+      width: drawerWidth,
+      transition: theme.transitions.create('width', {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
+    },
+    drawerClose: {
+      transition: theme.transitions.create('width', {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.leavingScreen,
+      }),
+      overflowX: 'hidden',
+      width: 0,
+    },
+    content: {
+      flexGrow: 1,
+    },
+    progress: {
+      alignSelf: 'center',
+    },
+  }),
+  { withTheme: true }
+)
 export default class App extends Component {
   static isMobile(width) {
     return ['xs', 'sm'].includes(width)
