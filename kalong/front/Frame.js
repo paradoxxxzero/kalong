@@ -5,7 +5,7 @@ import ListItemText from '@material-ui/core/ListItemText'
 import React from 'react'
 
 import { setActiveFrame } from './actions'
-import Snippet from './Snippet'
+import Snippet from './Code/Snippet'
 
 @connect(
   state => ({

@@ -70,37 +70,33 @@ export default class Source extends Component {
       return null
     }
     return (
-      <Code source={files[filename]} readOnly lineNumbers theme="material">
-        {files[filename] && (
-          <>
-            {/* Active line */}
+      <Code readOnly lineNumbers theme="material">
+        <Code.Source code={files[filename]} />
+        {/* Active line */}
+        <Code.Line line={lineNumber} classes={{ background: classes.active }} />
+        <Code.Gutter
+          line={lineNumber}
+          gutter="CodeMirror-linenumbers"
+          marker="➤"
+        />
+        {/* Context */}
+        <Code.Line
+          line={firstFunctionLineNumber}
+          classes={{ background: classes.contextTop }}
+        />
+        {range(firstFunctionLineNumber, lastFunctionLineNumber + 1).map(
+          line => (
             <Code.Line
-              line={lineNumber}
-              classes={{ background: classes.active }}
+              key={line}
+              line={line}
+              classes={{ background: classes.context }}
             />
-            <Code.Gutter line={lineNumber} gutter="CodeMirror-linenumbers">
-              ➤
-            </Code.Gutter>
-            {/* Context */}
-            <Code.Line
-              line={firstFunctionLineNumber}
-              classes={{ background: classes.contextTop }}
-            />
-            {range(firstFunctionLineNumber, lastFunctionLineNumber + 1).map(
-              line => (
-                <Code.Line
-                  key={line}
-                  line={line}
-                  classes={{ background: classes.context }}
-                />
-              )
-            )}
-            <Code.Line
-              line={lastFunctionLineNumber}
-              classes={{ background: classes.contextBottom }}
-            />
-          </>
+          )
         )}
+        <Code.Line
+          line={lastFunctionLineNumber}
+          classes={{ background: classes.contextBottom }}
+        />
       </Code>
     )
   }
