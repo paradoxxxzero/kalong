@@ -70,13 +70,18 @@ export default class Source extends Component {
       return null
     }
     return (
-      <Code readOnly lineNumbers theme="material">
+      <Code
+        readOnly
+        lineNumbers
+        theme="material"
+        gutters={['CodeMirror-linemarkers', 'CodeMirror-linenumbers']}
+      >
         <Code.Source code={files[filename]} />
         {/* Active line */}
         <Code.Line line={lineNumber} classes={{ background: classes.active }} />
         <Code.Gutter
           line={lineNumber}
-          gutter="CodeMirror-linenumbers"
+          gutter="CodeMirror-linemarkers"
           marker="➤"
         />
         {/* Context */}
