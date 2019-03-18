@@ -3,16 +3,23 @@ import { connect } from 'react-redux'
 import { withStyles } from '@material-ui/core/styles'
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
-import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos'
+import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
 import IconButton from '@material-ui/core/IconButton'
 import React from 'react'
 import RedoIcon from '@material-ui/icons/Redo'
 import Typography from '@material-ui/core/Typography'
 
-@connect(state => ({
-  title: state.title,
-}))
+import { doCommand } from './actions'
+
+@connect(
+  state => ({
+    title: state.title,
+  }),
+  dispatch => ({
+    handleCommand: command => dispatch(doCommand(command)),
+  })
+)
 @withStyles(() => ({
   grow: {
     flexGrow: 1,
@@ -20,23 +27,8 @@ import Typography from '@material-ui/core/Typography'
   steps: {},
 }))
 export default class Top extends React.PureComponent {
-  constructor(props) {
-    super(props)
-    this.handleStepInto = this.handleStepInto.bind(this)
-    this.handleStep = this.handleStep.bind(this)
-    this.handleStepOut = this.handleStepOut.bind(this)
-    this.handleStepUntil = this.handleStepUntil.bind(this)
-    this.handleContinue = this.handleContinue.bind(this)
-  }
-
-  handleStepInto() {}
-  handleStep() {}
-  handleStepOut() {}
-  handleStepUntil() {}
-  handleContinue() {}
-
   render() {
-    const { classes, title } = this.props
+    const { classes, title, handleCommand } = this.props
     return (
       <>
         <Typography variant="h6" color="inherit" noWrap>
@@ -45,22 +37,31 @@ export default class Top extends React.PureComponent {
         <div className={classes.grow} />
         <div className={classes.steps}>
           <Tooltip title="Step Into function call">
-            <IconButton color="inherit" onClick={this.handleStepInto}>
+            <IconButton
+              color="inherit"
+              onClick={() => handleCommand('stepInto')}
+            >
               <ArrowDownwardIcon />
             </IconButton>
           </Tooltip>
           <Tooltip title="Step to the next instruction">
-            <IconButton color="inherit" onClick={this.handleStep}>
+            <IconButton color="inherit" onClick={() => handleCommand('step')}>
               <ArrowForwardIcon />
             </IconButton>
           </Tooltip>
           <Tooltip title="Step Out of the current function">
-            <IconButton color="inherit" onClick={this.handleStepOut}>
+            <IconButton
+              color="inherit"
+              onClick={() => handleCommand('stepOut')}
+            >
               <ArrowUpwardIcon />
             </IconButton>
           </Tooltip>
           <Tooltip title="Step Until next line (bypass loops)">
-            <IconButton color="inherit" onClick={this.handleStepUntil}>
+            <IconButton
+              color="inherit"
+              onClick={() => handleCommand('continue')}
+            >
               <RedoIcon />
             </IconButton>
           </Tooltip>

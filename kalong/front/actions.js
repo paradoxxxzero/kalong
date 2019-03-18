@@ -1,5 +1,5 @@
 export const SET_TITLE = 'SET_TITLE'
-export const setTitle = ({ title }) => ({
+export const setTitle = title => ({
   type: SET_TITLE,
   title,
 })
@@ -11,20 +11,27 @@ export const getFrames = () => ({
 })
 
 export const SET_FRAMES = 'SET_FRAMES'
-export const setFrames = ({ frames }) => ({
+export const setFrames = frames => ({
   type: SET_FRAMES,
   frames,
 })
 
 export const GET_FILE = 'GET_FILE'
-export const getFile = ({ filename }) => ({
+export const getFile = filename => ({
   type: GET_FILE,
   filename,
   remote: true,
 })
 
+export const DO_COMMAND = 'DO_COMMAND'
+export const doCommand = command => ({
+  type: DO_COMMAND,
+  command,
+  remote: true,
+})
+
 export const SET_FILE = 'SET_FILE'
-export const setFile = ({ filename, source }) => ({
+export const setFile = (filename, source) => ({
   type: SET_FILE,
   filename,
   source,

@@ -18,7 +18,7 @@ const cmBg = f => f(tinycolor(blueGrey[900])).toString()
     activeFrame: state.activeFrame,
   }),
   dispatch => ({
-    requestFile: filename => dispatch(getFile({ filename })),
+    requestFile: filename => dispatch(getFile(filename)),
   })
 )
 @withStyles(() => ({
