@@ -1,9 +1,9 @@
-import React, { Component } from 'react'
+import React from 'react'
 
 import Prompt from './Prompt'
 import Scrollback from './Scrollback'
 
-export default class Interpreter extends Component {
+export default class Interpreter extends React.PureComponent {
   render() {
     return (
       <>

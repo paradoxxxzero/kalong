@@ -1,6 +1,6 @@
-import React, { Component } from 'react'
+import React from 'react'
 
-export default class Scrollback extends Component {
+export default class Scrollback extends React.PureComponent {
   render() {
     return <></>
   }

@@ -1,5 +1,4 @@
-import { CircularProgress, withWidth } from '@material-ui/core'
-import { connect } from 'react-redux'
+import { Link, Tooltip, withWidth } from '@material-ui/core'
 import { withStyles } from '@material-ui/core/styles'
 import AppBar from '@material-ui/core/AppBar'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
@@ -9,21 +8,19 @@ import Divider from '@material-ui/core/Divider'
 import Drawer from '@material-ui/core/Drawer'
 import IconButton from '@material-ui/core/IconButton'
 import MenuIcon from '@material-ui/icons/Menu'
-import React, { Component } from 'react'
+import React from 'react'
 import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
 import classNames from 'classnames'
 
 import Frames from './Frames'
+import GlobalIndicator from './GlobalIndicator'
 import Interpreter from './Interpreter'
 import Source from './Source'
+import Top from './Top'
 
 const drawerWidth = 240
 
-@connect(state => ({
-  title: state.title,
-  connection: state.connection,
-}))
 @withWidth()
 @withStyles(
   theme => ({
@@ -57,7 +54,6 @@ const drawerWidth = 240
     menuButton: {
       marginRight: 20,
     },
-    toolbar: theme.mixins.toolbar,
     drawerOpen: {
       width: drawerWidth,
       transition: theme.transitions.create('width', {
@@ -76,13 +72,23 @@ const drawerWidth = 240
     content: {
       flexGrow: 1,
     },
-    progress: {
-      alignSelf: 'center',
+    toolbar: {
+      ...theme.mixins.toolbar,
+      display: 'flex',
+    },
+    brand: {
+      paddingTop: '0.8em',
+    },
+    title: {
+      fontSize: '1.5em',
+    },
+    subtitle: {
+      fontSize: '1em',
     },
   }),
   { withTheme: true }
 )
-export default class App extends Component {
+export default class App extends React.PureComponent {
   static isMobile(width) {
     return ['xs', 'sm'].includes(width)
   }
@@ -118,12 +124,9 @@ export default class App extends Component {
   }
 
   render() {
-    const { classes, theme, container, width, title, connection } = this.props
+    const { classes, theme, container, width } = this.props
     const { open } = this.state
     const mobile = ['xs', 'sm'].includes(width)
-    if (connection.state !== 'open') {
-      return <CircularProgress className={classes.progress} />
-    }
     return (
       <div className={classes.root}>
         <CssBaseline />
@@ -134,24 +137,24 @@ export default class App extends Component {
           })}
         >
           <Toolbar>
-            <IconButton
-              color="inherit"
-              onClick={open ? this.handleDrawerClose : this.handleDrawerOpen}
-              className={classes.menuButton}
-            >
-              {!mobile && open ? (
-                theme.direction === 'rtl' ? (
-                  <ChevronRightIcon />
+            <Tooltip title={`${open ? 'Close' : 'Open'} the call stack`}>
+              <IconButton
+                color="inherit"
+                onClick={open ? this.handleDrawerClose : this.handleDrawerOpen}
+                className={classes.menuButton}
+              >
+                {!mobile && open ? (
+                  theme.direction === 'rtl' ? (
+                    <ChevronRightIcon />
+                  ) : (
+                    <ChevronLeftIcon />
+                  )
                 ) : (
-                  <ChevronLeftIcon />
-                )
-              ) : (
-                <MenuIcon />
-              )}
-            </IconButton>
-            <Typography variant="h6" color="inherit" noWrap>
-              {title}
-            </Typography>
+                  <MenuIcon />
+                )}
+              </IconButton>
+            </Tooltip>
+            <Top />
           </Toolbar>
         </AppBar>
         <Drawer
@@ -172,9 +175,19 @@ export default class App extends Component {
           onClose={this.handleDrawerClose}
         >
           <div className={classes.toolbar}>
-            <Typography variant="h2" color="inherit" align="center">
-              Kalong
-            </Typography>
+            <GlobalIndicator />
+            <div className={classes.brand}>
+              <Link href="http://github.com/paradoxxxzero/kalong/">
+                <Typography variant="h1" className={classes.title}>
+                  Kalong
+                </Typography>
+              </Link>
+              <Link href="http://github.com/paradoxxxzero/kalong/releases">
+                <Typography variant="subtitle1" className={classes.subtitle}>
+                  v0.0.0
+                </Typography>
+              </Link>
+            </div>
           </div>
           <Divider />
           <Frames />

@@ -37,7 +37,7 @@ export const setActiveFrame = key => ({
 })
 
 export const SET_CONNECTION_STATE = 'SET_CONNECTION_STATE'
-export const setConnectionState = wsState => ({
+export const setConnectionState = state => ({
   type: SET_CONNECTION_STATE,
-  wsState,
+  state,
 })

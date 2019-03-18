@@ -12,9 +12,6 @@ const title = (state = 'Tracing', action) => {
   switch (action.type) {
     case SET_TITLE:
       return action.title
-
-    case SET_CONNECTION_STATE: // To remove
-      return action.state
     default:
       return state
   }
@@ -63,10 +60,22 @@ const connection = (state = { state: 'connecting' }, action) => {
       return state
   }
 }
+
+const loadingLevel = (state = 0, action) => {
+  if (action.remote) {
+    return state + 1
+  }
+  if (action.local) {
+    return state - 1
+  }
+  return state
+}
+
 export default combineReducers({
   title,
   frames,
   files,
   activeFrame,
   connection,
+  loadingLevel,
 })

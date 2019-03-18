@@ -135,6 +135,7 @@ async def communicate(frame):
                         'message': f"Unknown type {data['type']}",
                     }
                 log.info(f'Got {data} answering with {response}')
+                response['local'] = True
                 await ws.send_json(response)
             elif msg.type == WSMsgType.ERROR:
                 log.error(f'WebSocket closed', exc_info=ws.exception())

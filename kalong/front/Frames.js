@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import List from '@material-ui/core/List'
-import React, { Component } from 'react'
+import React from 'react'
 
 import { getFrames } from './actions'
 import Frame from './Frame'
@@ -13,7 +13,7 @@ import Frame from './Frame'
     requestFrames: () => dispatch(getFrames()),
   })
 )
-export default class Frames extends Component {
+export default class Frames extends React.PureComponent {
   componentDidMount() {
     const { frames, requestFrames } = this.props
 

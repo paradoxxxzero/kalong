@@ -1,17 +1,22 @@
-import { SET_CONNECTION_STATE } from './actions'
+import { setConnectionState } from './actions'
 
 export default store => {
-  const ws = new WebSocket(
-    `${window.location.protocol.replace(
-      'http',
-      'ws'
-    )}//${window.location.host.replace(59998, 59999)}${
-      window.location.pathname
-    }`
-  )
-  window.ws = ws
+  const queue = []
+  const connect = () =>
+    new WebSocket(
+      `${window.location.protocol.replace(
+        'http',
+        'ws'
+      )}//${window.location.host.replace(59998, 59999)}${
+        window.location.pathname
+      }`
+    )
+  let ws = (window.ws = connect())
   ws.onopen = () => {
-    store.dispatch({ type: SET_CONNECTION_STATE, state: 'open' })
+    store.dispatch(setConnectionState('open'))
+    while (queue.length) {
+      ws.send(queue.shift())
+    }
   }
 
   ws.onmessage = ({ data }) => {
@@ -20,12 +25,20 @@ export default store => {
   }
 
   ws.onclose = () => {
-    store.dispatch({ type: SET_CONNECTION_STATE, state: 'closed' })
+    store.dispatch(setConnectionState('closed'))
   }
 
   return next => action => {
     if (action.remote) {
-      ws.send(JSON.stringify(action))
+      const packet = JSON.stringify(action)
+      if (ws.readyState === 1) {
+        ws.send(packet)
+      } else {
+        queue.push(packet)
+        if (ws.readyState === 3) {
+          ws = window.ws = connect()
+        }
+      }
     }
     return next(action)
   }

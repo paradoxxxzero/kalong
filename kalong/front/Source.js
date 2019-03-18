@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 import { tinycolor } from '@thebespokepixel/es-tinycolor'
 import { withStyles } from '@material-ui/core'
-import React, { Component } from 'react'
+import React from 'react'
 import blueGrey from '@material-ui/core/colors/blueGrey'
 import equal from 'fast-deep-equal'
 
@@ -37,7 +37,7 @@ const cmBg = f => f(tinycolor(blueGrey[900])).toString()
     backgroundColor: cmBg(c => c.lighten(5)),
   },
 }))
-export default class Source extends Component {
+export default class Source extends React.PureComponent {
   componentDidMount() {
     this.componentDidUpdate({})
   }
