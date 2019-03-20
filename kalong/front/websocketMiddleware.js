@@ -26,6 +26,7 @@ export default store => {
 
   ws.onclose = () => {
     store.dispatch(setConnectionState('closed'))
+    window.close()
   }
 
   return next => action => {

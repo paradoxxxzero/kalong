@@ -14,7 +14,7 @@ export default class Source extends React.PureComponent {
 
   componentWillUnmount() {
     const { codeMirror } = this.props
-    codeMirror.setValue(null)
+    codeMirror.setValue('')
   }
 
   render() {

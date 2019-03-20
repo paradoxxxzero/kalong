@@ -3,6 +3,7 @@ import React from 'react'
 import { CodeContext, withContext } from './context'
 import CodeMirror from './codemirror'
 import Gutter from './Gutter'
+import InView from './InView'
 import Line from './Line'
 import Source from './Source'
 
@@ -10,8 +11,10 @@ export default class Code extends React.PureComponent {
   static Source = withContext(Source)
   static Line = withContext(Line)
   static Gutter = withContext(Gutter)
+  static InView = withContext(InView)
 
   static defaultProps = {
+    theme: 'default',
     mode: 'python',
   }
 
@@ -43,12 +46,13 @@ export default class Code extends React.PureComponent {
         this.codeMirror.setOption(name, value)
       }
     })
+    this.codeMirror.refresh()
   }
 
   render() {
     const { children } = this.props
     return (
-      <div ref={this.root} className="Code">
+      <div ref={this.root} className="Code" style={{ width: '100%' }}>
         {this.codeMirror && (
           <CodeContext.Provider value={{ codeMirror: this.codeMirror }}>
             {children}

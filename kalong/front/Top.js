@@ -3,7 +3,8 @@ import { connect } from 'react-redux'
 import { withStyles } from '@material-ui/core/styles'
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
-import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos'
+import PlayArrowIcon from '@material-ui/icons/PlayArrow'
+import StopIcon from '@material-ui/icons/Stop'
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
 import IconButton from '@material-ui/core/IconButton'
 import React from 'react'
@@ -60,14 +61,22 @@ export default class Top extends React.PureComponent {
           <Tooltip title="Step Until next line (bypass loops)">
             <IconButton
               color="inherit"
-              onClick={() => handleCommand('continue')}
+              onClick={() => handleCommand('stepUntil')}
             >
               <RedoIcon />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Continue the program">
-            <IconButton color="inherit" onClick={this.handleContinue}>
-              <ArrowForwardIosIcon />
+          <Tooltip title="Continue the program and stop at exceptions">
+            <IconButton
+              color="inherit"
+              onClick={() => handleCommand('continue')}
+            >
+              <PlayArrowIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Stop debugging">
+            <IconButton color="inherit" onClick={() => handleCommand('stop')}>
+              <StopIcon />
             </IconButton>
           </Tooltip>
         </div>

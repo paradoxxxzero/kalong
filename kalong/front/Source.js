@@ -73,6 +73,7 @@ export default class Source extends React.PureComponent {
       <Code
         readOnly
         lineNumbers
+        lineWrapping
         theme="material"
         gutters={['CodeMirror-linemarkers', 'CodeMirror-linenumbers']}
       >
@@ -102,6 +103,7 @@ export default class Source extends React.PureComponent {
           line={lastFunctionLineNumber}
           classes={{ background: classes.contextBottom }}
         />
+        <Code.InView line={lineNumber} />
       </Code>
     )
   }

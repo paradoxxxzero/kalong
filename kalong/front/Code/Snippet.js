@@ -3,24 +3,30 @@ import React from 'react'
 import CodeMirror from './codemirror'
 
 export default class Snippet extends React.PureComponent {
+  static defaultProps = {
+    theme: 'default',
+    mode: 'python',
+  }
+
   constructor(props) {
     super(props)
     this.code = React.createRef()
   }
 
   componentDidMount() {
-    const { children } = this.props
-    CodeMirror.runMode(children, 'python', this.code.current)
+    const { mode, children } = this.props
+    CodeMirror.runMode(children, mode, this.code.current)
   }
 
-  componentDidUpgrade({ children: oldChildren }) {
-    const { children } = this.props
+  componentDidUpdate({ children: oldChildren }) {
+    const { mode, children } = this.props
     if (children !== oldChildren) {
-      CodeMirror.runMode(children, 'python', this.code.current)
+      CodeMirror.runMode(children, mode, this.code.current)
     }
   }
 
   render() {
-    return <code ref={this.code} className="Snippet" />
+    const { theme } = this.props
+    return <code ref={this.code} className={`cm-s-${theme}`} />
   }
 }

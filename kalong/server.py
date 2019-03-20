@@ -5,30 +5,30 @@ import os
 from itertools import chain
 from pathlib import Path
 
-import log_colorizer
 from aiohttp import WSMsgType, web
 from aiohttp.web_runner import GracefulExit
 
+from .config import basicConfig, host, log_level, port
 from .errors import NoClientFoundError
 
-host = 'localhost'
-port = 59999
-
 log = logging.getLogger(__name__)
-
-log.error(os.environ)
+basicConfig(level=log_level)
 
 
 def maybe_bail(app):
     if not app['front'] and not app['back']:
-        log.info('No remaining clients, gracefully bailing.')
+        log.debug('No remaining clients, gracefully bailing.')
         raise GracefulExit()
 
 
 async def shutdown(app):
     log.info('App shutdown, closing remaining websockets.')
-    for ws in chain(app['front'].values(), app['back'].values()):
-        await ws.close()
+    await asyncio.gather(
+        *[
+            ws.close()
+            for ws in chain(app['front'].values(), app['back'].values())
+        ]
+    )
     app['front'].clear()
     app['back'].clear()
 
@@ -37,7 +37,7 @@ async def peer(app, side, origin):
     if origin in app[side]:
         return app[side][origin]
     else:
-        for delay in [0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2, 5, 10]:
+        for delay in [0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10]:
             await asyncio.sleep(delay)
             if origin in app[side]:
                 return app[side][origin]
@@ -52,41 +52,40 @@ async def websocket(request):
 
     state = ws.can_prepare(request)
     if not state.ok:
-        log.info(f'Sending {side} app for {origin}')
+        log.debug(f'Sending {side} app for {origin}')
         return web.FileResponse(
             Path(__file__).parent / 'assets' / 'index.html'
         )
 
     await ws.prepare(request)
 
-    log.info(f'{side.title()} app connected for {origin}')
+    log.debug(f'{side.title()} app connected for {origin}')
     request.app[side][origin] = ws
 
     async for msg in ws:
         if msg.type == WSMsgType.TEXT:
             data = json.loads(msg.data)
-            log.info(f'{side} -> {other_side}: {data}')
+            log.debug(f'{side} -> {other_side}: {data}')
             pair = await peer(request.app, other_side, origin)
             await pair.send_json(data)
         elif msg.type == WSMsgType.ERROR:
             log.error(f'{side.title()} closed', exc_info=ws.exception())
 
-    log.info(f'Closing {side}')
+    log.debug(f'Closing {side}')
     await ws.close()
     del request.app[side][origin]
 
     if os.getenv('KALONG_DETACHED'):
         return ws
 
-    log.info(f'Closing {other_side} due to {side} closing.')
     if origin in request.app[other_side]:
+        log.debug(f'Closing {other_side} due to {side} closing.')
         await request.app[other_side][origin].close()
     maybe_bail(request.app)
     return ws
 
 
 def main():
-    log_colorizer.basicConfig(level=logging.INFO)
     app = web.Application()
     app['front'] = {}
     app['back'] = {}

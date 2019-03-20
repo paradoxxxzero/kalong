@@ -1,7 +1,9 @@
-import { Typography } from '@material-ui/core'
+import { ListItemIcon, Tooltip, Typography } from '@material-ui/core'
 import { connect } from 'react-redux'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
+import LocalLibraryIcon from '@material-ui/icons/LocalLibrary'
+import PlayArrowIcon from '@material-ui/icons/PlayArrow'
 import React from 'react'
 
 import { setActiveFrame } from './actions'
@@ -31,14 +33,19 @@ export default class Frame extends React.PureComponent {
     const { frame, activeFrame } = this.props
     return (
       <ListItem selected={frame.key === activeFrame} onClick={this.handleClick}>
+        <ListItemIcon>
+          {frame.active ? <PlayArrowIcon /> : <LocalLibraryIcon />}
+        </ListItemIcon>
         <ListItemText
           primary={frame.function}
           secondary={
             <>
               <Snippet>{frame.lineSource}</Snippet>
-              <Typography component="span" color="textPrimary" noWrap>
-                {frame.filename}:{frame.lineNumber}
-              </Typography>
+              <Tooltip title={frame.filename}>
+                <Typography component="span" color="textPrimary" noWrap>
+                  {frame.stem}:{frame.lineNumber}
+                </Typography>
+              </Tooltip>
             </>
           }
         />
