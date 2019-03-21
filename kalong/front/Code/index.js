@@ -52,7 +52,11 @@ export default class Code extends React.PureComponent {
   render() {
     const { children } = this.props
     return (
-      <div ref={this.root} className="Code" style={{ width: '100%' }}>
+      <div
+        ref={this.root}
+        className="Code"
+        style={{ width: '100%', height: '100%' }}
+      >
         {this.codeMirror && (
           <CodeContext.Provider value={{ codeMirror: this.codeMirror }}>
             {children}

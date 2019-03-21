@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 
 
-def get_frame(current_frame):
+def serialize_frames(current_frame):
     frame = current_frame
     frames = []
     while frame:

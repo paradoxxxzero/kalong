@@ -1,4 +1,3 @@
-import asyncio
 import json
 import linecache
 import logging
@@ -6,7 +5,8 @@ import logging
 from aiohttp import WSMsgType
 
 from .config import basicConfig, log_level
-from .debugger import get_frame
+from .debugger import serialize_frames
+from .loops import get_loop
 from .tracing import add_step, clear_step, stop_trace
 from .websockets import close_websocket, websocket
 
@@ -15,19 +15,24 @@ basicConfig(level=log_level)
 
 
 def communicate(frame):
-    loop = asyncio.get_event_loop()
+    loop = get_loop()
     loop.run_until_complete(communication_loop(frame))
 
 
 async def communication_loop(frame):
     ws = await websocket()
-    await ws.send_json({'type': 'SET_FRAMES', 'frames': get_frame(frame)})
+    await ws.send_json(
+        {'type': 'SET_FRAMES', 'frames': serialize_frames(frame)}
+    )
     stop = False
     async for msg in ws:
         if msg.type == WSMsgType.TEXT:
             data = json.loads(msg.data)
             if data['type'] == 'GET_FRAMES':
-                response = {'type': 'SET_FRAMES', 'frames': get_frame(frame)}
+                response = {
+                    'type': 'SET_FRAMES',
+                    'frames': serialize_frames(frame),
+                }
             elif data['type'] == 'GET_FILE':
                 filename = data['filename']
                 file = ''.join(linecache.getlines(filename))

@@ -1,14 +1,13 @@
 import asyncio
 import json
 import logging
-import os
 from itertools import chain
 from pathlib import Path
 
 from aiohttp import WSMsgType, web
 from aiohttp.web_runner import GracefulExit
 
-from .config import basicConfig, host, log_level, port
+from .config import basicConfig, detached, host, log_level, port
 from .errors import NoClientFoundError
 
 log = logging.getLogger(__name__)
@@ -17,8 +16,13 @@ basicConfig(level=log_level)
 
 def maybe_bail(app):
     if not app['front'] and not app['back']:
-        log.debug('No remaining clients, gracefully bailing.')
+        log.info('No remaining clients, gracefully bailing.')
         raise GracefulExit()
+    else:
+        log.info(
+            f"Not closing since {len(app['front'])} front and "
+            + f"{len(app['back'])} back connections remains."
+        )
 
 
 async def shutdown(app):
@@ -75,12 +79,10 @@ async def websocket(request):
     await ws.close()
     del request.app[side][origin]
 
-    if os.getenv('KALONG_DETACHED'):
-        return ws
-
-    if origin in request.app[other_side]:
+    if not detached and origin in request.app[other_side]:
         log.debug(f'Closing {other_side} due to {side} closing.')
         await request.app[other_side][origin].close()
+
     maybe_bail(request.app)
     return ws
 

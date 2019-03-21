@@ -1,10 +1,9 @@
-import { ListItemIcon, Tooltip, Typography } from '@material-ui/core'
+import { ListItemSecondaryAction, Tooltip, Typography } from '@material-ui/core'
 import { connect } from 'react-redux'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
-import LocalLibraryIcon from '@material-ui/icons/LocalLibrary'
-import PlayArrowIcon from '@material-ui/icons/PlayArrow'
 import React from 'react'
+import StarIcon from '@material-ui/icons/Star'
 
 import { setActiveFrame } from './actions'
 import Snippet from './Code/Snippet'
@@ -32,10 +31,11 @@ export default class Frame extends React.PureComponent {
   render() {
     const { frame, activeFrame } = this.props
     return (
-      <ListItem selected={frame.key === activeFrame} onClick={this.handleClick}>
-        <ListItemIcon>
-          {frame.active ? <PlayArrowIcon /> : <LocalLibraryIcon />}
-        </ListItemIcon>
+      <ListItem
+        button
+        selected={frame.key === activeFrame}
+        onClick={this.handleClick}
+      >
         <ListItemText
           primary={frame.function}
           secondary={
@@ -49,6 +49,13 @@ export default class Frame extends React.PureComponent {
             </>
           }
         />
+        <ListItemSecondaryAction>
+          {frame.active && (
+            <Tooltip title="Current Frame">
+              <StarIcon fontSize="small" />
+            </Tooltip>
+          )}
+        </ListItemSecondaryAction>
       </ListItem>
     )
   }

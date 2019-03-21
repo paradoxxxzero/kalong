@@ -1,10 +1,17 @@
+import atexit
 import linecache
+import logging
 import sys
 import threading
 from functools import partial
+from multiprocessing import process
 from pathlib import Path
 
+from .loops import clean_loops
 from .tools import current_origin, iter_frame
+from .websockets import clean_websockets, die
+
+log = logging.getLogger(__name__)
 
 steppings = {}
 kalong_dir = str(Path(__file__).resolve().parent)
@@ -23,8 +30,11 @@ def clear_step():
 def start_trace(frame):
     from .communication import communicate
 
+    origin = current_origin()
+    log.debug(f'Starting trace for {origin}')
+
     linecache.checkcache()
-    current_trace = partial(trace, current_origin(), communicate)
+    current_trace = partial(trace, origin, communicate)
     sys.settrace(current_trace)
     for f in iter_frame(frame):
         f.f_trace = current_trace
@@ -46,8 +56,14 @@ def trace(origin, communicate, frame, event, arg):
     filename = frame.f_code.co_filename
 
     # When we are in _shutdown of thread, program is finished
-    if filename == threading.__file__ and frame.f_code.co_name == '_shutdown':
+    if (
+        filename == threading.__file__
+        and frame.f_code.co_name in ['_shutdown', '_bootstrap_inner']
+        or filename == process.__file__
+        and frame.f_code.co_name == '_bootstrap'
+    ):
         stop_trace(frame)
+        die()
         return
 
     # Don't trace importlib bootstrapping
@@ -63,9 +79,10 @@ def trace(origin, communicate, frame, event, arg):
         return
 
     if (
-        type == 'step'  # Step: Normal stepping
-        or type
-        == 'stepInto'  # StepInto: Stepping normally in new frame as well
+        # Step: Normal stepping
+        type == 'step'
+        # StepInto: Stepping normally in new frame as well
+        or type == 'stepInto'
         # StepUntil: Stepping only if line number is greater than previously
         or (
             type == 'stepUntil'
@@ -86,4 +103,11 @@ def trace(origin, communicate, frame, event, arg):
     ):
         # Enter the websocket communication loop that pauses the execution
         communicate(frame)
+
     return sys.gettrace()
+
+
+@atexit.register
+def cleanup():
+    clean_websockets()
+    clean_loops()

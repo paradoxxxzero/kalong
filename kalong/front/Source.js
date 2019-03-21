@@ -76,6 +76,7 @@ export default class Source extends React.PureComponent {
         lineWrapping
         theme="material"
         gutters={['CodeMirror-linemarkers', 'CodeMirror-linenumbers']}
+        height="100%"
       >
         <Code.Source code={files[filename]} />
         {/* Active line */}

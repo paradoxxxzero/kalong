@@ -36,13 +36,12 @@ const files = (state = {}, action) => {
 }
 
 const activeFrame = (state = null, action) => {
+  let currentFrame
   switch (action.type) {
     case SET_FRAMES:
-      if (state === null) {
-        const currentFrame = action.frames.find(({ active }) => active)
-        if (currentFrame) {
-          return currentFrame.key
-        }
+      currentFrame = action.frames.find(({ active }) => active)
+      if (currentFrame) {
+        return currentFrame.key
       }
       return state
     case SET_ACTIVE_FRAME:

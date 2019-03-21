@@ -76,6 +76,12 @@ const drawerWidth = 240
       ...theme.mixins.toolbar,
       display: 'flex',
     },
+    source: {
+      height: '50vh',
+    },
+    interpreter: {
+      flex: '1 0 50%',
+    },
     brand: {
       paddingTop: '0.8em',
     },
@@ -194,8 +200,12 @@ export default class App extends React.PureComponent {
         </Drawer>
         <main className={classes.content}>
           <div className={classes.toolbar} />
-          <Source />
-          <Interpreter />
+          <div className={classes.source}>
+            <Source />
+          </div>
+          <div className={classes.interpreter}>
+            <Interpreter />
+          </div>
         </main>
       </div>
     )
