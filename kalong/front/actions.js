@@ -43,6 +43,23 @@ export const setActiveFrame = key => ({
   key,
 })
 
+export const SET_PROMPT = 'SET_PROMPT'
+export const setPrompt = (key, prompt) => ({
+  type: SET_PROMPT,
+  key,
+  prompt,
+  remote: true,
+})
+
+export const SET_PROMPT_ANSWER = 'SET_PROMPT_ANSWER'
+export const setPromptAnswer = ({ key, prompt, answer, duration }) => ({
+  type: SET_PROMPT_ANSWER,
+  key,
+  prompt,
+  answer,
+  duration,
+})
+
 export const SET_CONNECTION_STATE = 'SET_CONNECTION_STATE'
 export const setConnectionState = state => ({
   type: SET_CONNECTION_STATE,

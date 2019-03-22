@@ -22,6 +22,9 @@ const cmBg = f => f(tinycolor(blueGrey[900])).toString()
   })
 )
 @withStyles(() => ({
+  source: {
+    flex: 1,
+  },
   context: {
     backgroundColor: cmBg(c => c.darken(2)),
     borderRight: `1px solid ${cmBg(c => c.darken(6))}`,
@@ -71,6 +74,7 @@ export default class Source extends React.PureComponent {
     }
     return (
       <Code
+        className={classes.source}
         readOnly
         lineNumbers
         lineWrapping

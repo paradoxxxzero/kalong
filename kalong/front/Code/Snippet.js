@@ -1,4 +1,5 @@
 import React from 'react'
+import classNames from 'classnames'
 
 import CodeMirror from './codemirror'
 
@@ -15,18 +16,27 @@ export default class Snippet extends React.PureComponent {
 
   componentDidMount() {
     const { mode, children } = this.props
-    CodeMirror.runMode(children, mode, this.code.current)
+    this.runMode(children, mode)
   }
 
   componentDidUpdate({ children: oldChildren }) {
     const { mode, children } = this.props
     if (children !== oldChildren) {
-      CodeMirror.runMode(children, mode, this.code.current)
+      this.runMode(children, mode)
     }
   }
 
+  runMode(code, mode) {
+    CodeMirror.runMode(code ? code.toString() : '', mode, this.code.current)
+  }
+
   render() {
-    const { theme } = this.props
-    return <code ref={this.code} className={`cm-s-${theme}`} />
+    const { className, theme } = this.props
+    return (
+      <code
+        ref={this.code}
+        className={classNames(`cm-s-${theme}`, className)}
+      />
+    )
   }
 }

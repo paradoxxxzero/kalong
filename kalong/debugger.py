@@ -1,7 +1,16 @@
 import dis
 import linecache
 import os
+import time
+from contextlib import redirect_stderr, redirect_stdout
+from io import StringIO
 from pathlib import Path
+
+try:
+    from cutter import cut
+    from cutter.utils import bang_compile as compile
+except ImportError:
+    cut = None
 
 
 def serialize_frames(current_frame):
@@ -39,3 +48,36 @@ def serialize_frames(current_frame):
         )
         frame = frame.f_back
     return frames
+
+
+def serialize_answer(prompt, frame):
+    prompt = prompt.strip()
+    duration = 0
+    answer = StringIO()
+    with redirect_stdout(answer), redirect_stderr(answer):
+        compiled_code = None
+        try:
+            compiled_code = compile(prompt, '<stdin>', 'single')
+        except Exception:
+            try:
+                compiled_code = compile(prompt, '<stdin>', 'exec')
+            except Exception:
+                # handle ex
+                pass
+
+        locals_ = frame.f_locals
+        globals_ = frame.f_globals
+        start = time.time()
+        if compiled_code is not None:
+            try:
+                exec(compiled_code, globals_, locals_)
+            except Exception:
+                # handle ex
+                pass
+        duration = int((time.time() - start) * 1000 * 1000 * 1000)
+
+    return {
+        'prompt': prompt,
+        'answer': answer.getvalue(),
+        'duration': duration,
+    }

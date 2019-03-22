@@ -15,8 +15,8 @@ import classNames from 'classnames'
 
 import Frames from './Frames'
 import GlobalIndicator from './GlobalIndicator'
-import Interpreter from './Interpreter'
 import Source from './Source'
+import Terminal from './Terminal'
 import Top from './Top'
 
 const drawerWidth = 240
@@ -71,16 +71,12 @@ const drawerWidth = 240
     },
     content: {
       flexGrow: 1,
+      display: 'flex',
+      flexDirection: 'column',
     },
     toolbar: {
       ...theme.mixins.toolbar,
       display: 'flex',
-    },
-    source: {
-      height: '50vh',
-    },
-    interpreter: {
-      flex: '1 0 50%',
     },
     brand: {
       paddingTop: '0.8em',
@@ -200,12 +196,8 @@ export default class App extends React.PureComponent {
         </Drawer>
         <main className={classes.content}>
           <div className={classes.toolbar} />
-          <div className={classes.source}>
-            <Source />
-          </div>
-          <div className={classes.interpreter}>
-            <Interpreter />
-          </div>
+          <Source />
+          <Terminal />
         </main>
       </div>
     )

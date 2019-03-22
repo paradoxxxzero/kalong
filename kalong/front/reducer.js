@@ -5,6 +5,8 @@ import {
   SET_CONNECTION_STATE,
   SET_FILE,
   SET_FRAMES,
+  SET_PROMPT,
+  SET_PROMPT_ANSWER,
   SET_TITLE,
 } from './actions'
 
@@ -51,6 +53,28 @@ const activeFrame = (state = null, action) => {
   }
 }
 
+const scrollback = (state = [], action) => {
+  switch (action.type) {
+    case SET_PROMPT:
+      return [
+        ...state,
+        { key: action.key, prompt: action.prompt, answer: null },
+      ]
+    case SET_PROMPT_ANSWER:
+      return state.map(promptAnswer =>
+        action.key === promptAnswer.key
+          ? {
+              key: action.key,
+              prompt: action.prompt,
+              answer: action.answer,
+              duration: action.duration,
+            }
+          : promptAnswer
+      )
+    default:
+      return state
+  }
+}
 const connection = (state = { state: 'connecting' }, action) => {
   switch (action.type) {
     case SET_CONNECTION_STATE:
@@ -75,6 +99,7 @@ export default combineReducers({
   frames,
   files,
   activeFrame,
+  scrollback,
   connection,
   loadingLevel,
 })

@@ -33,10 +33,11 @@ export default class Code extends React.PureComponent {
   componentDidUpdate({
     height: oldHeight,
     width: oldWidth,
+    className: oldClassName,
     children: oldChildren,
     ...oldProps
   }) {
-    const { height, width, children, ...props } = this.props
+    const { height, width, className, children, ...props } = this.props
     if (width !== oldWidth || height !== oldHeight) {
       this.codeMirror.setSize(width, height)
       this.codeMirror.refresh()
@@ -50,13 +51,9 @@ export default class Code extends React.PureComponent {
   }
 
   render() {
-    const { children } = this.props
+    const { className, children } = this.props
     return (
-      <div
-        ref={this.root}
-        className="Code"
-        style={{ width: '100%', height: '100%' }}
-      >
+      <div ref={this.root} className={className}>
         {this.codeMirror && (
           <CodeContext.Provider value={{ codeMirror: this.codeMirror }}>
             {children}
