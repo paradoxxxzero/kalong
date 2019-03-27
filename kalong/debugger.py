@@ -5,6 +5,7 @@ import time
 from contextlib import redirect_stderr, redirect_stdout
 from io import StringIO
 from pathlib import Path
+from sys import exc_info, excepthook
 
 from .tools import iter_stack
 
@@ -58,17 +59,15 @@ def serialize_answer(prompt, frame):
                 compiled_code = compile(prompt, '<stdin>', 'exec')
             except Exception:
                 # handle ex
-                pass
+                excepthook(*exc_info())
 
-        locals_ = frame.f_locals
-        globals_ = frame.f_globals
         start = time.time()
         if compiled_code is not None:
             try:
-                exec(compiled_code, globals_, locals_)
+                exec(compiled_code, frame.f_globals, frame.f_locals)
             except Exception:
                 # handle ex
-                pass
+                excepthook(*exc_info())
         duration = int((time.time() - start) * 1000 * 1000 * 1000)
 
     return {
