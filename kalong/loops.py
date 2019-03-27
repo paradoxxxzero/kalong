@@ -32,3 +32,8 @@ def clean_loops():
         return
     for loop in loops.values():
         loop.close()
+
+
+def run(coro):
+    loop = get_loop()
+    loop.run_until_complete(coro)

@@ -3,7 +3,7 @@ import { applyMiddleware, compose, createStore } from 'redux'
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-import App from './App'
+import ThemedApp from './ThemedApp'
 import reducer from './reducer'
 import websocketMiddleware from './websocketMiddleware'
 
@@ -16,7 +16,7 @@ export const store = createStore(
 
 ReactDOM.render(
   <Provider store={store}>
-    <App />
+    <ThemedApp />
   </Provider>,
   document.getElementById('root')
 )

@@ -38,17 +38,23 @@ const drawerWidth = 240
     },
     appBar: {
       zIndex: theme.zIndex.drawer + 1,
-      transition: theme.transitions.create(['margin', 'width'], {
+      transition: `${theme.transitions.create(['margin', 'width'], {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen,
-      }),
+      })},${theme.transitions.create('background-color', {
+        easing: theme.transitions.easing.easeInOut,
+        duration: theme.transitions.duration.normal,
+      })}`,
     },
     appBarShift: {
       width: `calc(100% - ${drawerWidth}px)`,
-      transition: theme.transitions.create(['margin', 'width'], {
+      transition: `${theme.transitions.create(['margin', 'width'], {
         easing: theme.transitions.easing.easeOut,
         duration: theme.transitions.duration.enteringScreen,
-      }),
+      })},${theme.transitions.create('background-color', {
+        easing: theme.transitions.easing.easeInOut,
+        duration: theme.transitions.duration.normal,
+      })}`,
       marginLeft: drawerWidth,
     },
     menuButton: {

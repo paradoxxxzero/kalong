@@ -6,6 +6,8 @@ from contextlib import redirect_stderr, redirect_stdout
 from io import StringIO
 from pathlib import Path
 
+from .tools import iter_stack
+
 try:
     from cutter import cut
     from cutter.utils import bang_compile as compile
@@ -13,10 +15,8 @@ except ImportError:
     cut = None
 
 
-def serialize_frames(current_frame):
-    frame = current_frame
-    frames = []
-    while frame:
+def serialize_frames(current_frame, current_tb):
+    for frame, lno in iter_stack(current_frame, current_tb):
         code = frame.f_code
         filename = code.co_filename or '<unspecified>'
         if filename == '<frozen importlib._bootstrap>':
@@ -25,7 +25,6 @@ def serialize_frames(current_frame):
                 'importlib',
                 '_bootstrap.py',
             )
-        lno = frame.f_lineno
         line = None
         linecache.checkcache(filename)
         line = linecache.getline(filename, lno, frame.f_globals)
@@ -33,21 +32,17 @@ def serialize_frames(current_frame):
         startlnos = dis.findlinestarts(code)
         lastlineno = list(startlnos)[-1][1]
         fn = Path(filename).resolve()
-        frames.append(
-            {
-                'key': id(code),
-                'filename': str(fn),
-                'stem': fn.stem,
-                'function': code.co_name,
-                'firstFunctionLineNumber': code.co_firstlineno,
-                'lastFunctionLineNumber': lastlineno,
-                'lineNumber': lno,
-                'lineSource': line,
-                'active': frame == current_frame,
-            }
-        )
-        frame = frame.f_back
-    return frames
+        yield {
+            'key': id(code),
+            'filename': str(fn),
+            'stem': fn.stem,
+            'function': code.co_name,
+            'firstFunctionLineNumber': code.co_firstlineno,
+            'lastFunctionLineNumber': lastlineno,
+            'lineNumber': lno,
+            'lineSource': line,
+            'active': frame == current_frame,
+        }
 
 
 def serialize_answer(prompt, frame):

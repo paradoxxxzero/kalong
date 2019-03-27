@@ -7,6 +7,7 @@ import {
   SET_FRAMES,
   SET_PROMPT,
   SET_PROMPT_ANSWER,
+  SET_THEME,
   SET_TITLE,
 } from './actions'
 
@@ -94,12 +95,22 @@ const loadingLevel = (state = 0, action) => {
   return state
 }
 
+const theme = (state = 'normal', action) => {
+  switch (action.type) {
+    case SET_THEME:
+      return action.theme
+    default:
+      return state
+  }
+}
+
 export default combineReducers({
   title,
   frames,
   files,
   activeFrame,
   scrollback,
+  theme,
   connection,
   loadingLevel,
 })

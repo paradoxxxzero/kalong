@@ -74,7 +74,7 @@ async def close_websocket():
 
 
 def die():
-    log.info('Sockets fucking dying.')
+    log.info('Dying, closing socket.')
     loop = get_loop()
     loop.run_until_complete(close_websocket())
 

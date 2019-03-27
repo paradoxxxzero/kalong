@@ -4,6 +4,12 @@ export const setTitle = title => ({
   title,
 })
 
+export const SET_THEME = 'SET_THEME'
+export const setTheme = theme => ({
+  type: SET_THEME,
+  theme,
+})
+
 export const GET_FRAMES = 'GET_FRAMES'
 export const getFrames = () => ({
   type: GET_FRAMES,
