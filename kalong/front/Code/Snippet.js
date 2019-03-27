@@ -1,8 +1,16 @@
+import { withStyles } from '@material-ui/core'
 import React from 'react'
 import classNames from 'classnames'
 
 import CodeMirror from './codemirror'
 
+@withStyles(() => ({
+  snippet: {
+    whiteSpace: 'pre-wrap',
+    wordBreak: 'break-all',
+    overflowWrap: 'break-word',
+  },
+}))
 export default class Snippet extends React.PureComponent {
   static defaultProps = {
     theme: 'default',
@@ -15,14 +23,14 @@ export default class Snippet extends React.PureComponent {
   }
 
   componentDidMount() {
-    const { mode, children } = this.props
-    this.runMode(children, mode)
+    const { mode, value } = this.props
+    this.runMode(value, mode)
   }
 
-  componentDidUpdate({ children: oldChildren }) {
-    const { mode, children } = this.props
-    if (children !== oldChildren) {
-      this.runMode(children, mode)
+  componentDidUpdate({ value: oldValue }) {
+    const { mode, value } = this.props
+    if (value !== oldValue) {
+      this.runMode(value, mode)
     }
   }
 
@@ -31,11 +39,11 @@ export default class Snippet extends React.PureComponent {
   }
 
   render() {
-    const { className, theme } = this.props
+    const { classes, className, theme } = this.props
     return (
       <code
         ref={this.code}
-        className={classNames(`cm-s-${theme}`, className)}
+        className={classNames(`cm-s-${theme}`, className, classes.snippet)}
       />
     )
   }

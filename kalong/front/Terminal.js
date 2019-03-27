@@ -54,17 +54,18 @@ export default class Terminal extends React.PureComponent {
           <Card key={key} className={classes.element}>
             <CardHeader
               avatar={<ChevronRightIcon fontSize="large" />}
-              title={<Snippet className={classes.prompt}>{prompt}</Snippet>}
+              title={<Snippet className={classes.prompt} value={prompt} />}
               titleTypographyProps={{ variant: 'h5' }}
               action={
-                <Snippet className={classes.duration}>
-                  {prettyTime(duration)}
-                </Snippet>
+                <Snippet
+                  className={classes.duration}
+                  value={prettyTime(duration)}
+                />
               }
             />
             <CardContent className={classes.content}>
               <Typography variant="h6">
-                <Snippet className={classes.answer}>{answer || ''}</Snippet>
+                <Snippet className={classes.answer} value={answer || ''} />
               </Typography>
             </CardContent>
           </Card>

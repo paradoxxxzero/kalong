@@ -40,7 +40,7 @@ export default class Frame extends React.PureComponent {
           primary={frame.function}
           secondary={
             <>
-              <Snippet>{frame.lineSource}</Snippet>
+              <Snippet value={frame.lineSource} />
               <Tooltip title={frame.filename}>
                 <Typography component="span" color="textPrimary" noWrap>
                   {frame.stem}:{frame.lineNumber}
