@@ -1,4 +1,4 @@
-import { Card, CardHeader, withStyles } from '@material-ui/core'
+import { Card, CardHeader, Grow, withStyles } from '@material-ui/core'
 import { connect } from 'react-redux'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import React from 'react'
@@ -12,6 +12,7 @@ import Code from './Code'
     activeFrame: state.activeFrame,
     frames: state.frames,
     history: state.history,
+    scrollback: state.scrollback,
   }),
   dispatch => ({
     addPrompt: (key, prompt) => dispatch(setPrompt(key, prompt)),
@@ -47,9 +48,11 @@ export default class Prompt extends React.PureComponent {
       value: '',
       transientValue: '',
     }
+    this.code = React.createRef()
 
     this.handleChange = this.handleChange.bind(this)
     this.handleEnter = this.handleEnter.bind(this)
+    this.handleEntered = this.handleEntered.bind(this)
     this.handleUp = this.handleUp.bind(this)
     this.handleDown = this.handleDown.bind(this)
   }
@@ -88,32 +91,45 @@ export default class Prompt extends React.PureComponent {
     }))
   }
 
+  handleEntered() {
+    this.code.current.codeMirror.refresh()
+    this.code.current.codeMirror.focus()
+  }
+
   render() {
-    const { classes } = this.props
+    const { classes, scrollback } = this.props
     const { value } = this.state
     return (
-      <Card className={classes.card}>
-        <CardHeader
-          avatar={<ChevronRightIcon fontSize="large" />}
-          title={
-            <Code
-              autofocus
-              className={classes.prompt}
-              value={value}
-              onChange={this.handleChange}
-              height="auto"
-              cursorBlinkRate={0}
-              viewportMargin={Infinity}
-              extraKeys={{
-                Up: this.handleUp,
-                Down: this.handleDown,
-                Enter: this.handleEnter,
-              }}
-            />
-          }
-          titleTypographyProps={{ variant: 'h5' }}
-        />
-      </Card>
+      <Grow
+        in={scrollback.length === 0 || scrollback.slice(-1)[0].answer !== null}
+        exit={false}
+        mountOnEnter
+        unmountOnExit
+        onEntered={this.handleEntered}
+      >
+        <Card raised className={classes.card}>
+          <CardHeader
+            avatar={<ChevronRightIcon fontSize="large" />}
+            title={
+              <Code
+                ref={this.code}
+                className={classes.prompt}
+                value={value}
+                onChange={this.handleChange}
+                height="auto"
+                cursorBlinkRate={0}
+                viewportMargin={Infinity}
+                extraKeys={{
+                  Up: this.handleUp,
+                  Down: this.handleDown,
+                  Enter: this.handleEnter,
+                }}
+              />
+            }
+            titleTypographyProps={{ variant: 'h5' }}
+          />
+        </Card>
+      </Grow>
     )
   }
 }
