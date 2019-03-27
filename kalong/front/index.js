@@ -9,10 +9,15 @@ import websocketMiddleware from './websocketMiddleware'
 
 export const store = createStore(
   reducer,
+  { history: JSON.parse(localStorage.getItem('history') || '[]') },
   (window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose)(
     applyMiddleware(websocketMiddleware)
   )
 )
+
+store.subscribe(() => {
+  localStorage.setItem('history', JSON.stringify(store.getState().history))
+})
 
 ReactDOM.render(
   <Provider store={store}>

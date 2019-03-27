@@ -22,32 +22,56 @@ export default class Code extends React.PureComponent {
     super(props)
     this.root = React.createRef()
     this.codeMirror = null
+    this.skipEventOnce = false
+    this.handleChange = this.handleChange.bind(this)
   }
 
   componentDidMount() {
     this.codeMirror = CodeMirror(this.root.current)
+    this.codeMirror.on('change', this.handleChange)
     this.componentDidUpdate({})
     this.forceUpdate()
   }
 
   componentDidUpdate({
+    value: oldValue,
     height: oldHeight,
     width: oldWidth,
     className: oldClassName,
     children: oldChildren,
     ...oldProps
   }) {
-    const { height, width, className, children, ...props } = this.props
+    const { value, height, width, className, children, ...props } = this.props
+    if (value !== oldValue) {
+      if (value !== this.codeMirror.getValue()) {
+        this.codeMirror.setValue(value)
+        // Set cursor at end
+        this.codeMirror.setCursor({
+          line: this.codeMirror.lastLine(),
+          ch: this.codeMirror.getLine(this.codeMirror.lastLine()).length,
+        })
+        this.skipEventOnce = true
+      }
+    }
     if (width !== oldWidth || height !== oldHeight) {
       this.codeMirror.setSize(width, height)
       this.codeMirror.refresh()
     }
-    Object.entries(props).forEach(([name, value]) => {
-      if (oldProps[name] !== value) {
-        this.codeMirror.setOption(name, value)
+    Object.entries(props).forEach(([name, option]) => {
+      if (oldProps[name] !== option) {
+        this.codeMirror.setOption(name, option)
       }
     })
     this.codeMirror.refresh()
+  }
+
+  handleChange(codeMirror, change) {
+    const { onChange } = this.props
+    if (this.skipEventOnce) {
+      this.skipEventOnce = false
+    } else {
+      onChange && onChange(codeMirror.getValue(), change)
+    }
   }
 
   render() {

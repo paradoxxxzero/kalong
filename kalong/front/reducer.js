@@ -11,7 +11,7 @@ import {
   SET_TITLE,
 } from './actions'
 
-const title = (state = 'Tracing', action) => {
+const title = (state = 'Initializing', action) => {
   switch (action.type) {
     case SET_TITLE:
       return action.title
@@ -76,6 +76,7 @@ const scrollback = (state = [], action) => {
       return state
   }
 }
+
 const connection = (state = { state: 'connecting' }, action) => {
   switch (action.type) {
     case SET_CONNECTION_STATE:
@@ -95,7 +96,16 @@ const loadingLevel = (state = 0, action) => {
   return state
 }
 
-const theme = (state = 'normal', action) => {
+const history = (state = [], action) => {
+  switch (action.type) {
+    case SET_PROMPT:
+      return [action.prompt, ...state]
+    default:
+      return state
+  }
+}
+
+const theme = (state = 'init', action) => {
   switch (action.type) {
     case SET_THEME:
       return action.theme
@@ -110,6 +120,7 @@ export default combineReducers({
   files,
   activeFrame,
   scrollback,
+  history,
   theme,
   connection,
   loadingLevel,
