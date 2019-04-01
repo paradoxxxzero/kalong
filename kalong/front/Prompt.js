@@ -1,7 +1,14 @@
-import { Card, CardHeader, Grow, withStyles } from '@material-ui/core'
+import {
+  Card,
+  CardHeader,
+  Grow,
+  IconButton,
+  withStyles,
+} from '@material-ui/core'
 import { connect } from 'react-redux'
-import ChevronRightIcon from '@material-ui/icons/ChevronRight'
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import React from 'react'
+import classnames from 'classnames'
 
 import { setPrompt } from './actions'
 import { uid } from './util'
@@ -18,7 +25,7 @@ import Code from './Code'
     addPrompt: (key, prompt) => dispatch(setPrompt(key, prompt)),
   })
 )
-@withStyles(() => ({
+@withStyles(theme => ({
   card: {
     margin: '1em',
   },
@@ -38,6 +45,16 @@ import Code from './Code'
         outline: 0,
       },
     },
+  },
+  expand: {
+    transform: 'rotate(0deg)',
+    marginLeft: 'auto',
+    transition: theme.transitions.create('transform', {
+      duration: theme.transitions.duration.shortest,
+    }),
+  },
+  expandOpen: {
+    transform: 'rotate(270deg)',
   },
 }))
 export default class Prompt extends React.PureComponent {
@@ -61,9 +78,9 @@ export default class Prompt extends React.PureComponent {
     this.setState({ index: -1, value, transientValue: value })
   }
 
-  handleEnter(codeMirror) {
+  handleEnter() {
     const { addPrompt } = this.props
-    const value = codeMirror.getValue()
+    const value = this.code.current.codeMirror.getValue()
     if (!value) {
       return
     }
@@ -99,9 +116,11 @@ export default class Prompt extends React.PureComponent {
   render() {
     const { classes, scrollback } = this.props
     const { value } = this.state
+    const grow =
+      scrollback.length === 0 || scrollback.slice(-1)[0].answer !== null
     return (
       <Grow
-        in={scrollback.length === 0 || scrollback.slice(-1)[0].answer !== null}
+        in={grow}
         exit={false}
         mountOnEnter
         unmountOnExit
@@ -109,7 +128,20 @@ export default class Prompt extends React.PureComponent {
       >
         <Card raised className={classes.card}>
           <CardHeader
-            avatar={<ChevronRightIcon fontSize="large" />}
+            avatar={
+              <IconButton
+                className={classnames(classes.expand, {
+                  [classes.expandOpen]: grow,
+                })}
+                onClick={this.handleEnter}
+                disabled={
+                  !this.code.current ||
+                  !this.code.current.codeMirror.getValue().length
+                }
+              >
+                <ExpandMoreIcon />
+              </IconButton>
+            }
             title={
               <Code
                 ref={this.code}

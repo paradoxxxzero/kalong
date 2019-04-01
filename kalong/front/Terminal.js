@@ -1,18 +1,9 @@
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  Typography,
-  withStyles,
-} from '@material-ui/core'
 import { connect } from 'react-redux'
-import ChevronRightIcon from '@material-ui/icons/ChevronRight'
+import { withStyles } from '@material-ui/core'
 import React from 'react'
 
-import { prettyTime } from './util'
 import Answer from './Answer'
 import Prompt from './Prompt'
-import Snippet from './Code/Snippet'
 
 @connect(state => ({
   scrollback: state.scrollback,
@@ -22,18 +13,6 @@ import Snippet from './Code/Snippet'
     flex: 1,
     overflowY: 'scroll',
     scrollBehavior: 'smooth',
-  },
-  element: {
-    margin: '1em',
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  prompt: {
-    display: 'block',
-    padding: '4px', // .CodeMirror pre padding and .CodeMirror-lines
-  },
-  content: {
-    padding: '0 16px',
   },
 }))
 export default class Terminal extends React.PureComponent {
@@ -51,29 +30,8 @@ export default class Terminal extends React.PureComponent {
     const { classes, scrollback } = this.props
     return (
       <div className={classes.scrollback} ref={this.scroller}>
-        {scrollback.map(({ key, prompt, answer, duration }) => (
-          <Card key={key} className={classes.element}>
-            <CardHeader
-              avatar={<ChevronRightIcon fontSize="large" />}
-              title={<Snippet className={classes.prompt} value={prompt} />}
-              titleTypographyProps={{ variant: 'h5' }}
-              action={
-                duration && (
-                  <Snippet
-                    className={classes.duration}
-                    value={prettyTime(duration)}
-                  />
-                )
-              }
-            />
-            {!!(answer && answer.length) && (
-              <CardContent className={classes.content}>
-                <Typography variant="h6">
-                  <Answer answer={answer} />
-                </Typography>
-              </CardContent>
-            )}
-          </Card>
+        {scrollback.map(({ key, ...props }) => (
+          <Answer key={key} {...props} />
         ))}
         <Prompt />
       </div>

@@ -1,5 +1,4 @@
 import {
-  Paper,
   Tab,
   Table,
   TableBody,
@@ -98,7 +97,7 @@ export default class Inspect extends React.PureComponent {
           </Typography>
         )}
         {tab === 'doc' && (
-          <Typography component="div" className={classes.doc}>
+          <Typography component="div" variant="body2" className={classes.doc}>
             {doc}
           </Typography>
         )}
