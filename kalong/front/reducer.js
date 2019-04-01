@@ -1,10 +1,12 @@
 import { combineReducers } from 'redux'
 
 import {
+  REQUEST_INSPECT,
   SET_ACTIVE_FRAME,
   SET_CONNECTION_STATE,
   SET_FILE,
   SET_FRAMES,
+  SET_INSPECT_ANSWER,
   SET_PROMPT,
   SET_PROMPT_ANSWER,
   SET_THEME,
@@ -69,6 +71,21 @@ const scrollback = (state = [], action) => {
               prompt: action.prompt,
               answer: action.answer,
               duration: action.duration,
+            }
+          : promptAnswer
+      )
+    case REQUEST_INSPECT:
+      return [
+        ...state,
+        { key: action.key, prompt: `${action.id}…`, answer: null },
+      ]
+    case SET_INSPECT_ANSWER:
+      return state.map(promptAnswer =>
+        action.key === promptAnswer.key
+          ? {
+              key: action.key,
+              prompt: action.prompt,
+              answer: action.answer,
             }
           : promptAnswer
       )

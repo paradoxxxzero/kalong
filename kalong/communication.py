@@ -5,7 +5,7 @@ import logging
 from aiohttp import WSMsgType
 
 from .config import basicConfig, log_level
-from .debugger import serialize_answer, serialize_frames
+from .debugger import serialize_answer, serialize_frames, serialize_inspect
 from .loops import run
 from .stepping import add_step, clear_step, stop_trace
 from .websockets import close_websocket, websocket
@@ -70,6 +70,12 @@ async def communication_loop(frame, tb=None):
                     'type': 'SET_PROMPT_ANSWER',
                     'key': data['key'],
                     **serialize_answer(data['prompt'], frame),
+                }
+            elif data['type'] == 'REQUEST_INSPECT':
+                response = {
+                    'type': 'SET_INSPECT_ANSWER',
+                    'key': data['key'],
+                    **serialize_inspect(data['id'], frame),
                 }
             elif data['type'] == 'DO_COMMAND':
                 command = data['command']

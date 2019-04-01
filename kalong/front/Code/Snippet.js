@@ -39,11 +39,12 @@ export default class Snippet extends React.PureComponent {
   }
 
   render() {
-    const { classes, className, theme } = this.props
+    const { classes, className, theme, onClick } = this.props
     return (
       <code
         ref={this.code}
         className={classNames(`cm-s-${theme}`, className, classes.snippet)}
+        onClick={onClick}
       />
     )
   }

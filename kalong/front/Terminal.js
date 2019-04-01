@@ -10,6 +10,7 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import React from 'react'
 
 import { prettyTime } from './util'
+import Answer from './Answer'
 import Prompt from './Prompt'
 import Snippet from './Code/Snippet'
 
@@ -32,7 +33,7 @@ import Snippet from './Code/Snippet'
     padding: '4px', // .CodeMirror pre padding and .CodeMirror-lines
   },
   content: {
-    padding: '0 0 0 16px',
+    padding: '0 16px',
   },
 }))
 export default class Terminal extends React.PureComponent {
@@ -57,17 +58,21 @@ export default class Terminal extends React.PureComponent {
               title={<Snippet className={classes.prompt} value={prompt} />}
               titleTypographyProps={{ variant: 'h5' }}
               action={
-                <Snippet
-                  className={classes.duration}
-                  value={prettyTime(duration)}
-                />
+                duration && (
+                  <Snippet
+                    className={classes.duration}
+                    value={prettyTime(duration)}
+                  />
+                )
               }
             />
-            <CardContent className={classes.content}>
-              <Typography variant="h6">
-                <Snippet className={classes.answer} value={answer || ''} />
-              </Typography>
-            </CardContent>
+            {!!(answer && answer.length) && (
+              <CardContent className={classes.content}>
+                <Typography variant="h6">
+                  <Answer answer={answer} />
+                </Typography>
+              </CardContent>
+            )}
           </Card>
         ))}
         <Prompt />

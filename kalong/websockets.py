@@ -8,7 +8,7 @@ from threading import Lock
 from aiohttp import ClientSession
 from aiohttp.client_exceptions import ClientConnectorError
 
-from .config import host, port, protocol
+from .config import front_port, host, port, protocol
 from .errors import NoServerFoundError
 from .forking import forkserver
 from .loops import get_loop
@@ -28,7 +28,8 @@ async def websocket():
         return websockets[origin]
 
     def url(side):
-        return f'{protocol}://{host}:{port}/{side}/{origin}'
+        overriden_port = front_port if side == 'front' else port
+        return f'{protocol}://{host}:{overriden_port}/{side}/{origin}'
 
     sessions[origin] = sessions.get(origin, ClientSession())
 

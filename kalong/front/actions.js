@@ -71,3 +71,19 @@ export const setConnectionState = state => ({
   type: SET_CONNECTION_STATE,
   state,
 })
+
+export const REQUEST_INSPECT = 'REQUEST_INSPECT'
+export const requestInspect = (key, id) => ({
+  type: REQUEST_INSPECT,
+  key,
+  id,
+  remote: true,
+})
+
+export const SET_INSPECT_ANSWER = 'SET_INSPECT_ANSWER'
+export const setInspectAnswer = ({ key, prompt, answer }) => ({
+  type: SET_INSPECT_ANSWER,
+  key,
+  prompt,
+  answer,
+})
