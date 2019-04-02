@@ -75,6 +75,38 @@ class ObjCache(object):
 obj_cache = ObjCache()
 
 
+def walk_iterable(iterable):
+    return [walk_obj(obj) for obj in iterable]
+
+
+def walk_mapping(mapping):
+    return [
+        {'key': walk_obj(key), 'value': walk_obj(val)}
+        for key, val in mapping.items()
+    ]
+
+
+def walk_obj(obj):
+    if any(
+        [isinstance(obj, list), isinstance(obj, set), isinstance(obj, tuple)]
+    ):
+        return {
+            'type': 'iterable',
+            'subtype': type(obj).__name__,
+            'values': walk_iterable(obj),
+            'id': obj_cache.register(obj),
+        }
+    if isinstance(obj, dict):
+        return {
+            'type': 'mapping',
+            'subtype': type(obj).__name__,
+            'values': walk_mapping(obj),
+            'id': obj_cache.register(obj),
+        }
+
+    return {'type': 'obj', 'value': repr(obj), 'id': obj_cache.register(obj)}
+
+
 class FakeSTD(object):
     def __init__(self, answer, type):
         self.answer = answer
@@ -98,9 +130,8 @@ class capture_display(object):
         sys.displayhook = sys.__displayhook__
 
     def hook(self, obj):
-        self.answer.append(
-            {'type': 'obj', 'value': repr(obj), 'id': obj_cache.register(obj)}
-        )
+        if obj is not None:
+            self.answer.append(walk_obj(obj))
 
 
 class capture_std(object):

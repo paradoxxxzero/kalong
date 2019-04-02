@@ -13,24 +13,12 @@ import React from 'react'
 import classnames from 'classnames'
 
 import { prettyTime } from '../util'
-import Err from './Err'
-import Inspect from './Inspect'
-import Obj from './Obj'
-import Out from './Out'
+import AnswerDispatch from './AnswerDispatch'
 import Snippet from '../Code/Snippet'
-
-const TYPES = {
-  out: Out,
-  err: Err,
-  obj: Obj,
-  inspect: Inspect,
-}
 
 @withStyles(theme => ({
   answer: {
-    whiteSpace: 'pre-wrap',
-    wordBreak: 'break-all',
-    overflowWrap: 'break-word',
+    padding: '0 16px',
   },
   prompt: {
     display: 'block',
@@ -102,16 +90,11 @@ export default class Answer extends React.PureComponent {
             <Divider />
             <Collapse in={this.state.expanded} timeout="auto" unmountOnExit>
               <CardContent className={classes.content}>
-                <Typography variant="h6">
-                  <code className={classes.answer}>
-                    {answer.map(({ type, ...props }, i) => {
-                      const AnswerPart = TYPES[type]
-                      return (
-                        // eslint-disable-next-line react/no-array-index-key
-                        <AnswerPart key={i} {...props} />
-                      )
-                    })}
-                  </code>
+                <Typography variant="h6" className={classes.answer}>
+                  {answer.map((props, i) => (
+                    // eslint-disable-next-line react/no-array-index-key
+                    <AnswerDispatch key={i} {...props} />
+                  ))}
                 </Typography>
               </CardContent>
             </Collapse>

@@ -44,6 +44,9 @@ import Code from './Code'
         animation: 'blink 1.5s ease-in-out infinite',
         outline: 0,
       },
+      pre: {
+        wordBreak: 'break-word',
+      },
     },
   },
   expand: {
@@ -151,6 +154,8 @@ export default class Prompt extends React.PureComponent {
                 height="auto"
                 cursorBlinkRate={0}
                 viewportMargin={Infinity}
+                width="100%"
+                lineWrapping
                 extraKeys={{
                   Up: this.handleUp,
                   Down: this.handleDown,

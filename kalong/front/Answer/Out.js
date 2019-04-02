@@ -1,16 +1,18 @@
 import { withStyles } from '@material-ui/core'
 import React from 'react'
 
+import Snippet from '../Code/Snippet'
+
 @withStyles(() => ({
-  out: {},
+  out: {
+    whiteSpace: 'pre-wrap',
+    wordBreak: 'break-all',
+    overflowWrap: 'break-word',
+  },
 }))
 export default class Out extends React.PureComponent {
   render() {
     const { classes, text } = this.props
-    return (
-      <span className={classes.out} title="stdout">
-        {text}
-      </span>
-    )
+    return <Snippet className={classes.err} value={text} mode={null} />
   }
 }

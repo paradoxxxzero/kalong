@@ -79,6 +79,7 @@ const drawerWidth = 240
       flexGrow: 1,
       display: 'flex',
       flexDirection: 'column',
+      minWidth: 0, // Fix codemirror wrapping
     },
     toolbar: {
       ...theme.mixins.toolbar,

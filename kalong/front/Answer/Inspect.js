@@ -23,7 +23,6 @@ import Snippet from '../Code/Snippet'
   })
 )
 @withStyles(theme => ({
-  inspect: {},
   name: {
     wordBreak: 'normal',
   },
