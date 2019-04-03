@@ -116,7 +116,10 @@ const loadingLevel = (state = 0, action) => {
 const history = (state = [], action) => {
   switch (action.type) {
     case SET_PROMPT:
-      return [action.prompt, ...state]
+      return [
+        action.prompt,
+        ...state.filter(historyPrompt => historyPrompt !== action.prompt),
+      ]
     default:
       return state
   }
