@@ -1,3 +1,4 @@
+import ctypes
 import dis
 import linecache
 import os
@@ -17,7 +18,9 @@ from inspect import (
 from itertools import groupby
 from pathlib import Path
 
-from .tools import iter_stack
+from .utils.io import capture_display, capture_std
+from .utils.iterators import iter_stack
+from .utils.obj import get_infos, obj_cache, sync_locals
 
 try:
     from cutter import cut
@@ -56,101 +59,11 @@ def serialize_frames(current_frame, current_tb):
         }
 
 
-class ObjCache(object):
-    def __init__(self):
-        self.cache = {}
-
-    def register(self, obj):
-        ident = id(obj)
-        self.cache[ident] = obj
-        return ident
-
-    def get(self, ident):
-        return self.cache[ident]
-
-    def clear(self):
-        self.cache = {}
-
-
-obj_cache = ObjCache()
-
-
-def walk_iterable(iterable):
-    return [walk_obj(obj) for obj in iterable]
-
-
-def walk_mapping(mapping):
-    return [
-        {'key': walk_obj(key), 'value': walk_obj(val)}
-        for key, val in mapping.items()
-    ]
-
-
-def walk_obj(obj):
-    if any(
-        [isinstance(obj, list), isinstance(obj, set), isinstance(obj, tuple)]
-    ):
-        return {
-            'type': 'iterable',
-            'subtype': type(obj).__name__,
-            'values': walk_iterable(obj),
-            'id': obj_cache.register(obj),
-        }
-    if isinstance(obj, dict):
-        return {
-            'type': 'mapping',
-            'subtype': type(obj).__name__,
-            'values': walk_mapping(obj),
-            'id': obj_cache.register(obj),
-        }
-
-    return {'type': 'obj', 'value': repr(obj), 'id': obj_cache.register(obj)}
-
-
-class FakeSTD(object):
-    def __init__(self, answer, type):
-        self.answer = answer
-        self.type = type
-
-    def write(self, s):
-        self.answer.append({'type': self.type, 'text': s})
-
-    def flush(self):
-        pass
-
-
-class capture_display(object):
-    def __init__(self, answer):
-        self.answer = answer
-
-    def __enter__(self):
-        sys.displayhook = self.hook
-
-    def __exit__(self, exctype, excinst, exctb):
-        sys.displayhook = sys.__displayhook__
-
-    def hook(self, obj):
-        if obj is not None:
-            self.answer.append(walk_obj(obj))
-
-
-class capture_std(object):
-    def __init__(self, answer):
-        self.answer = answer
-
-    def __enter__(self):
-        sys.stdout = FakeSTD(self.answer, 'out')
-        sys.stderr = FakeSTD(self.answer, 'err')
-
-    def __exit__(self, exctype, excinst, exctb):
-        sys.stdout = sys.__stdout__
-        sys.stderr = sys.__stderr__
-
-
 def serialize_answer(prompt, frame):
     prompt = prompt.strip()
     duration = 0
     answer = []
+    f_locals = dict(frame.f_locals)
     with capture_display(answer), capture_std(answer):
         compiled_code = None
         try:
@@ -165,10 +78,11 @@ def serialize_answer(prompt, frame):
         start = time.time()
         if compiled_code is not None:
             try:
-                exec(compiled_code, frame.f_globals, frame.f_locals)
+                exec(compiled_code, frame.f_globals, f_locals)
             except Exception:
                 # handle ex
                 sys.excepthook(*sys.exc_info())
+            sync_locals(frame, f_locals)
         duration = int((time.time() - start) * 1000 * 1000 * 1000)
 
     return {'prompt': prompt, 'answer': answer, 'duration': duration}
@@ -216,7 +130,7 @@ def serialize_inspect(key, frame):
         group: [serialize_attribute(attr, group) for attr in attrs]
         for group, attrs in groupby(attributes, key=attribute_classifier)
     }
-
+    infos = get_infos(obj)
     doc = getdoc(obj)
     try:
         source = getsource(obj)
@@ -225,6 +139,7 @@ def serialize_inspect(key, frame):
     answer = [
         {
             'type': 'inspect',
+            'infos': infos,
             'attributes': grouped_attributes,
             'doc': doc,
             'source': source,

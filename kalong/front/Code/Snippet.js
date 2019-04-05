@@ -6,6 +6,7 @@ import CodeMirror from './codemirror'
 
 @withStyles(() => ({
   snippet: {
+    display: 'block',
     whiteSpace: 'pre-wrap',
     wordBreak: 'break-all',
     overflowWrap: 'break-word',

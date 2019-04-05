@@ -1,4 +1,7 @@
 import {
+  List,
+  ListItem,
+  ListItemText,
   Tab,
   Table,
   TableBody,
@@ -58,8 +61,8 @@ export default class Inspect extends React.PureComponent {
   }
 
   render() {
-    const { classes, attributes, doc, source } = this.props
-    const tab = this.state.tab || Object.keys(attributes)[0]
+    const { classes, attributes, doc, source, infos } = this.props
+    const tab = this.state.tab || 'infos'
     return (
       <div className={classes.root}>
         <Tabs
@@ -70,13 +73,16 @@ export default class Inspect extends React.PureComponent {
           variant="scrollable"
           scrollButtons="auto"
         >
-          {Object.entries(attributes).map(([group]) => (
-            <Tab label={group} key={group} value={group} />
-          ))}
+          {infos && <Tab label="infos" value="infos" />}
+          {Object.entries(attributes)
+            .sort(() => 1)
+            .map(([group]) => (
+              <Tab label={group} key={group} value={group} />
+            ))}
           {doc && <Tab label="documentation" value="doc" />}
           {source && <Tab label="source" value="source" />}
         </Tabs>
-        {!['doc', 'source'].includes(tab) && (
+        {!['doc', 'source', 'infos'].includes(tab) && (
           <Typography component="div" className={classes.attributes}>
             <Table>
               <TableBody>
@@ -96,14 +102,21 @@ export default class Inspect extends React.PureComponent {
           </Typography>
         )}
         {tab === 'doc' && (
-          <Typography component="div" variant="body2" className={classes.doc}>
-            {doc}
-          </Typography>
+          <Snippet value={doc} mode={null} className={classes.doc} />
         )}
         {tab === 'source' && (
-          <Typography component="div" className={classes.source}>
-            <Snippet value={source} />
-          </Typography>
+          <Snippet value={source} className={classes.source} />
+        )}
+        {tab === 'infos' && (
+          <List className={classes.infos}>
+            {Object.entries(infos)
+              .filter(([, value]) => value)
+              .map(([key, value]) => (
+                <ListItem key={key}>
+                  <ListItemText primary={key} secondary={value} />
+                </ListItem>
+              ))}
+          </List>
         )}
       </div>
     )
