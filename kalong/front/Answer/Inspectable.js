@@ -1,3 +1,4 @@
+import classnames from 'classnames'
 import { Button, withStyles } from '@material-ui/core'
 import { connect } from 'react-redux'
 import React from 'react'
@@ -10,6 +11,7 @@ import { uid } from '../util'
     minWidth: 'auto',
     textTransform: 'none',
     padding: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.02)',
   },
 }))
 @connect(
@@ -31,9 +33,12 @@ export default class Inspectable extends React.PureComponent {
   }
 
   render() {
-    const { classes, children } = this.props
+    const { classes, className, children } = this.props
     return (
-      <Button onClick={this.handleClick} className={classes.button}>
+      <Button
+        onClick={this.handleClick}
+        className={classnames(classes.button, className)}
+      >
         {children}
       </Button>
     )

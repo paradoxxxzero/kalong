@@ -1,5 +1,6 @@
 import ctypes
 from inspect import (
+    getclasstree,
     getcomments,
     getmodule,
     getmro,
@@ -65,38 +66,56 @@ def walk_obj(obj, walked):
     return {'type': 'obj', 'value': repr(obj), 'id': id}
 
 
+def getbases(cls):
+    return {
+        'name': cls.__name__,
+        'bases': [getbases(base) for base in cls.__bases__],
+    }
+
+
+def has_mixins(bases):
+    return len(bases['bases']) > 1 or any(
+        has_mixins(base) for base in bases['bases']
+    )
+
+
 def get_infos(obj):
     infos = {}
-    infos['Type'] = type(obj).__name__
+    infos['type'] = type(obj).__name__
+    cls = obj if type(obj) == type else type(obj)
     try:
-        infos['Signature'] = str(signature(obj))
+        infos['signature'] = obj.__name__ + str(signature(obj))
     except Exception:
         pass
+
     try:
-        infos['MRO'] = ', '.join(
-            m.__name__
-            for m in (getmro(obj) if type(obj) == type else getmro(type(obj)))
-        )
+        infos['bases'] = getbases(cls)
+        if has_mixins(infos['bases']):
+            try:
+                infos['mro'] = [m.__name__ for m in (getmro(cls))]
+            except Exception:
+                pass
     except Exception:
         pass
+
     try:
-        infos['File'] = getsourcefile(obj)
+        infos['file'] = getsourcefile(obj)
     except Exception:
-        infos['File'] = ''
+        infos['file'] = ''
 
     try:
         srcs, lno = getsourcelines(obj)
-        infos['File'] += f':{lno}'
-        infos['Source size'] = f'{len(srcs)} lines'
+        infos['file'] += f':{lno}'
+        infos['source_size'] = len(srcs)
     except Exception:
         pass
 
     try:
-        infos['Module'] += f':{getmodule(obj).__name__}'
+        infos['module'] += f':{getmodule(obj).__name__}'
     except Exception:
         pass
 
-    infos['Comments'] = getcomments(obj)
+    infos['comments'] = getcomments(obj)
 
     return infos
 

@@ -42,6 +42,7 @@ export default class Mapping extends React.PureComponent {
         _oldLength: values.length,
       }
     }
+    return null
   }
 
   handleExpand() {

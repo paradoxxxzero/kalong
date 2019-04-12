@@ -36,8 +36,8 @@ export default class Frames extends React.PureComponent {
     const { frames } = this.props
     return (
       <List>
-        {frames.map(frame => (
-          <Frame key={frame.key} frame={frame} />
+        {frames.map((frame, i) => (
+          <Frame key={frame.key} frame={frame} last={i === frames.length - 1} />
         ))}
       </List>
     )

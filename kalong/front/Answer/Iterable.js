@@ -15,7 +15,11 @@ import Snippet from '../Code/Snippet'
     fontSize: theme.typography.button.fontSize,
   },
   indented: {
-    marginLeft: '8px',
+    display: 'block',
+    paddingLeft: '8px',
+  },
+  inline: {
+    display: 'inline',
   },
   expandIcon: {
     fontSize: '16px',
@@ -43,6 +47,7 @@ export default class Iterable extends React.PureComponent {
         _oldLength: values.length,
       }
     }
+    return null
   }
 
   handleExpand() {
@@ -73,7 +78,8 @@ export default class Iterable extends React.PureComponent {
         )}
         {expanded && <br />}
         {values.map((props, i) => (
-          <React.Fragment
+          <section
+            className={expanded ? classes.indented : classes.inline}
             // eslint-disable-next-line react/no-array-index-key
             key={i}
           >
@@ -84,9 +90,12 @@ export default class Iterable extends React.PureComponent {
               </Inspectable>
             )}
             {expanded && <br />}
-          </React.Fragment>
+          </section>
         ))}
         <Inspectable id={id}>
+          {values.length === 1 && open === '(' && (
+            <Snippet mode={null} value="," />
+          )}
           <Snippet mode={null} value={close || ')'} />
         </Inspectable>
       </>

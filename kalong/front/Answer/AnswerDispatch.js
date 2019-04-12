@@ -1,6 +1,7 @@
 import React from 'react'
 
 import Err from './Err'
+import Exception from './Exception'
 import Inspect from './Inspect'
 import Iterable from './Iterable'
 import Mapping from './Mapping'
@@ -14,6 +15,7 @@ const TYPES = {
   inspect: Inspect,
   iterable: Iterable,
   mapping: Mapping,
+  exception: Exception,
 }
 
 export default class AnswerDispatch extends React.PureComponent {

@@ -29,10 +29,11 @@ export default class Frame extends React.PureComponent {
   }
 
   render() {
-    const { frame, activeFrame } = this.props
+    const { frame, activeFrame, last } = this.props
     return (
       <ListItem
         button
+        divider={!last}
         selected={frame.key === activeFrame}
         onClick={this.handleClick}
       >
@@ -41,9 +42,9 @@ export default class Frame extends React.PureComponent {
           secondary={
             <>
               <Snippet value={frame.lineSource} />
-              <Tooltip title={frame.filename}>
+              <Tooltip title={frame.absolute_filename}>
                 <Typography component="span" color="textPrimary" noWrap>
-                  {frame.stem}:{frame.lineNumber}
+                  {frame.filename}:{frame.lineNumber}
                 </Typography>
               </Tooltip>
             </>

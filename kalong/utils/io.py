@@ -1,6 +1,7 @@
 import sys
 
-from .obj import walk_obj
+from .iterators import iter_cause, iter_linked_list
+from .obj import obj_cache, walk_obj
 
 
 class FakeSTD(object):
@@ -41,3 +42,40 @@ class capture_std(object):
     def __exit__(self, exctype, excinst, exctb):
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
+
+
+class capture_exception(object):
+    def __init__(self, answer):
+        self.answer = answer
+
+    def __enter__(self):
+        sys.excepthook = self.hook
+
+    def __exit__(self, exctype, excinst, exctb):
+        sys.excepthook = sys.__excepthook__
+
+    def hook(self, type, value, tb):
+        from ..debugger import serialize_frames
+
+        self.answer.append(
+            {
+                'type': 'exception',
+                'id': obj_cache.register(value),
+                'subtype': 'root',
+                'name': type(value).__class__.__name__,
+                'description': str(value),
+                'traceback': list(serialize_frames(None, tb)),
+                'causes': [
+                    {
+                        'id': obj_cache.register(cause),
+                        'subtype': 'cause' if explicit else 'context',
+                        'name': type(cause).__class__.__name__,
+                        'description': str(cause),
+                        'traceback': list(
+                            serialize_frames(None, cause.__traceback__)
+                        ),
+                    }
+                    for cause, explicit in iter_cause(value)
+                ],
+            }
+        )

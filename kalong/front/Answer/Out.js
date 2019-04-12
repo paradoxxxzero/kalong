@@ -1,6 +1,6 @@
-import { withStyles } from '@material-ui/core'
 import React from 'react'
 
+import { withStyles } from '@material-ui/core'
 import Snippet from '../Code/Snippet'
 
 @withStyles(() => ({
@@ -13,6 +13,6 @@ import Snippet from '../Code/Snippet'
 export default class Out extends React.PureComponent {
   render() {
     const { classes, text } = this.props
-    return <Snippet className={classes.err} value={text} mode={null} />
+    return <Snippet className={classes.out} value={text} mode={null} />
   }
 }
