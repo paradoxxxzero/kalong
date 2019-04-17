@@ -16,6 +16,7 @@
     "react": "^16.8.4",
     "react-dom": "^16.8.4",
     "react-redux": "^6.0.1",
+    "react-swipeable-views": "^0.13.1",
     "redux": "^4.0.1"
   },
   "devDependencies": {

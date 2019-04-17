@@ -44,7 +44,7 @@ export default class Code extends React.PureComponent {
     const { value, height, width, className, children, ...props } = this.props
     if (value !== oldValue) {
       if (value !== this.codeMirror.getValue()) {
-        this.codeMirror.setValue(value)
+        this.codeMirror.setValue(value || '')
         // Set cursor at end
         this.codeMirror.setCursor({
           line: this.codeMirror.lastLine(),

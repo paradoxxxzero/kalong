@@ -1,7 +1,6 @@
 import {
   Chip,
   Link,
-  Slide,
   Tab,
   Table,
   TableBody,
@@ -13,10 +12,12 @@ import {
 import { connect } from 'react-redux'
 import OpenInNewIcon from '@material-ui/icons/OpenInNew'
 import React from 'react'
+import SwipeableViews from 'react-swipeable-views'
 
 import { requestInspect } from '../actions'
 import { uid } from '../util'
 import ClassBases from './ClassBases'
+import Code from '../Code'
 import Obj from './Obj'
 import Snippet from '../Code/Snippet'
 
@@ -66,7 +67,7 @@ export default class Inspect extends React.PureComponent {
 
   render() {
     const { classes, attributes, doc, source, infos } = this.props
-    const tab = this.state.tab || 'infos'
+    const { tab } = this.state
     return (
       <div className={classes.root}>
         <Tabs
@@ -77,58 +78,27 @@ export default class Inspect extends React.PureComponent {
           variant="scrollable"
           scrollButtons="auto"
         >
-          {infos && <Tab label="infos" value="infos" />}
+          <Tab label="infos" value={0} />
           {Object.entries(attributes)
             .sort(() => 1)
-            .map(([group]) => (
-              <Tab label={group} key={group} value={group} />
+            .map(([group], i) => (
+              <Tab label={group} key={group} value={i + 1} />
             ))}
-          {doc && <Tab label="documentation" value="doc" />}
-          {source && <Tab label="source" value="source" />}
+          {doc && (
+            <Tab
+              label="documentation"
+              value={Object.keys(attributes).length + 1}
+            />
+          )}
+          {source && (
+            <Tab label="source" value={Object.keys(attributes).length + 2} />
+          )}
         </Tabs>
-        {Object.entries(attributes).map(([attr, values]) => (
-          <Slide
-            key={attr}
-            direction="left"
-            in={tab === attr}
-            mountOnEnter
-            unmountOnExit
-          >
-            <div className={classes.tabContent}>
-              <Table>
-                <TableBody>
-                  {values.map(({ key, value, id, signature }) => (
-                    <TableRow key={key}>
-                      <TableCell className={classes.name} align="right">
-                        {key}
-                        {signature}
-                      </TableCell>
-                      <TableCell>
-                        <Obj value={value} id={id} />
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </Slide>
-        ))}
-        <Slide direction="left" in={tab === 'doc'} mountOnEnter unmountOnExit>
-          <div className={classes.tabContent}>
-            <Snippet value={doc} mode={null} className={classes.doc} />
-          </div>
-        </Slide>
-        <Slide
-          direction="left"
-          in={tab === 'source'}
-          mountOnEnter
-          unmountOnExit
+        <SwipeableViews
+          axis="x"
+          index={tab}
+          onChangeIndex={i => this.setState({ tab: i })}
         >
-          <div className={classes.tabContent}>
-            <Snippet value={source} className={classes.source} />
-          </div>
-        </Slide>
-        <Slide direction="left" in={tab === 'infos'} mountOnEnter unmountOnExit>
           <div className={classes.tabContent}>
             <Table>
               <TableBody>
@@ -227,7 +197,32 @@ export default class Inspect extends React.PureComponent {
               </TableBody>
             </Table>
           </div>
-        </Slide>
+          {Object.entries(attributes).map(([attr, values]) => (
+            <div key={attr} className={classes.tabContent}>
+              <Table>
+                <TableBody>
+                  {values.map(({ key, value, id, signature }) => (
+                    <TableRow key={key}>
+                      <TableCell className={classes.name} align="right">
+                        {key}
+                        {signature}
+                      </TableCell>
+                      <TableCell>
+                        <Obj value={value} id={id} />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          ))}
+          <div className={classes.tabContent}>
+            <Code value={doc} mode={null} className={classes.doc} readOnly />
+          </div>
+          <div className={classes.tabContent}>
+            <Code value={source} className={classes.source} readOnly />
+          </div>
+        </SwipeableViews>
       </div>
     )
   }
