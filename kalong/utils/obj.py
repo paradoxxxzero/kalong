@@ -1,6 +1,5 @@
 import ctypes
 from inspect import (
-    getclasstree,
     getcomments,
     getmodule,
     getmro,
@@ -8,6 +7,8 @@ from inspect import (
     getsourcelines,
     signature,
 )
+
+from .doc_lookup import get_fqn, get_online_doc
 
 
 class ObjCache(object):
@@ -87,6 +88,10 @@ def get_infos(obj):
         infos['signature'] = obj.__name__ + str(signature(obj))
     except Exception:
         pass
+
+    infos['fqn'] = get_fqn(obj)
+    if infos['fqn']:
+        infos['online_doc'] = get_online_doc(infos['fqn'])
 
     try:
         infos['bases'] = getbases(cls)
