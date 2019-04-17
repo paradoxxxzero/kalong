@@ -1,11 +1,19 @@
 import json
 import linecache
 import logging
+import sys
 
 from aiohttp import WSMsgType
 
 from .config import basicConfig, log_level
-from .debugger import serialize_answer, serialize_frames, serialize_inspect
+from .debugger import (
+    get_id_from_expression,
+    serialize_answer,
+    serialize_exception,
+    serialize_frames,
+    serialize_inspect,
+    serialize_inspect_eval,
+)
 from .loops import run
 from .stepping import add_step, clear_step, stop_trace
 from .websockets import close_websocket, websocket
@@ -75,7 +83,15 @@ async def communication_loop(frame, tb=None):
                 response = {
                     'type': 'SET_INSPECT_ANSWER',
                     'key': data['key'],
+                    'command': 'inspect',
                     **serialize_inspect(data['id'], frame),
+                }
+            elif data['type'] == 'REQUEST_INSPECT_EVAL':
+                response = {
+                    'type': 'SET_INSPECT_ANSWER',
+                    'key': data['key'],
+                    'command': 'inspect',
+                    **serialize_inspect_eval(data['prompt'], frame),
                 }
             elif data['type'] == 'DO_COMMAND':
                 command = data['command']

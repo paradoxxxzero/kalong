@@ -17,7 +17,7 @@ from itertools import groupby
 from pathlib import Path
 
 from .utils.io import capture_display, capture_exception, capture_std
-from .utils.iterators import iter_stack
+from .utils.iterators import iter_cause, iter_stack
 from .utils.obj import get_infos, obj_cache, sync_locals
 
 try:
@@ -88,6 +88,27 @@ def serialize_answer(prompt, frame):
     return {'prompt': prompt, 'answer': answer, 'duration': duration}
 
 
+def serialize_exception(type_, value, tb):
+    return {
+        'type': 'exception',
+        'id': obj_cache.register(value),
+        'subtype': 'root',
+        'name': type_.__name__,
+        'description': str(value),
+        'traceback': list(serialize_frames(None, tb)),
+        'causes': [
+            {
+                'id': obj_cache.register(cause),
+                'subtype': 'cause' if explicit else 'context',
+                'name': type(cause).__name__,
+                'description': str(cause),
+                'traceback': list(serialize_frames(None, cause.__traceback__)),
+            }
+            for cause, explicit in iter_cause(value)
+        ],
+    }
+
+
 def attribute_classifier(attr):
     key = attr['key']
     value = attr['value']
@@ -116,6 +137,21 @@ def serialize_attribute(attr, group):
             pass
     attr['value'] = repr(attr['value'])
     return attr
+
+
+def get_id_from_expression(expr, frame):
+    return obj_cache.register(eval(expr, frame.f_globals, frame.f_locals))
+
+
+def serialize_inspect_eval(prompt, frame):
+    try:
+        key = get_id_from_expression(prompt, frame)
+    except Exception:
+        return {
+            'prompt': prompt,
+            'answer': [serialize_exception(*sys.exc_info())],
+        }
+    return serialize_inspect(key, frame)
 
 
 def serialize_inspect(key, frame):
