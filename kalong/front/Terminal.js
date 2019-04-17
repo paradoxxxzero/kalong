@@ -31,7 +31,7 @@ export default class Terminal extends React.PureComponent {
     return (
       <div className={classes.scrollback} ref={this.scroller}>
         {scrollback.map(({ key, ...props }) => (
-          <Answer key={key} {...props} />
+          <Answer key={key} uid={key} {...props} />
         ))}
         <Prompt />
       </div>

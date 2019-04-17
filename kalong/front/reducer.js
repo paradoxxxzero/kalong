@@ -1,7 +1,9 @@
 import { combineReducers } from 'redux'
 
 import {
+  REMOVE_PROMPT_ANSWER,
   REQUEST_INSPECT,
+  REQUEST_INSPECT_EVAL,
   SET_ACTIVE_FRAME,
   SET_CONNECTION_STATE,
   SET_FILE,
@@ -74,10 +76,17 @@ const scrollback = (state = [], action) => {
             }
           : promptAnswer
       )
+    case REMOVE_PROMPT_ANSWER:
+      return state.filter(promptAnswer => action.key !== promptAnswer.key)
     case REQUEST_INSPECT:
       return [
         ...state,
         { key: action.key, prompt: `${action.id}…`, answer: null },
+      ]
+    case REQUEST_INSPECT_EVAL:
+      return [
+        ...state,
+        { key: action.key, prompt: `${action.prompt}…`, answer: null },
       ]
     case SET_INSPECT_ANSWER:
       return state.map(promptAnswer =>
@@ -85,6 +94,7 @@ const scrollback = (state = [], action) => {
           ? {
               key: action.key,
               prompt: action.prompt,
+              command: action.command,
               answer: action.answer,
             }
           : promptAnswer

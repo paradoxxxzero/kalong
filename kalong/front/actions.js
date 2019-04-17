@@ -66,6 +66,12 @@ export const setPromptAnswer = ({ key, prompt, answer, duration }) => ({
   duration,
 })
 
+export const REMOVE_PROMPT_ANSWER = 'REMOVE_PROMPT_ANSWER'
+export const removePromptAnswer = key => ({
+  type: REMOVE_PROMPT_ANSWER,
+  key,
+})
+
 export const SET_CONNECTION_STATE = 'SET_CONNECTION_STATE'
 export const setConnectionState = state => ({
   type: SET_CONNECTION_STATE,
@@ -77,6 +83,14 @@ export const requestInspect = (key, id) => ({
   type: REQUEST_INSPECT,
   key,
   id,
+  remote: true,
+})
+
+export const REQUEST_INSPECT_EVAL = 'REQUEST_INSPECT_EVAL'
+export const requestInspectEval = (key, prompt) => ({
+  type: REQUEST_INSPECT_EVAL,
+  key,
+  prompt,
   remote: true,
 })
 
