@@ -28,15 +28,6 @@ with open(
 ) as f:
     exec(f.read(), about)
 
-tests_requirements = [
-    'flake8',
-    'pytest-cov',
-    'pytest-flake8',
-    'pytest-isort',
-    'pytest',
-]
-
-
 setup(
     name=about['__title__'],
     version=about['__version__'],
@@ -49,7 +40,14 @@ setup(
     packages=find_packages(),
     provides=['kalong'],
     keywords=['debugger'],
-    test_requires=tests_requirements,
+    test_requires=[
+        'flake8',
+        'pytest-cov',
+        'pytest-flake8',
+        'pytest-isort',
+        'pytest',
+    ],
+    extras_require={'tools': ['sphinx']},
     classifiers=[
         "Development Status :: 4 - Beta",
         "Environment :: Console",
