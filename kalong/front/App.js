@@ -11,7 +11,7 @@ import MenuIcon from '@material-ui/icons/Menu'
 import React from 'react'
 import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
-import classNames from 'classnames'
+import classnames from 'classnames'
 
 import Frames from './Frames'
 import GlobalIndicator from './GlobalIndicator'
@@ -141,7 +141,7 @@ export default class App extends React.PureComponent {
         <CssBaseline />
         <AppBar
           position="fixed"
-          className={classNames(classes.appBar, {
+          className={classnames(classes.appBar, {
             [classes.appBarShift]: open && !mobile,
           })}
         >
@@ -167,12 +167,12 @@ export default class App extends React.PureComponent {
           </Toolbar>
         </AppBar>
         <Drawer
-          className={classNames(classes.drawer, {
+          className={classnames(classes.drawer, {
             [classes.drawerOpen]: this.state.open,
             [classes.drawerClose]: !this.state.open,
           })}
           classes={{
-            paper: classNames({
+            paper: classnames({
               [classes.drawerOpen]: this.state.open,
               [classes.drawerClose]: !this.state.open,
             }),

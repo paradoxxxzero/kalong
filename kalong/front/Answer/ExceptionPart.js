@@ -1,4 +1,5 @@
 import {
+  Divider,
   ExpansionPanel,
   ExpansionPanelDetails,
   ExpansionPanelSummary,
@@ -76,7 +77,7 @@ export default class Exception extends React.PureComponent {
             )}
             <Inspectable id={id} className={classes.button}>
               <Typography variant="h6">
-                <Snippet value={name} mode={null} />
+                <Snippet value={name} mode={null} noBreakAll />
               </Typography>
               <Typography variant="subtitle1">
                 <Snippet value={' ― '} mode={null} />
@@ -87,6 +88,7 @@ export default class Exception extends React.PureComponent {
             </Inspectable>
           </Grid>
         </ExpansionPanelSummary>
+        <Divider />
         <ExpansionPanelDetails>
           <List>
             {traceback.map((frame, i) => (

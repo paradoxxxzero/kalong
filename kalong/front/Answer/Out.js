@@ -1,6 +1,6 @@
+import { withStyles } from '@material-ui/core'
 import React from 'react'
 
-import { withStyles } from '@material-ui/core'
 import Snippet from '../Code/Snippet'
 
 @withStyles(() => ({

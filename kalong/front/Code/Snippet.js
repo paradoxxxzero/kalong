@@ -1,6 +1,6 @@
 import { withStyles } from '@material-ui/core'
 import React from 'react'
-import classNames from 'classnames'
+import classnames from 'classnames'
 
 import CodeMirror from './codemirror'
 
@@ -9,6 +9,9 @@ import CodeMirror from './codemirror'
     whiteSpace: 'pre-wrap',
     wordBreak: 'break-all',
     overflowWrap: 'break-word',
+  },
+  breakingSnippet: {
+    whiteSpace: 'pre-wrap',
   },
 }))
 export default class Snippet extends React.PureComponent {
@@ -39,11 +42,15 @@ export default class Snippet extends React.PureComponent {
   }
 
   render() {
-    const { classes, className, theme, onClick } = this.props
+    const { classes, className, theme, onClick, noBreakAll } = this.props
     return (
       <code
         ref={this.code}
-        className={classNames(`cm-s-${theme}`, className, classes.snippet)}
+        className={classnames(
+          `cm-s-${theme}`,
+          className,
+          noBreakAll ? classes.breakingSnippet : classes.snippet
+        )}
         onClick={onClick}
       />
     )

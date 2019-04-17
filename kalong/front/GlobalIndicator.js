@@ -1,7 +1,7 @@
 import { CircularProgress, Tooltip, withStyles } from '@material-ui/core'
 import { connect } from 'react-redux'
 import React from 'react'
-import classNames from 'classnames'
+import classnames from 'classnames'
 import pink from '@material-ui/core/colors/pink'
 import green from '@material-ui/core/colors/green'
 import red from '@material-ui/core/colors/red'
@@ -39,13 +39,13 @@ export default class GlobalIndicator extends React.PureComponent {
     if (state === 'connecting') {
       indicator = (
         <CircularProgress
-          className={classNames(classes.loader, classes.connecting)}
+          className={classnames(classes.loader, classes.connecting)}
         />
       )
     } else if (state === 'closed') {
       indicator = (
         <CircularProgress
-          className={classNames(classes.loader, classes.dead)}
+          className={classnames(classes.loader, classes.dead)}
           variant="static"
           value={100}
         />
@@ -54,13 +54,13 @@ export default class GlobalIndicator extends React.PureComponent {
       if (level > 0) {
         indicator = (
           <CircularProgress
-            className={classNames(classes.loader, classes.loading)}
+            className={classnames(classes.loader, classes.loading)}
           />
         )
       } else {
         indicator = (
           <CircularProgress
-            className={classNames(classes.loader, classes.allgood)}
+            className={classnames(classes.loader, classes.allgood)}
             variant="static"
             value={100}
           />
