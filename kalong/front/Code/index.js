@@ -3,6 +3,7 @@ import React from 'react'
 import { CodeContext, withContext } from './context'
 import CodeMirror from './codemirror'
 import Gutter from './Gutter'
+import Hint from './Hint'
 import InView from './InView'
 import Line from './Line'
 import Source from './Source'
@@ -12,6 +13,7 @@ export default class Code extends React.PureComponent {
   static Line = withContext(Line)
   static Gutter = withContext(Gutter)
   static InView = withContext(InView)
+  static Hint = withContext(Hint)
 
   static defaultProps = {
     theme: 'default',

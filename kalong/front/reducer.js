@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux'
 
 import {
+  CLEAR_SUGGESTION,
   REMOVE_PROMPT_ANSWER,
   REQUEST_INSPECT,
   REQUEST_INSPECT_EVAL,
@@ -11,6 +12,7 @@ import {
   SET_INSPECT_ANSWER,
   SET_PROMPT,
   SET_PROMPT_ANSWER,
+  SET_SUGGESTION,
   SET_THEME,
   SET_TITLE,
 } from './actions'
@@ -135,6 +137,22 @@ const history = (state = [], action) => {
   }
 }
 
+const suggestions = (state = {}, action) => {
+  switch (action.type) {
+    case SET_SUGGESTION:
+      return {
+        prompt: action.prompt,
+        from: action.from,
+        to: action.to,
+        suggestion: action.suggestion,
+      }
+    case CLEAR_SUGGESTION:
+      return {}
+    default:
+      return state
+  }
+}
+
 const theme = (state = 'init', action) => {
   switch (action.type) {
     case SET_THEME:
@@ -151,6 +169,7 @@ export default combineReducers({
   activeFrame,
   scrollback,
   history,
+  suggestions,
   theme,
   connection,
   loadingLevel,

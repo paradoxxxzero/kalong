@@ -11,7 +11,12 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import React from 'react'
 import classnames from 'classnames'
 
-import { requestInspectEval, setPrompt } from './actions'
+import {
+  requestInspectEval,
+  requestSuggestion,
+  setPrompt,
+  setSuggestion,
+} from './actions'
 import { uid } from './util'
 import Code from './Code'
 
@@ -25,10 +30,15 @@ const commandShortcuts = {
     frames: state.frames,
     history: state.history,
     scrollback: state.scrollback,
+    suggestions: state.suggestions,
   }),
   dispatch => ({
     addPrompt: (key, prompt) => dispatch(setPrompt(key, prompt)),
     inspectEval: (key, prompt) => dispatch(requestInspectEval(key, prompt)),
+    complete: (prompt, from, to) =>
+      dispatch(requestSuggestion(prompt, from, to)),
+    setSuggestions: (prompt, from, to, suggestion) =>
+      dispatch(setSuggestion({ prompt, from, to, suggestion })),
   })
 )
 @withStyles(theme => ({
@@ -83,7 +93,9 @@ export default class Prompt extends React.PureComponent {
     this.handleUp = this.handleUp.bind(this)
     this.handleDown = this.handleDown.bind(this)
     this.handleBackspace = this.handleBackspace.bind(this)
+    this.handleCompletion = this.handleCompletion.bind(this)
     this.handleRemoveCommand = this.handleRemoveCommand.bind(this)
+    this.provideSuggestion = this.provideSuggestion.bind(this)
   }
 
   handleChange(value) {
@@ -149,6 +161,29 @@ export default class Prompt extends React.PureComponent {
     this.code.current.codeMirror.focus()
   }
 
+  handleCompletion(codeMirror) {
+    const { complete, setSuggestions } = this.props
+    const { value } = this.state
+    const cursor = codeMirror.getCursor()
+    const token = codeMirror.getTokenAt(cursor)
+    const from = {
+      line: cursor.line,
+      ch: token.string === ' ' ? token.end : token.start,
+    }
+    const to = { line: cursor.line, ch: token.end }
+    if (!value.includes(' ') && value.startsWith('?')) {
+      setSuggestions(value, from, to, {
+        from: { line: from.line, ch: 0 },
+        to,
+        list: Object.values(commandShortcuts).map(command => ({
+          text: `?${command}`,
+        })),
+      })
+      return
+    }
+    complete(value, from, to)
+  }
+
   handleBackspace(cm) {
     const { value, command } = this.state
     if (!value && command) {
@@ -162,8 +197,15 @@ export default class Prompt extends React.PureComponent {
     this.setState({ command: null })
   }
 
+  provideSuggestion() {
+    const {
+      suggestions: { suggestion },
+    } = this.props
+    return suggestion
+  }
+
   render() {
-    const { classes, scrollback } = this.props
+    const { classes, suggestions, scrollback } = this.props
     const { command, value } = this.state
     const grow =
       scrollback.length === 0 || scrollback.slice(-1)[0].answer !== null
@@ -212,8 +254,13 @@ export default class Prompt extends React.PureComponent {
                   Down: this.handleDown,
                   Enter: this.handleEnter,
                   Backspace: this.handleBackspace,
+                  'Ctrl-Space': this.handleCompletion,
                 }}
-              />
+              >
+                {suggestions && suggestions.prompt === value && (
+                  <Code.Hint hint={this.provideSuggestion} />
+                )}
+              </Code>
             }
             titleTypographyProps={{ variant: 'h5' }}
           />

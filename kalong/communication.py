@@ -1,18 +1,16 @@
 import json
 import linecache
 import logging
-import sys
 
 from aiohttp import WSMsgType
 
 from .config import basicConfig, log_level
 from .debugger import (
-    get_id_from_expression,
     serialize_answer,
-    serialize_exception,
     serialize_frames,
     serialize_inspect,
     serialize_inspect_eval,
+    serialize_suggestion,
 )
 from .loops import run
 from .stepping import add_step, clear_step, stop_trace
@@ -92,6 +90,13 @@ async def communication_loop(frame, tb=None):
                     'key': data['key'],
                     'command': 'inspect',
                     **serialize_inspect_eval(data['prompt'], frame),
+                }
+            elif data['type'] == 'REQUEST_SUGGESTION':
+                response = {
+                    'type': 'SET_SUGGESTION',
+                    **serialize_suggestion(
+                        data['prompt'], data['from'], data['to'], frame
+                    ),
                 }
             elif data['type'] == 'DO_COMMAND':
                 command = data['command']

@@ -40,6 +40,7 @@ setup(
     packages=find_packages(),
     provides=['kalong'],
     keywords=['debugger'],
+    requires=['jedi'],
     test_requires=[
         'flake8',
         'pytest-cov',

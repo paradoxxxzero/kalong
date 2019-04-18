@@ -101,3 +101,26 @@ export const setInspectAnswer = ({ key, prompt, answer }) => ({
   prompt,
   answer,
 })
+
+export const REQUEST_SUGGESTION = 'REQUEST_SUGGESTION'
+export const requestSuggestion = (prompt, from, to) => ({
+  type: REQUEST_SUGGESTION,
+  prompt,
+  from,
+  to,
+  remote: true,
+})
+
+export const SET_SUGGESTION = 'SET_SUGGESTION'
+export const setSuggestion = ({ prompt, from, to, suggestion }) => ({
+  type: SET_SUGGESTION,
+  prompt,
+  from,
+  to,
+  suggestion,
+})
+
+export const CLEAR_SUGGESTION = 'CLEAR_SUGGESTION'
+export const clearSuggestion = () => ({
+  type: CLEAR_SUGGESTION,
+})

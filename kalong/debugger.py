@@ -1,5 +1,6 @@
 import dis
 import linecache
+import logging
 import os
 import sys
 import time
@@ -16,6 +17,8 @@ from inspect import (
 from itertools import groupby
 from pathlib import Path
 
+from jedi import Interpreter
+
 from .utils.io import capture_display, capture_exception, capture_std
 from .utils.iterators import iter_cause, iter_stack
 from .utils.obj import get_infos, obj_cache, sync_locals
@@ -25,6 +28,8 @@ try:
     from cutter.utils import bang_compile as compile
 except ImportError:
     cut = None
+
+log = logging.getLogger(__name__)
 
 
 def serialize_frames(current_frame, current_tb):
@@ -186,3 +191,23 @@ def serialize_inspect(key, frame):
     ]
 
     return {'prompt': repr(obj), 'answer': answer}
+
+
+def serialize_suggestion(prompt, from_, to, frame):
+    answer = {'prompt': prompt, 'from': from_, 'to': to, 'suggestion': {}}
+    try:
+        script = Interpreter(prompt, [frame.f_locals, frame.f_globals])
+        completions = script.completions()
+    except Exception:
+        log.exception('Completion failed')
+        return answer
+
+    completions = [
+        {'text': comp.name}
+        for comp in completions
+        if comp.name.endswith(comp.complete)
+    ]
+
+    suggestion = {'from': from_, 'to': to, 'list': completions}
+    answer['suggestion'] = suggestion
+    return answer
