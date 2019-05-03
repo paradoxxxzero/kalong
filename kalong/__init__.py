@@ -1,5 +1,8 @@
-import sys
+"""A new take on debugging"""
+__version__ = "0.0.0"
 
+
+import sys
 
 def breakpoint():
     from .stepping import add_step, start_trace, stop_trace
