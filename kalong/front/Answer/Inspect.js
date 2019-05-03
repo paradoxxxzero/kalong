@@ -44,6 +44,9 @@ import Snippet from '../Code/Snippet'
   type: {
     margin: '4px',
   },
+  signature: {
+    color: theme.palette.text.secondary,
+  },
 }))
 export default class Inspect extends React.PureComponent {
   constructor(props) {
@@ -167,7 +170,11 @@ export default class Inspect extends React.PureComponent {
                       Online documentation
                     </TableCell>
                     <TableCell>
-                      <Link href={infos.online_doc}>
+                      <Link
+                        href={infos.online_doc}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
                         {infos.fqn} <OpenInNewIcon fontSize="small" />
                       </Link>
                     </TableCell>
@@ -205,7 +212,7 @@ export default class Inspect extends React.PureComponent {
                     <TableRow key={key}>
                       <TableCell className={classes.name} align="right">
                         {key}
-                        {signature}
+                        <span className={classes.signature}>{signature}</span>
                       </TableCell>
                       <TableCell>
                         <Obj value={value} id={id} />
