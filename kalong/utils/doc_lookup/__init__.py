@@ -15,11 +15,11 @@ except FileNotFoundError:
 
 def get_fqn(obj):
     mod = inspect.getmodule(obj)
-    if not mod:
-        return
-    if mod == obj or mod.__name__ == 'bultins':
-        return obj.__name__
-    return '.'.join((mod.__name__, obj.__name__))
+    mod_name = getattr(mod, '__name__', '') if mod else ''
+    obj_name = getattr(obj, '__qualname__', getattr(obj, '__name__', ''))
+    if not mod_name or mod == obj or mod_name == 'builtins':
+        return obj_name
+    return '.'.join(s for s in (mod_name, obj_name) if s)
 
 
 def get_online_doc(fqn):
