@@ -1,5 +1,6 @@
 .eggs
 .cache/
+__pycache__/
 build
 .env
 .coverage
