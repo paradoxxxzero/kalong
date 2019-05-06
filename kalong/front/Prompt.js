@@ -96,6 +96,23 @@ export default class Prompt extends React.PureComponent {
     this.handleCompletion = this.handleCompletion.bind(this)
     this.handleRemoveCommand = this.handleRemoveCommand.bind(this)
     this.provideSuggestion = this.provideSuggestion.bind(this)
+    this.handleGlobalFocus = this.handleGlobalFocus.bind(this)
+  }
+
+  componentDidMount() {
+    addEventListener('click', this.handleGlobalFocus)
+  }
+
+  componentWillUnmount() {
+    removeEventListener('click', this.handleGlobalFocus)
+  }
+
+  handleGlobalFocus({ target }) {
+    if (this.code.current.codeMirror) {
+      if (!target.closest('[tabindex]')) {
+        this.code.current.codeMirror.focus()
+      }
+    }
   }
 
   handleChange(value) {
