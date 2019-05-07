@@ -105,7 +105,7 @@ export default class Inspect extends React.PureComponent {
           <div className={classes.tabContent}>
             <Table>
               <TableBody>
-                {infos.type && (
+                {infos.type ? (
                   <TableRow>
                     <TableCell className={classes.name} align="right">
                       Type
@@ -114,8 +114,8 @@ export default class Inspect extends React.PureComponent {
                       <Chip label={infos.type} className={classes.type} />
                     </TableCell>
                   </TableRow>
-                )}
-                {infos.bases && (
+                ) : null}
+                {infos.bases ? (
                   <TableRow>
                     <TableCell className={classes.name} align="right">
                       Bases
@@ -124,8 +124,8 @@ export default class Inspect extends React.PureComponent {
                       <ClassBases cls={infos.bases} root />
                     </TableCell>
                   </TableRow>
-                )}
-                {infos.mro && (
+                ) : null}
+                {infos.mro ? (
                   <TableRow>
                     <TableCell className={classes.name} align="right">
                       MRO
@@ -145,8 +145,8 @@ export default class Inspect extends React.PureComponent {
                       ))}
                     </TableCell>
                   </TableRow>
-                )}
-                {infos.signature && (
+                ) : null}
+                {infos.signature ? (
                   <TableRow>
                     <TableCell className={classes.name} align="right">
                       Signature
@@ -155,16 +155,16 @@ export default class Inspect extends React.PureComponent {
                       <Snippet value={infos.signature} />
                     </TableCell>
                   </TableRow>
-                )}
-                {infos.fqn && (
+                ) : null}
+                {infos.fqn ? (
                   <TableRow>
                     <TableCell className={classes.name} align="right">
                       Full Qualified Name
                     </TableCell>
                     <TableCell>{infos.fqn}</TableCell>
                   </TableRow>
-                )}
-                {infos.online_doc && (
+                ) : null}
+                {infos.online_doc ? (
                   <TableRow>
                     <TableCell className={classes.name} align="right">
                       Online documentation
@@ -179,8 +179,8 @@ export default class Inspect extends React.PureComponent {
                       </Link>
                     </TableCell>
                   </TableRow>
-                )}
-                {infos.file && (
+                ) : null}
+                {infos.file ? (
                   <TableRow>
                     <TableCell className={classes.name} align="right">
                       Declared in file
@@ -190,8 +190,8 @@ export default class Inspect extends React.PureComponent {
                       {infos.source_size ? ` (${infos.source_size} lines)` : ''}
                     </TableCell>
                   </TableRow>
-                )}
-                {infos.comments && (
+                ) : null}
+                {infos.comments ? (
                   <TableRow>
                     <TableCell className={classes.name} align="right">
                       Comments
@@ -200,7 +200,7 @@ export default class Inspect extends React.PureComponent {
                       <Snippet value={infos.comments} mode={null} />
                     </TableCell>
                   </TableRow>
-                )}
+                ) : null}
               </TableBody>
             </Table>
           </div>
