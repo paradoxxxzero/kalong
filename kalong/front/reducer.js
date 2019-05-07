@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux'
 
 import {
+  CLEAR_SCROLLBACK,
   CLEAR_SUGGESTION,
   REMOVE_PROMPT_ANSWER,
   REQUEST_INSPECT,
@@ -101,6 +102,8 @@ const scrollback = (state = [], action) => {
             }
           : promptAnswer
       )
+    case CLEAR_SCROLLBACK:
+      return []
     default:
       return state
   }

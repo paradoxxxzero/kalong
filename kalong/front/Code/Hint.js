@@ -1,3 +1,5 @@
+import 'codemirror/addon/hint/show-hint'
+import 'codemirror/addon/hint/show-hint.css'
 import React from 'react'
 
 export default class Hint extends React.PureComponent {

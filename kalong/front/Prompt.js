@@ -12,6 +12,7 @@ import React from 'react'
 import classnames from 'classnames'
 
 import {
+  clearScrollback,
   requestInspectEval,
   requestSuggestion,
   setPrompt,
@@ -39,6 +40,7 @@ const commandShortcuts = {
       dispatch(requestSuggestion(prompt, from, to)),
     setSuggestions: (prompt, from, to, suggestion) =>
       dispatch(setSuggestion({ prompt, from, to, suggestion })),
+    clearScreen: () => dispatch(clearScrollback()),
   })
 )
 @withStyles(theme => ({
@@ -63,6 +65,9 @@ const commandShortcuts = {
       pre: {
         wordBreak: 'break-word',
       },
+      '.CodeMirror.dialog-opened .CodeMirror-code': {
+        marginBottom: '20px',
+      },
     },
   },
   expand: {
@@ -75,6 +80,18 @@ const commandShortcuts = {
   expandOpen: {
     transform: 'rotate(270deg)',
   },
+  dialog: {
+    lineHeight: 0.7,
+  },
+  dialogTitle: { fontSize: '0.7em', color: theme.palette.text.secondary },
+  dialogInput: {},
+  notFound: {
+    '@global': {
+      '.CodeMirror-dialog': {
+        color: theme.palette.error.main,
+      },
+    },
+  },
 }))
 export default class Prompt extends React.PureComponent {
   constructor(props) {
@@ -84,6 +101,10 @@ export default class Prompt extends React.PureComponent {
       value: '',
       transientValue: '',
       command: null,
+      search: null,
+      baseSearchIndex: 0,
+      searchNotFound: false,
+      searchHighlight: null,
     }
     this.code = React.createRef()
 
@@ -97,6 +118,19 @@ export default class Prompt extends React.PureComponent {
     this.handleRemoveCommand = this.handleRemoveCommand.bind(this)
     this.provideSuggestion = this.provideSuggestion.bind(this)
     this.handleGlobalFocus = this.handleGlobalFocus.bind(this)
+    this.handleRemoveAllOrCopy = this.handleRemoveAllOrCopy.bind(this)
+    this.handleDieIfEmpty = this.handleDieIfEmpty.bind(this)
+    this.handleClearScreen = this.handleClearScreen.bind(this)
+    this.handleReverseSearch = this.handleReverseSearch.bind(this)
+    this.handleSearch = this.handleSearch.bind(this)
+    this.handleScrollUp = this.handleScrollUp.bind(this)
+    this.handleScrollDown = this.handleScrollDown.bind(this)
+    this.handleTabOrComplete = this.handleTabOrComplete.bind(this)
+    this.handleInsertHistoryUp = this.handleInsertHistoryUp.bind(this)
+    this.handleInsertHistoryDown = this.handleInsertHistoryDown.bind(this)
+
+    this.handleIncrementalSearch = this.handleIncrementalSearch.bind(this)
+    this.handleSearchClose = this.handleSearchClose.bind(this)
   }
 
   componentDidMount() {
@@ -108,7 +142,7 @@ export default class Prompt extends React.PureComponent {
   }
 
   handleGlobalFocus({ target }) {
-    if (this.code.current.codeMirror) {
+    if (this.code.current) {
       if (!target.closest('[tabindex]')) {
         this.code.current.codeMirror.focus()
       }
@@ -214,6 +248,116 @@ export default class Prompt extends React.PureComponent {
     this.setState({ command: null })
   }
 
+  handleRemoveAllOrCopy(cm) {
+    if (cm.getSelection()) {
+      // There's no codemirror command for this
+      window.document.execCommand('copy')
+    } else {
+      this.setState({ index: -1, value: '', transientValue: '' })
+    }
+  }
+
+  handleDieIfEmpty() {
+    this.setState({ value: 'import sys; sys.exit(1)' })
+    this.handleEnter()
+  }
+
+  handleClearScreen() {
+    const { clearScreen } = this.props
+    clearScreen()
+  }
+
+  handleReverseSearch() {
+    const { index } = this.state
+    this.setState({
+      search: 'reversed',
+      baseSearchIndex: index === -1 ? 0 : index,
+    })
+  }
+
+  handleSearch() {
+    const { history } = this.props
+    const { index } = this.state
+    this.setState({
+      search: 'normal',
+      baseSearchIndex: index === -1 ? history.length - 1 : index,
+    })
+  }
+
+  handleSearchClose() {
+    this.setState({
+      search: null,
+      searchNotFound: false,
+      searchHighlight: null,
+    })
+  }
+
+  handleIncrementalSearch(e, value) {
+    if (!value) {
+      this.setState({
+        searchNotFound: false,
+        searchHighlight: null,
+      })
+      return
+    }
+    const { history } = this.props
+    const { baseSearchIndex, search } = this.state
+    const valueRE = new RegExp(
+      value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
+      'gi'
+    )
+    const historySearched =
+      search === 'reversed'
+        ? history.slice(baseSearchIndex)
+        : [...history]
+            .sort(() => -1)
+            .slice(history.length - baseSearchIndex - 1)
+    const newIndex = historySearched.findIndex(prompt => prompt.match(valueRE))
+    if (newIndex === -1) {
+      this.setState({ searchNotFound: true, searchHighlight: null })
+    } else {
+      const finalIndex =
+        search === 'reversed'
+          ? baseSearchIndex + newIndex
+          : baseSearchIndex - newIndex
+      this.setState({
+        index: finalIndex,
+        value: history[finalIndex],
+        searchNotFound: false,
+        searchHighlight: {
+          token: stream => {
+            valueRE.lastIndex = stream.pos
+            const match = valueRE.exec(stream.string)
+            if (match && match.index === stream.pos) {
+              stream.pos += match[0].length || 1
+              return 'searching'
+            } else if (match) {
+              stream.pos = match.index
+            } else {
+              stream.skipToEnd()
+            }
+          },
+        },
+      })
+    }
+  }
+
+  handleScrollUp() {
+    const { onScrollUp } = this.props
+    onScrollUp()
+  }
+
+  handleScrollDown() {
+    const { onScrollDown } = this.props
+    onScrollDown()
+  }
+
+  handleTabOrComplete() {}
+
+  handleInsertHistoryUp() {}
+
+  handleInsertHistoryDown() {}
+
   provideSuggestion() {
     const {
       suggestions: { suggestion },
@@ -223,7 +367,13 @@ export default class Prompt extends React.PureComponent {
 
   render() {
     const { classes, suggestions, scrollback } = this.props
-    const { command, value } = this.state
+    const {
+      command,
+      value,
+      search,
+      searchNotFound,
+      searchHighlight,
+    } = this.state
     const grow =
       scrollback.length === 0 || scrollback.slice(-1)[0].answer !== null
     return (
@@ -258,7 +408,9 @@ export default class Prompt extends React.PureComponent {
             title={
               <Code
                 ref={this.code}
-                className={classes.prompt}
+                className={classnames(classes.prompt, {
+                  [classes.notFound]: searchNotFound,
+                })}
                 value={value}
                 onChange={this.handleChange}
                 height="auto"
@@ -272,11 +424,38 @@ export default class Prompt extends React.PureComponent {
                   Enter: this.handleEnter,
                   Backspace: this.handleBackspace,
                   'Ctrl-Space': this.handleCompletion,
+                  'Ctrl-C': this.handleRemoveAllOrCopy,
+                  'Ctrl-D': this.handleDieIfEmpty,
+                  'Ctrl-L': this.handleClearScreen,
+                  'Ctrl-R': this.handleReverseSearch,
+                  'Ctrl-S': this.handleSearch,
+                  'Shift-PageUp': this.handleScrollUp,
+                  'Shift-PageDown': this.handleScrollDown,
+                  Tab: this.handleTabOrComplete,
+                  'Alt-Up': this.handleInsertHistoryUp,
+                  'Alt-Down': this.handleInsertHistoryDown,
                 }}
               >
                 {suggestions && suggestions.prompt === value && (
                   <Code.Hint hint={this.provideSuggestion} />
                 )}
+                {search && (
+                  <Code.Dialog
+                    template={`
+                      <div class="${classes.dialog}">
+                        <span class="${classes.dialogTitle}">Search:</span>
+                        <input
+                          type="text"
+                          class="${classes.dialogInput}"
+                        />
+                      </div>
+                    `}
+                    bottom
+                    onInput={this.handleIncrementalSearch}
+                    onClose={this.handleSearchClose}
+                  />
+                )}
+                {searchHighlight && <Code.Highlight mode={searchHighlight} />}
               </Code>
             }
             titleTypographyProps={{ variant: 'h5' }}

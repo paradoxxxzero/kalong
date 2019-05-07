@@ -20,10 +20,20 @@ export default class Terminal extends React.PureComponent {
     super(props)
 
     this.scroller = React.createRef()
+    this.handleScrollUp = this.handleScrollUp.bind(this)
+    this.handleScrollDown = this.handleScrollDown.bind(this)
   }
 
   componentDidUpdate() {
     this.scroller.current.scrollTop = this.scroller.current.scrollHeight
+  }
+
+  handleScrollUp() {
+    this.scroller.current.scrollTop -= 300
+  }
+
+  handleScrollDown() {
+    this.scroller.current.scrollTop += 300
   }
 
   render() {
@@ -33,7 +43,10 @@ export default class Terminal extends React.PureComponent {
         {scrollback.map(({ key, ...props }) => (
           <Answer key={key} uid={key} {...props} />
         ))}
-        <Prompt />
+        <Prompt
+          onScrollUp={this.handleScrollUp}
+          onScrollDown={this.handleScrollDown}
+        />
       </div>
     )
   }

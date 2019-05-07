@@ -102,6 +102,11 @@ export const setInspectAnswer = ({ key, prompt, answer }) => ({
   answer,
 })
 
+export const CLEAR_SCROLLBACK = 'CLEAR_SCROLLBACK'
+export const clearScrollback = () => ({
+  type: CLEAR_SCROLLBACK,
+})
+
 export const REQUEST_SUGGESTION = 'REQUEST_SUGGESTION'
 export const requestSuggestion = (prompt, from, to) => ({
   type: REQUEST_SUGGESTION,

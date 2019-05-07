@@ -4,6 +4,8 @@ import { CodeContext, withContext } from './context'
 import CodeMirror from './codemirror'
 import Gutter from './Gutter'
 import Hint from './Hint'
+import Dialog from './Dialog'
+import Highlight from './Highlight'
 import InView from './InView'
 import Line from './Line'
 import Source from './Source'
@@ -14,6 +16,8 @@ export default class Code extends React.PureComponent {
   static Gutter = withContext(Gutter)
   static InView = withContext(InView)
   static Hint = withContext(Hint)
+  static Dialog = withContext(Dialog)
+  static Highlight = withContext(Highlight)
 
   static defaultProps = {
     theme: 'default',
