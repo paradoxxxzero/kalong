@@ -63,12 +63,36 @@ export default class Code extends React.PureComponent {
       this.codeMirror.setSize(width, height)
       this.codeMirror.refresh()
     }
-    Object.entries(props).forEach(([name, option]) => {
-      if (oldProps[name] !== option) {
+    Object.entries(props)
+      .filter(([name]) => !name.startsWith('on'))
+      .filter(([name, option]) => oldProps[name] !== option)
+      .forEach(([name, option]) => {
         this.codeMirror.setOption(name, option)
-      }
-    })
+      })
+
+    Object.entries(props)
+      .filter(([name]) => name.startsWith('on') && name !== 'onChange')
+      .filter(([name, handler]) => oldProps[name] !== handler)
+      .forEach(([name, handler]) => {
+        this.codeMirror.off(
+          name.replace(/^on/, '').toLowerCase(),
+          oldProps[name]
+        )
+        this.codeMirror.on(name.replace(/^on/, '').toLowerCase(), handler)
+      })
     this.codeMirror.refresh()
+    if (props.autofocus) {
+      this.codeMirror.focus()
+    }
+  }
+
+  componentWillUnmount() {
+    this.codeMirror.off('change', this.handleChange)
+    Object.entries(this.props)
+      .filter(([name]) => name.startsWith('on') && name !== 'onChange')
+      .forEach(([name, handler]) => {
+        this.codeMirror.off(name.replace(/^on/, '').toLowerCase(), handler)
+      })
   }
 
   handleChange(codeMirror, change) {

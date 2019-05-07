@@ -65,9 +65,6 @@ const commandShortcuts = {
       pre: {
         wordBreak: 'break-word',
       },
-      '.CodeMirror.dialog-opened .CodeMirror-code': {
-        marginBottom: '20px',
-      },
     },
   },
   expand: {
@@ -81,16 +78,16 @@ const commandShortcuts = {
     transform: 'rotate(270deg)',
   },
   dialog: {
-    lineHeight: 0.7,
+    fontSize: '.5em',
+    color: theme.palette.text.secondary,
+    display: 'flex',
+    alignItems: 'center',
   },
-  dialogTitle: { fontSize: '0.7em', color: theme.palette.text.secondary },
-  dialogInput: {},
-  notFound: {
-    '@global': {
-      '.CodeMirror-dialog': {
-        color: theme.palette.error.main,
-      },
-    },
+  searchLabel: {
+    padding: '4px 0',
+  },
+  searchNotFound: {
+    color: theme.palette.error.main,
   },
 }))
 export default class Prompt extends React.PureComponent {
@@ -101,7 +98,9 @@ export default class Prompt extends React.PureComponent {
       value: '',
       transientValue: '',
       command: null,
-      search: null,
+      search: '',
+      searchDirection: null,
+      searchInsensitive: false,
       baseSearchIndex: 0,
       searchNotFound: false,
       searchHighlight: null,
@@ -121,8 +120,7 @@ export default class Prompt extends React.PureComponent {
     this.handleRemoveAllOrCopy = this.handleRemoveAllOrCopy.bind(this)
     this.handleDieIfEmpty = this.handleDieIfEmpty.bind(this)
     this.handleClearScreen = this.handleClearScreen.bind(this)
-    this.handleReverseSearch = this.handleReverseSearch.bind(this)
-    this.handleSearch = this.handleSearch.bind(this)
+
     this.handleScrollUp = this.handleScrollUp.bind(this)
     this.handleScrollDown = this.handleScrollDown.bind(this)
     this.handleTabOrComplete = this.handleTabOrComplete.bind(this)
@@ -131,6 +129,47 @@ export default class Prompt extends React.PureComponent {
 
     this.handleIncrementalSearch = this.handleIncrementalSearch.bind(this)
     this.handleSearchClose = this.handleSearchClose.bind(this)
+
+    this.handleReverseSearch = this.handleSearch({
+      reverse: true,
+      insensitive: false,
+      reset: true,
+    }).bind(this)
+    this.handleForwardSearch = this.handleSearch({
+      reverse: false,
+      insensitive: false,
+      reset: true,
+    }).bind(this)
+    this.handleInsensitiveReverseSearch = this.handleSearch({
+      reverse: true,
+      insensitive: true,
+      reset: true,
+    }).bind(this)
+    this.handleInsensitiveForwardSearch = this.handleSearch({
+      reverse: false,
+      insensitive: true,
+      reset: true,
+    }).bind(this)
+    this.handleIncrementalReverseSearch = this.handleSearch({
+      reverse: true,
+      insensitive: false,
+      reset: false,
+    }).bind(this)
+    this.handleIncrementalForwardSearch = this.handleSearch({
+      reverse: false,
+      insensitive: false,
+      reset: false,
+    }).bind(this)
+    this.handleIncrementalInsensitiveReverseSearch = this.handleSearch({
+      reverse: true,
+      insensitive: true,
+      reset: false,
+    }).bind(this)
+    this.handleIncrementalInsensitiveForwardSearch = this.handleSearch({
+      reverse: false,
+      insensitive: true,
+      reset: false,
+    }).bind(this)
   }
 
   componentDidMount() {
@@ -267,32 +306,48 @@ export default class Prompt extends React.PureComponent {
     clearScreen()
   }
 
-  handleReverseSearch() {
-    const { index } = this.state
-    this.setState({
-      search: 'reversed',
-      baseSearchIndex: index === -1 ? 0 : index,
-    })
-  }
-
-  handleSearch() {
-    const { history } = this.props
-    const { index } = this.state
-    this.setState({
-      search: 'normal',
-      baseSearchIndex: index === -1 ? history.length - 1 : index,
-    })
+  handleSearch({ reverse, insensitive, reset }) {
+    return () => {
+      const { history } = this.props
+      const { index, baseSearchIndex } = this.state
+      this.setState(
+        {
+          searchDirection: reverse ? 'reversed' : 'normal',
+          searchInsensitive: insensitive,
+          baseSearchIndex: reset
+            ? reverse
+              ? index === -1
+                ? 0
+                : index
+              : index === -1
+              ? history.length - 1
+              : index
+            : baseSearchIndex,
+        },
+        reset
+          ? void 0
+          : () =>
+              this.handleIncrementalSearch(this.state.search, {
+                baseIndex: reverse ? index + 1 : index - 1,
+              })
+      )
+    }
   }
 
   handleSearchClose() {
     this.setState({
-      search: null,
+      search: '',
+      searchInsensitive: false,
+      searchDirection: null,
       searchNotFound: false,
       searchHighlight: null,
     })
+    if (this.code.current) {
+      this.code.current.codeMirror.focus()
+    }
   }
 
-  handleIncrementalSearch(e, value) {
+  handleIncrementalSearch(value, { baseIndex }) {
     if (!value) {
       this.setState({
         searchNotFound: false,
@@ -301,26 +356,28 @@ export default class Prompt extends React.PureComponent {
       return
     }
     const { history } = this.props
-    const { baseSearchIndex, search } = this.state
+    const { baseSearchIndex, searchInsensitive, searchDirection } = this.state
+    const index = baseIndex === void 0 ? baseSearchIndex : baseIndex
     const valueRE = new RegExp(
       value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
-      'gi'
+      `g${searchInsensitive ? 'i' : ''}`
     )
     const historySearched =
-      search === 'reversed'
-        ? history.slice(baseSearchIndex)
-        : [...history]
-            .sort(() => -1)
-            .slice(history.length - baseSearchIndex - 1)
+      searchDirection === 'reversed'
+        ? history.slice(index)
+        : [...history].sort(() => -1).slice(history.length - index - 1)
     const newIndex = historySearched.findIndex(prompt => prompt.match(valueRE))
     if (newIndex === -1) {
-      this.setState({ searchNotFound: true, searchHighlight: null })
+      this.setState({
+        search: value,
+        searchNotFound: true,
+        searchHighlight: null,
+      })
     } else {
       const finalIndex =
-        search === 'reversed'
-          ? baseSearchIndex + newIndex
-          : baseSearchIndex - newIndex
+        searchDirection === 'reversed' ? index + newIndex : index - newIndex
       this.setState({
+        search: value,
         index: finalIndex,
         value: history[finalIndex],
         searchNotFound: false,
@@ -371,6 +428,8 @@ export default class Prompt extends React.PureComponent {
       command,
       value,
       search,
+      searchDirection,
+      searchInsensitive,
       searchNotFound,
       searchHighlight,
     } = this.state
@@ -406,57 +465,76 @@ export default class Prompt extends React.PureComponent {
               </>
             }
             title={
-              <Code
-                ref={this.code}
-                className={classnames(classes.prompt, {
-                  [classes.notFound]: searchNotFound,
-                })}
-                value={value}
-                onChange={this.handleChange}
-                height="auto"
-                cursorBlinkRate={0}
-                viewportMargin={Infinity}
-                width="100%"
-                lineWrapping
-                extraKeys={{
-                  Up: this.handleUp,
-                  Down: this.handleDown,
-                  Enter: this.handleEnter,
-                  Backspace: this.handleBackspace,
-                  'Ctrl-Space': this.handleCompletion,
-                  'Ctrl-C': this.handleRemoveAllOrCopy,
-                  'Ctrl-D': this.handleDieIfEmpty,
-                  'Ctrl-L': this.handleClearScreen,
-                  'Ctrl-R': this.handleReverseSearch,
-                  'Ctrl-S': this.handleSearch,
-                  'Shift-PageUp': this.handleScrollUp,
-                  'Shift-PageDown': this.handleScrollDown,
-                  Tab: this.handleTabOrComplete,
-                  'Alt-Up': this.handleInsertHistoryUp,
-                  'Alt-Down': this.handleInsertHistoryDown,
-                }}
-              >
-                {suggestions && suggestions.prompt === value && (
-                  <Code.Hint hint={this.provideSuggestion} />
+              <>
+                <Code
+                  ref={this.code}
+                  className={classes.prompt}
+                  value={value}
+                  onChange={this.handleChange}
+                  height="auto"
+                  cursorBlinkRate={0}
+                  viewportMargin={Infinity}
+                  width="100%"
+                  lineWrapping
+                  extraKeys={{
+                    Up: this.handleUp,
+                    Down: this.handleDown,
+                    Enter: this.handleEnter,
+                    Backspace: this.handleBackspace,
+                    'Ctrl-Space': this.handleCompletion,
+                    'Ctrl-C': this.handleRemoveAllOrCopy,
+                    'Ctrl-D': this.handleDieIfEmpty,
+                    'Ctrl-L': this.handleClearScreen,
+                    'Ctrl-R': this.handleReverseSearch,
+                    'Ctrl-S': this.handleForwardSearch,
+                    'Shift-Ctrl-R': this.handleInsensitiveReverseSearch,
+                    'Shift-Ctrl-S': this.handleInsensitiveForwardSearch,
+                    'Shift-PageUp': this.handleScrollUp,
+                    'Shift-PageDown': this.handleScrollDown,
+                    Tab: this.handleTabOrComplete,
+                    'Alt-Up': this.handleInsertHistoryUp,
+                    'Alt-Down': this.handleInsertHistoryDown,
+                  }}
+                >
+                  {suggestions && suggestions.prompt === value && (
+                    <Code.Hint hint={this.provideSuggestion} />
+                  )}
+
+                  {searchHighlight && <Code.Highlight mode={searchHighlight} />}
+                </Code>
+                {searchDirection && (
+                  <label
+                    className={classnames(classes.dialog, {
+                      [classes.searchNotFound]: searchNotFound,
+                    })}
+                  >
+                    <span className={classes.searchLabel}>
+                      {searchInsensitive && 'I-'}Search{' '}
+                      {searchDirection === 'reversed' ? 'backward' : 'forward'}:
+                    </span>
+                    <Code
+                      className={classes.search}
+                      value={search}
+                      height="auto"
+                      autofocus
+                      width="100%"
+                      lineWrapping
+                      onChange={this.handleIncrementalSearch}
+                      extraKeys={{
+                        Enter: this.handleSearchClose,
+                        Esc: this.handleSearchClose,
+                        'Ctrl-R': this.handleIncrementalReverseSearch,
+                        'Ctrl-S': this.handleIncrementalForwardSearch,
+                        'Shift-Ctrl-R': this
+                          .handleIncrementalInsensitiveReverseSearch,
+                        'Shift-Ctrl-S': this
+                          .handleIncrementalInsensitiveForwardSearch,
+                      }}
+                      onBlur={this.handleSearchClose}
+                    />
+                  </label>
                 )}
-                {search && (
-                  <Code.Dialog
-                    template={`
-                      <div class="${classes.dialog}">
-                        <span class="${classes.dialogTitle}">Search:</span>
-                        <input
-                          type="text"
-                          class="${classes.dialogInput}"
-                        />
-                      </div>
-                    `}
-                    bottom
-                    onInput={this.handleIncrementalSearch}
-                    onClose={this.handleSearchClose}
-                  />
-                )}
-                {searchHighlight && <Code.Highlight mode={searchHighlight} />}
-              </Code>
+              </>
             }
             titleTypographyProps={{ variant: 'h5' }}
           />
