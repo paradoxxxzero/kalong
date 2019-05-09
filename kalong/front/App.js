@@ -94,6 +94,12 @@ const drawerWidth = 240
     subtitle: {
       fontSize: '1em',
     },
+    terminal: {
+      flex: 1,
+    },
+    source: {
+      flex: 1,
+    },
   }),
   { withTheme: true }
 )
@@ -203,8 +209,8 @@ export default class App extends React.PureComponent {
         </Drawer>
         <main className={classes.content}>
           <div className={classes.toolbar} />
-          <Source />
-          <Terminal />
+          <Source className={classes.source} />
+          <Terminal className={classes.terminal} />
         </main>
       </div>
     )

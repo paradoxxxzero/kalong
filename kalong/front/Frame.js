@@ -42,8 +42,13 @@ export default class Frame extends React.PureComponent {
           secondary={
             <>
               <Snippet value={frame.lineSource} />
-              <Tooltip title={frame.absolute_filename}>
-                <Typography component="span" color="textPrimary" noWrap>
+              <Tooltip title={frame.absoluteFilename}>
+                <Typography
+                  variant="body2"
+                  display="block"
+                  component="span"
+                  noWrap
+                >
                   {frame.filename}:{frame.lineNumber}
                 </Typography>
               </Tooltip>
@@ -53,7 +58,9 @@ export default class Frame extends React.PureComponent {
         <ListItemSecondaryAction>
           {frame.active && (
             <Tooltip title="Current Frame">
-              <StarIcon fontSize="small" />
+              <div>
+                <StarIcon fontSize="small" />
+              </div>
             </Tooltip>
           )}
         </ListItemSecondaryAction>

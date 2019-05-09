@@ -3,6 +3,7 @@ import { tinycolor } from '@thebespokepixel/es-tinycolor'
 import { withStyles } from '@material-ui/core'
 import React from 'react'
 import blueGrey from '@material-ui/core/colors/blueGrey'
+import classnames from 'classnames'
 import equal from 'fast-deep-equal'
 
 import { getFile } from './actions'
@@ -22,9 +23,7 @@ const cmBg = f => f(tinycolor(blueGrey[900])).toString()
   })
 )
 @withStyles(() => ({
-  source: {
-    flex: 1,
-  },
+  source: {},
   context: {
     backgroundColor: cmBg(c => c.darken(2)),
     borderRight: `1px solid ${cmBg(c => c.darken(6))}`,
@@ -58,7 +57,7 @@ export default class Source extends React.PureComponent {
   }
 
   render() {
-    const { classes, frames, files, activeFrame } = this.props
+    const { classes, className, frames, files, activeFrame } = this.props
     const current = frames.find(({ key }) => key === activeFrame)
     if (!current) {
       return null
@@ -74,7 +73,7 @@ export default class Source extends React.PureComponent {
     }
     return (
       <Code
-        className={classes.source}
+        className={classnames(classes.source, className)}
         readOnly
         lineNumbers
         lineWrapping

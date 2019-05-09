@@ -7,7 +7,7 @@ import grey from '@material-ui/core/colors/grey'
 
 import App from './App'
 
-const base = { typography: { useNextVariants: true } }
+const base = {}
 
 const muiThemes = {
   init: createMuiTheme({ ...base, palette: { primary: { main: grey[400] } } }),

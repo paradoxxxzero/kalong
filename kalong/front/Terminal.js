@@ -1,6 +1,7 @@
 import { connect } from 'react-redux'
 import { withStyles } from '@material-ui/core'
 import React from 'react'
+import classnames from 'classnames'
 
 import Answer from './Answer'
 import Prompt from './Prompt'
@@ -10,7 +11,6 @@ import Prompt from './Prompt'
 }))
 @withStyles(() => ({
   scrollback: {
-    flex: 1,
     overflowY: 'scroll',
     scrollBehavior: 'smooth',
   },
@@ -37,9 +37,12 @@ export default class Terminal extends React.PureComponent {
   }
 
   render() {
-    const { classes, scrollback } = this.props
+    const { classes, className, scrollback } = this.props
     return (
-      <div className={classes.scrollback} ref={this.scroller}>
+      <div
+        className={classnames(classes.scrollback, className)}
+        ref={this.scroller}
+      >
         {scrollback.map(({ key, ...props }) => (
           <Answer key={key} uid={key} {...props} />
         ))}

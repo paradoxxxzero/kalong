@@ -6,6 +6,12 @@ import React from 'react'
 import { requestInspect } from '../actions'
 import { uid } from '../util'
 
+@connect(
+  () => ({}),
+  dispatch => ({
+    inspect: (key, id) => dispatch(requestInspect(key, id)),
+  })
+)
 @withStyles(() => ({
   button: {
     minWidth: 'auto',
@@ -14,12 +20,6 @@ import { uid } from '../util'
     backgroundColor: 'rgba(0, 0, 0, 0.02)',
   },
 }))
-@connect(
-  () => ({}),
-  dispatch => ({
-    inspect: (key, id) => dispatch(requestInspect(key, id)),
-  })
-)
 export default class Inspectable extends React.PureComponent {
   constructor(props) {
     super(props)

@@ -12,7 +12,7 @@ import red from '@material-ui/core/colors/red'
 }))
 @withStyles(theme => ({
   loader: {
-    margin: theme.spacing.unit * 2,
+    margin: theme.spacing(2),
     transition: theme.transitions.create(['color'], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.standard,

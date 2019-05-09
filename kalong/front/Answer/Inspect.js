@@ -32,10 +32,10 @@ import Snippet from '../Code/Snippet'
     wordBreak: 'normal',
   },
   doc: {
-    padding: theme.spacing.unit * 3,
+    padding: theme.spacing(3),
   },
   source: {
-    padding: theme.spacing.unit * 3,
+    padding: theme.spacing(3),
   },
   tabContent: {
     maxHeight: '400px',

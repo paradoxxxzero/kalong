@@ -110,7 +110,7 @@ export default class Exception extends React.PureComponent {
                         {' '}
                         of{' '}
                       </Typography>
-                      <Tooltip title={frame.absolute_filename}>
+                      <Tooltip title={frame.absoluteFilename}>
                         <Typography inline>{frame.filename}</Typography>
                       </Tooltip>
                     </>

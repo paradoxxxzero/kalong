@@ -51,7 +51,7 @@ def serialize_frames(current_frame, current_tb):
         fn = Path(filename).resolve()
         yield {
             'key': id(code),
-            'absolute_filename': str(fn),
+            'absoluteFilename': str(fn),
             'filename': fn.name,
             'function': code.co_name,
             'firstFunctionLineNumber': code.co_firstlineno,
