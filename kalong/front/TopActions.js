@@ -27,7 +27,7 @@ import { doCommand } from './actions'
   },
   steps: {},
 }))
-export default class Top extends React.PureComponent {
+export default class TopActions extends React.PureComponent {
   render() {
     const { classes, title, handleCommand } = this.props
     return (

@@ -1,98 +1,27 @@
-import { Link, Tooltip, withWidth } from '@material-ui/core'
 import { withStyles } from '@material-ui/core/styles'
-import AppBar from '@material-ui/core/AppBar'
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
-import ChevronRightIcon from '@material-ui/icons/ChevronRight'
+import { withWidth } from '@material-ui/core'
 import CssBaseline from '@material-ui/core/CssBaseline'
-import Divider from '@material-ui/core/Divider'
-import Drawer from '@material-ui/core/Drawer'
-import IconButton from '@material-ui/core/IconButton'
-import MenuIcon from '@material-ui/icons/Menu'
 import React from 'react'
-import Toolbar from '@material-ui/core/Toolbar'
-import Typography from '@material-ui/core/Typography'
-import classnames from 'classnames'
 
-import Frames from './Frames'
-import GlobalIndicator from './GlobalIndicator'
+import SideDrawer from './SideDrawer'
 import Source from './Source'
 import Terminal from './Terminal'
-import Top from './Top'
-
-const drawerWidth = 240
+import TopBar from './TopBar'
 
 @withWidth()
 @withStyles(
-  theme => ({
+  () => ({
     root: {
       display: 'flex',
       width: '100vw',
       height: '100vh',
       justifyContent: 'center',
     },
-    drawer: {
-      [theme.breakpoints.up('sm')]: {
-        width: drawerWidth,
-        flexShrink: 0,
-      },
-    },
-    appBar: {
-      zIndex: theme.zIndex.drawer + 1,
-      transition: `${theme.transitions.create(['margin', 'width'], {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen,
-      })},${theme.transitions.create(['background-color', 'color'], {
-        easing: theme.transitions.easing.easeInOut,
-        duration: theme.transitions.duration.normal,
-      })}`,
-    },
-    appBarShift: {
-      width: `calc(100% - ${drawerWidth}px)`,
-      transition: `${theme.transitions.create(['margin', 'width'], {
-        easing: theme.transitions.easing.easeOut,
-        duration: theme.transitions.duration.enteringScreen,
-      })},${theme.transitions.create(['background-color', 'color'], {
-        easing: theme.transitions.easing.easeInOut,
-        duration: theme.transitions.duration.normal,
-      })}`,
-      marginLeft: drawerWidth,
-    },
-    menuButton: {
-      marginRight: 20,
-    },
-    drawerOpen: {
-      width: drawerWidth,
-      transition: theme.transitions.create('width', {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.enteringScreen,
-      }),
-    },
-    drawerClose: {
-      transition: theme.transitions.create('width', {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen,
-      }),
-      overflowX: 'hidden',
-      width: 0,
-    },
     content: {
       flexGrow: 1,
       display: 'flex',
       flexDirection: 'column',
       minWidth: 0, // Fix codemirror wrapping
-    },
-    toolbar: {
-      ...theme.mixins.toolbar,
-      display: 'flex',
-    },
-    brand: {
-      paddingTop: '0.8em',
-    },
-    title: {
-      fontSize: '1.5em',
-    },
-    subtitle: {
-      fontSize: '1em',
     },
     terminal: {
       flex: 1,
@@ -139,74 +68,25 @@ export default class App extends React.PureComponent {
   }
 
   render() {
-    const { classes, theme, container, width } = this.props
+    const { classes, theme, width } = this.props
     const { open } = this.state
     const mobile = ['xs', 'sm'].includes(width)
     return (
       <div className={classes.root}>
         <CssBaseline />
-        <AppBar
-          position="fixed"
-          className={classnames(classes.appBar, {
-            [classes.appBarShift]: open && !mobile,
-          })}
-        >
-          <Toolbar>
-            <Tooltip title={`${open ? 'Close' : 'Open'} the call stack`}>
-              <IconButton
-                color="inherit"
-                onClick={open ? this.handleDrawerClose : this.handleDrawerOpen}
-                className={classes.menuButton}
-              >
-                {!mobile && open ? (
-                  theme.direction === 'rtl' ? (
-                    <ChevronRightIcon />
-                  ) : (
-                    <ChevronLeftIcon />
-                  )
-                ) : (
-                  <MenuIcon />
-                )}
-              </IconButton>
-            </Tooltip>
-            <Top />
-          </Toolbar>
-        </AppBar>
-        <Drawer
-          className={classnames(classes.drawer, {
-            [classes.drawerOpen]: this.state.open,
-            [classes.drawerClose]: !this.state.open,
-          })}
-          classes={{
-            paper: classnames({
-              [classes.drawerOpen]: this.state.open,
-              [classes.drawerClose]: !this.state.open,
-            }),
-          }}
-          container={mobile ? container : void 0}
-          variant={mobile ? 'temporary' : 'persistent'}
-          anchor={theme.direction === 'rtl' ? 'right' : 'left'}
+        <TopBar
+          mobile={mobile}
           open={open}
-          onClose={this.handleDrawerClose}
-        >
-          <div className={classes.toolbar}>
-            <GlobalIndicator />
-            <div className={classes.brand}>
-              <Link href="http://github.com/paradoxxxzero/kalong/">
-                <Typography variant="h1" className={classes.title}>
-                  Kalong
-                </Typography>
-              </Link>
-              <Link href="http://github.com/paradoxxxzero/kalong/releases">
-                <Typography variant="subtitle1" className={classes.subtitle}>
-                  v0.0.0
-                </Typography>
-              </Link>
-            </div>
-          </div>
-          <Divider />
-          <Frames />
-        </Drawer>
+          rtl={theme.direction === 'rtl'}
+          onDrawerOpen={this.handleDrawerOpen}
+          onDrawerClose={this.handleDrawerClose}
+        />
+        <SideDrawer
+          mobile={mobile}
+          open={open}
+          rtl={theme.direction === 'rtl'}
+          onDrawerClose={this.handleDrawerClose}
+        />
         <main className={classes.content}>
           <div className={classes.toolbar} />
           <Source className={classes.source} />
