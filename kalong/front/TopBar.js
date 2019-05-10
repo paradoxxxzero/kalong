@@ -75,7 +75,7 @@ export default class TopBar extends React.PureComponent {
               )}
             </IconButton>
           </Tooltip>
-          <TopActions />
+          <TopActions mobile={mobile} />
         </Toolbar>
       </AppBar>
     )

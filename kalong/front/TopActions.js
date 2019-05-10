@@ -3,15 +3,52 @@ import { connect } from 'react-redux'
 import { withStyles } from '@material-ui/core/styles'
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
-import PlayArrowIcon from '@material-ui/icons/PlayArrow'
-import StopIcon from '@material-ui/icons/Stop'
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
 import IconButton from '@material-ui/core/IconButton'
+import ListItemIcon from '@material-ui/core/ListItemIcon'
+import Menu from '@material-ui/core/Menu'
+import MenuItem from '@material-ui/core/MenuItem'
+import MoreVertIcon from '@material-ui/icons/MoreVert'
+import PlayArrowIcon from '@material-ui/icons/PlayArrow'
 import React from 'react'
 import RedoIcon from '@material-ui/icons/Redo'
+import StopIcon from '@material-ui/icons/Stop'
 import Typography from '@material-ui/core/Typography'
 
 import { doCommand } from './actions'
+
+const actions = [
+  {
+    label: 'Step Into function call',
+    action: 'stepInto',
+    Icon: ArrowDownwardIcon,
+  },
+  {
+    label: 'Step to the next instruction',
+    action: 'step',
+    Icon: ArrowForwardIcon,
+  },
+  {
+    label: 'Step Out of the current function',
+    action: 'stepOut',
+    Icon: ArrowUpwardIcon,
+  },
+  {
+    label: 'Step Until next line (bypass loops)',
+    action: 'stepUntil',
+    Icon: RedoIcon,
+  },
+  {
+    label: 'Continue the program and stop at exceptions',
+    action: 'continue',
+    Icon: PlayArrowIcon,
+  },
+  {
+    label: 'Stop debugging',
+    action: 'stop',
+    Icon: StopIcon,
+  },
+]
 
 @connect(
   state => ({
@@ -28,58 +65,84 @@ import { doCommand } from './actions'
   steps: {},
 }))
 export default class TopActions extends React.PureComponent {
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      mobileMenuAnchorEl: null,
+    }
+
+    this.handleMenuOpen = this.handleMenuOpen.bind(this)
+    this.handleMenuClose = this.handleMenuClose.bind(this)
+  }
+
+  static getDerivedStateFromProps({ mobile }) {
+    if (!mobile) {
+      return {
+        mobileMenuAnchorEl: null,
+      }
+    }
+    return null
+  }
+
+  handleMenuOpen({ currentTarget }) {
+    this.setState({ mobileMenuAnchorEl: currentTarget })
+  }
+
+  handleMenuClose() {
+    this.setState({ mobileMenuAnchorEl: null })
+  }
+
+  handleCommand(action) {
+    const { handleCommand } = this.props
+    return () => handleCommand(action)
+  }
+
   render() {
-    const { classes, title, handleCommand } = this.props
+    const { classes, mobile, title } = this.props
+    const { mobileMenuAnchorEl } = this.state
     return (
       <>
         <Typography variant="h6" color="inherit" noWrap>
           {title}
         </Typography>
         <div className={classes.grow} />
-        <div className={classes.steps}>
-          <Tooltip title="Step Into function call">
-            <IconButton
-              color="inherit"
-              onClick={() => handleCommand('stepInto')}
+        {mobile ? (
+          <>
+            <IconButton onClick={this.handleMenuOpen}>
+              <MoreVertIcon />
+            </IconButton>
+            <Menu
+              anchorEl={mobileMenuAnchorEl}
+              open={!!mobileMenuAnchorEl}
+              onClose={this.handleMenuClose}
             >
-              <ArrowDownwardIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Step to the next instruction">
-            <IconButton color="inherit" onClick={() => handleCommand('step')}>
-              <ArrowForwardIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Step Out of the current function">
-            <IconButton
-              color="inherit"
-              onClick={() => handleCommand('stepOut')}
-            >
-              <ArrowUpwardIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Step Until next line (bypass loops)">
-            <IconButton
-              color="inherit"
-              onClick={() => handleCommand('stepUntil')}
-            >
-              <RedoIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Continue the program and stop at exceptions">
-            <IconButton
-              color="inherit"
-              onClick={() => handleCommand('continue')}
-            >
-              <PlayArrowIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Stop debugging">
-            <IconButton color="inherit" onClick={() => handleCommand('stop')}>
-              <StopIcon />
-            </IconButton>
-          </Tooltip>
-        </div>
+              {actions.map(({ label, action, Icon }) => (
+                <MenuItem key={action} onClick={this.handleCommand(action)}>
+                  <ListItemIcon>
+                    <Icon />
+                  </ListItemIcon>
+                  <Typography variant="inherit" noWrap>
+                    {label}
+                  </Typography>
+                </MenuItem>
+              ))}
+            </Menu>
+          </>
+        ) : (
+          <div className={classes.steps}>
+            {actions.map(({ label, action, Icon }) => (
+              <Tooltip key={action} title={label}>
+                <IconButton
+                  color="inherit"
+                  onClick={this.handleCommand(action)}
+                >
+                  <Icon />
+                </IconButton>
+              </Tooltip>
+            ))}
+          </div>
+        )}
       </>
     )
   }
