@@ -1,9 +1,9 @@
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core'
-import { connect } from 'react-redux'
 import React from 'react'
+import { useSelector } from 'react-redux'
 import green from '@material-ui/core/colors/green'
-import orange from '@material-ui/core/colors/orange'
 import grey from '@material-ui/core/colors/grey'
+import orange from '@material-ui/core/colors/orange'
 
 import App from './App'
 
@@ -24,16 +24,11 @@ const muiThemes = {
   dead: createMuiTheme({ ...base, palette: { primary: { main: grey[900] } } }),
 }
 
-@connect(state => ({
-  theme: state.theme,
-}))
-export default class ThemedApp extends React.PureComponent {
-  render() {
-    const { theme } = this.props
-    return (
-      <MuiThemeProvider theme={muiThemes[theme]}>
-        <App />
-      </MuiThemeProvider>
-    )
-  }
+export default function ThemedApp() {
+  const theme = useSelector(state => state.theme)
+  return (
+    <MuiThemeProvider theme={muiThemes[theme]}>
+      <App />
+    </MuiThemeProvider>
+  )
 }

@@ -15,7 +15,7 @@
     "fast-deep-equal": "^2.0.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
-    "react-redux": "^7.0.3",
+    "react-redux": "^7.1.0-alpha.4",
     "react-swipeable-views": "^0.13.3",
     "redux": "^4.0.1"
   },
