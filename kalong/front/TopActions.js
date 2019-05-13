@@ -1,6 +1,5 @@
-import { Tooltip } from '@material-ui/core'
-import { connect } from 'react-redux'
-import { withStyles } from '@material-ui/core/styles'
+import { Tooltip, makeStyles } from '@material-ui/core'
+import { useDispatch, useSelector } from 'react-redux'
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
@@ -10,7 +9,7 @@ import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
 import PlayArrowIcon from '@material-ui/icons/PlayArrow'
-import React from 'react'
+import React, { useCallback, useLayoutEffect, useState } from 'react'
 import RedoIcon from '@material-ui/icons/Redo'
 import StopIcon from '@material-ui/icons/Stop'
 import Typography from '@material-ui/core/Typography'
@@ -50,100 +49,66 @@ const actions = [
   },
 ]
 
-@connect(
-  state => ({
-    title: state.title,
-  }),
-  dispatch => ({
-    handleCommand: command => dispatch(doCommand(command)),
-  })
-)
-@withStyles(() => ({
+const useStyles = makeStyles({
   grow: {
     flexGrow: 1,
   },
   steps: {},
-}))
-export default class TopActions extends React.PureComponent {
-  constructor(props) {
-    super(props)
+})
 
-    this.state = {
-      mobileMenuAnchorEl: null,
+export default function TopActions({ mobile }) {
+  const title = useSelector(state => state.title)
+  const dispatch = useDispatch()
+  const classes = useStyles()
+  const [menuEl, setMenuEl] = useState(null)
+  // TODO: Optimize this
+  const handleCommand = action => () => dispatch(doCommand(action))
+  const closeMenu = useCallback(() => setMenuEl(null), [])
+  const openMenu = useCallback(
+    ({ currentTarget }) => setMenuEl(currentTarget),
+    []
+  )
+  useLayoutEffect(() => {
+    if (!mobile && menuEl) {
+      closeMenu()
     }
+  })
 
-    this.handleMenuOpen = this.handleMenuOpen.bind(this)
-    this.handleMenuClose = this.handleMenuClose.bind(this)
-  }
-
-  static getDerivedStateFromProps({ mobile }) {
-    if (!mobile) {
-      return {
-        mobileMenuAnchorEl: null,
-      }
-    }
-    return null
-  }
-
-  handleMenuOpen({ currentTarget }) {
-    this.setState({ mobileMenuAnchorEl: currentTarget })
-  }
-
-  handleMenuClose() {
-    this.setState({ mobileMenuAnchorEl: null })
-  }
-
-  handleCommand(action) {
-    const { handleCommand } = this.props
-    return () => handleCommand(action)
-  }
-
-  render() {
-    const { classes, mobile, title } = this.props
-    const { mobileMenuAnchorEl } = this.state
-    return (
-      <>
-        <Typography variant="h6" color="inherit" noWrap>
-          {title}
-        </Typography>
-        <div className={classes.grow} />
-        {mobile ? (
-          <>
-            <IconButton onClick={this.handleMenuOpen}>
-              <MoreVertIcon />
-            </IconButton>
-            <Menu
-              anchorEl={mobileMenuAnchorEl}
-              open={!!mobileMenuAnchorEl}
-              onClose={this.handleMenuClose}
-            >
-              {actions.map(({ label, action, Icon }) => (
-                <MenuItem key={action} onClick={this.handleCommand(action)}>
-                  <ListItemIcon>
-                    <Icon />
-                  </ListItemIcon>
-                  <Typography variant="inherit" noWrap>
-                    {label}
-                  </Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </>
-        ) : (
-          <div className={classes.steps}>
+  return (
+    <>
+      <Typography variant="h6" color="inherit" noWrap>
+        {title}
+      </Typography>
+      <div className={classes.grow} />
+      {mobile ? (
+        <>
+          <IconButton onClick={openMenu}>
+            <MoreVertIcon />
+          </IconButton>
+          <Menu anchorEl={menuEl} open={!!menuEl} onClose={closeMenu}>
             {actions.map(({ label, action, Icon }) => (
-              <Tooltip key={action} title={label}>
-                <IconButton
-                  color="inherit"
-                  onClick={this.handleCommand(action)}
-                >
+              <MenuItem key={action} onClick={handleCommand(action)}>
+                <ListItemIcon>
                   <Icon />
-                </IconButton>
-              </Tooltip>
+                </ListItemIcon>
+                <Typography variant="inherit" noWrap>
+                  {label}
+                </Typography>
+              </MenuItem>
             ))}
-          </div>
-        )}
-      </>
-    )
-  }
+          </Menu>
+        </>
+      ) : (
+        <div className={classes.steps}>
+          {actions.map(({ label, action, Icon }) => (
+            <Tooltip key={action} title={label}>
+              <IconButton color="inherit" onClick={handleCommand(action)}>
+                <Icon />
+              </IconButton>
+            </Tooltip>
+          ))}
+        </div>
+      )}
+    </>
+  )
 }

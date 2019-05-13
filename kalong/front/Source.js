@@ -1,10 +1,9 @@
-import { connect } from 'react-redux'
+import { makeStyles } from '@material-ui/core'
 import { tinycolor } from '@thebespokepixel/es-tinycolor'
-import { withStyles } from '@material-ui/core'
-import React from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import React, { useEffect } from 'react'
 import blueGrey from '@material-ui/core/colors/blueGrey'
 import classnames from 'classnames'
-import equal from 'fast-deep-equal'
 
 import { getFile } from './actions'
 import { range } from './util'
@@ -12,17 +11,7 @@ import Code from './Code'
 
 const cmBg = f => f(tinycolor(blueGrey[900])).toString()
 
-@connect(
-  state => ({
-    frames: state.frames,
-    files: state.files,
-    activeFrame: state.activeFrame,
-  }),
-  dispatch => ({
-    requestFile: filename => dispatch(getFile(filename)),
-  })
-)
-@withStyles(() => ({
+const useStyles = makeStyles({
   source: {},
   context: {
     backgroundColor: cmBg(c => c.darken(2)),
@@ -38,77 +27,72 @@ const cmBg = f => f(tinycolor(blueGrey[900])).toString()
   active: {
     backgroundColor: cmBg(c => c.lighten(5)),
   },
-}))
-export default class Source extends React.PureComponent {
-  componentDidMount() {
-    this.componentDidUpdate({})
-  }
+})
 
-  componentDidUpdate(oldProps) {
-    const { frames, files, requestFile, activeFrame } = this.props
+export default function Source({ className }) {
+  const frames = useSelector(state => state.frames)
+  const files = useSelector(state => state.files)
+  const activeFrame = useSelector(state => state.activeFrame)
+  const dispatch = useDispatch()
+  const classes = useStyles()
 
-    if (!equal(oldProps, this.props)) {
-      const current = frames.find(({ key }) => activeFrame === key)
-
+  const current = frames.find(({ key }) => key === activeFrame)
+  useEffect(
+    () => {
       if (current && current.filename && !files[current.filename]) {
-        requestFile(current.filename)
+        dispatch(getFile(current.filename))
       }
-    }
-  }
+    },
+    [dispatch, current, files]
+  )
 
-  render() {
-    const { classes, className, frames, files, activeFrame } = this.props
-    const current = frames.find(({ key }) => key === activeFrame)
-    if (!current) {
-      return null
-    }
-    const {
-      filename,
-      lineNumber,
-      firstFunctionLineNumber,
-      lastFunctionLineNumber,
-    } = current
-    if (!files[filename]) {
-      return null
-    }
-    return (
-      <Code
-        className={classnames(classes.source, className)}
-        readOnly
-        lineNumbers
-        lineWrapping
-        theme="material"
-        gutters={['CodeMirror-linemarkers', 'CodeMirror-linenumbers']}
-        height="100%"
-      >
-        <Code.Source code={files[filename]} />
-        {/* Active line */}
-        <Code.Line line={lineNumber} classes={{ background: classes.active }} />
-        <Code.Gutter
-          line={lineNumber}
-          gutter="CodeMirror-linemarkers"
-          marker="➤"
-        />
-        {/* Context */}
-        <Code.Line
-          line={firstFunctionLineNumber}
-          classes={{ background: classes.contextTop }}
-        />
-        {range(firstFunctionLineNumber, lastFunctionLineNumber + 1).map(
-          line => (
-            <Code.Line
-              key={line}
-              line={line}
-              classes={{ background: classes.context }}
-            />
-          )
-        )}
-        <Code.Line
-          line={lastFunctionLineNumber}
-          classes={{ background: classes.contextBottom }}
-        />
-        <Code.InView line={lineNumber} />
-      </Code>
-    )
+  if (!current) {
+    return null
   }
+  const {
+    filename,
+    lineNumber,
+    firstFunctionLineNumber,
+    lastFunctionLineNumber,
+  } = current
+  if (!files[filename]) {
+    return null
+  }
+  return (
+    <Code
+      className={classnames(classes.source, className)}
+      readOnly
+      lineNumbers
+      lineWrapping
+      theme="material"
+      gutters={['CodeMirror-linemarkers', 'CodeMirror-linenumbers']}
+      height="100%"
+    >
+      <Code.Source code={files[filename]} />
+      {/* Active line */}
+      <Code.Line line={lineNumber} classes={{ background: classes.active }} />
+      <Code.Gutter
+        line={lineNumber}
+        gutter="CodeMirror-linemarkers"
+        marker="➤"
+      />
+      {/* Context */}
+      <Code.Line
+        line={firstFunctionLineNumber}
+        classes={{ background: classes.contextTop }}
+      />
+      {range(firstFunctionLineNumber, lastFunctionLineNumber + 1).map(line => (
+        <Code.Line
+          key={line}
+          line={line}
+          classes={{ background: classes.context }}
+        />
+      ))}
+      <Code.Line
+        line={lastFunctionLineNumber}
+        classes={{ background: classes.contextBottom }}
+      />
+      <Code.InView line={lineNumber} />
+    </Code>
+  )
 }

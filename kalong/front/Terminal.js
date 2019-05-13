@@ -1,56 +1,45 @@
-import { connect } from 'react-redux'
-import { withStyles } from '@material-ui/core'
-import React from 'react'
+import { makeStyles } from '@material-ui/core'
+import { useSelector } from 'react-redux'
+import React, { useRef, useCallback, useEffect } from 'react'
 import classnames from 'classnames'
 
 import Answer from './Answer'
 import Prompt from './Prompt'
 
-@connect(state => ({
-  scrollback: state.scrollback,
-}))
-@withStyles(() => ({
+const useStyles = makeStyles({
   scrollback: {
     overflowY: 'auto',
     scrollBehavior: 'smooth',
   },
-}))
-export default class Terminal extends React.PureComponent {
-  constructor(props) {
-    super(props)
+})
 
-    this.scroller = React.createRef()
-    this.handleScrollUp = this.handleScrollUp.bind(this)
-    this.handleScrollDown = this.handleScrollDown.bind(this)
-  }
+export default function Terminal({ className }) {
+  const scrollback = useSelector(state => state.scrollback)
+  const classes = useStyles()
+  const scroller = useRef()
+  const handleScrollUp = useCallback(
+    () => {
+      scroller.current.scrollTop -= 300
+    },
+    [scroller]
+  )
 
-  componentDidUpdate() {
-    this.scroller.current.scrollTop = this.scroller.current.scrollHeight
-  }
+  const handleScrollDown = useCallback(
+    () => {
+      scroller.current.scrollTop += 300
+    },
+    [scroller]
+  )
 
-  handleScrollUp() {
-    this.scroller.current.scrollTop -= 300
-  }
-
-  handleScrollDown() {
-    this.scroller.current.scrollTop += 300
-  }
-
-  render() {
-    const { classes, className, scrollback } = this.props
-    return (
-      <div
-        className={classnames(classes.scrollback, className)}
-        ref={this.scroller}
-      >
-        {scrollback.map(({ key, ...props }) => (
-          <Answer key={key} uid={key} {...props} />
-        ))}
-        <Prompt
-          onScrollUp={this.handleScrollUp}
-          onScrollDown={this.handleScrollDown}
-        />
-      </div>
-    )
-  }
+  useEffect(() => {
+    scroller.current.scrollTop = scroller.current.scrollHeight
+  })
+  return (
+    <div className={classnames(classes.scrollback, className)} ref={scroller}>
+      {scrollback.map(({ key, ...props }) => (
+        <Answer key={key} uid={key} {...props} />
+      ))}
+      <Prompt onScrollUp={handleScrollUp} onScrollDown={handleScrollDown} />
+    </div>
+  )
 }
