@@ -1,6 +1,7 @@
 import { withStyles } from '@material-ui/core'
 import React from 'react'
 import classnames from 'classnames'
+import ClickAwayListener from '@material-ui/core/ClickAwayListener'
 
 @withStyles(theme => ({
   wrapper: {
@@ -129,14 +130,16 @@ export default class Splitter extends React.PureComponent {
         >
           {children[0]}
         </div>
-        <div
-          className={classnames(
-            classes.divider,
-            vertical ? classes.verticalDivider : classes.horizontalDivider
-          )}
-          onTouchStart={this.handleTouchStart}
-          onMouseDown={this.handleTouchStart}
-        />
+        <ClickAwayListener onClickAway={this.handleTouchEnd}>
+          <div
+            className={classnames(
+              classes.divider,
+              vertical ? classes.verticalDivider : classes.horizontalDivider
+            )}
+            onTouchStart={this.handleTouchStart}
+            onMouseDown={this.handleTouchStart}
+          />
+        </ClickAwayListener>
         <div
           style={{
             display: 'flex',
