@@ -1,9 +1,9 @@
-import { withStyles } from '@material-ui/core'
-import React from 'react'
-import classnames from 'classnames'
+import { makeStyles } from '@material-ui/core'
 import ClickAwayListener from '@material-ui/core/ClickAwayListener'
+import React, { useRef, useState, useCallback } from 'react'
+import classnames from 'classnames'
 
-@withStyles(theme => ({
+const useStyles = makeStyles(theme => ({
   wrapper: {
     display: 'flex',
   },
@@ -43,115 +43,106 @@ import ClickAwayListener from '@material-ui/core/ClickAwayListener'
     },
   },
 }))
-export default class Splitter extends React.PureComponent {
-  constructor(props) {
-    super(props)
-    this.splitter = React.createRef()
 
-    this.state = {
-      ratio: 50,
-      origin: null,
-    }
+const computeRelativePosition = (event, element) => {
+  if (!element || !element.getBoundingClientRect) {
+    return null
+  }
+  const { x: rx, y: ry } = element.getBoundingClientRect()
+  const x = (event.touches ? event.touches[0] : event).clientX
+  const y = (event.touches ? event.touches[0] : event).clientY
+  return {
+    x: x - rx,
+    y: y - ry,
+  }
+}
 
-    this.handleTouchStart = this.handleTouchStart.bind(this)
-    this.handleTouchMove = this.handleTouchMove.bind(this)
-    this.handleTouchEnd = this.handleTouchEnd.bind(this)
+export default function Splitter({ children, className, vertical }) {
+  const classes = useStyles()
+  const [ratio, setRatio] = useState(50)
+  const [origin, setOrigin] = useState(null)
+  const splitter = useRef()
+
+  const handleTouchStart = useCallback(event => {
+    setOrigin(computeRelativePosition(event, splitter.current))
+  }, [])
+
+  const handleTouchMove = useCallback(
+    event => {
+      if (!origin) {
+        return
+      }
+      const position = computeRelativePosition(event, splitter.current)
+      if (!position) {
+        return null
+      }
+      const { width, height } = splitter.current.getBoundingClientRect()
+      setRatio(
+        Math.min(
+          100,
+          Math.max(
+            0,
+            (vertical ? position.x / width : position.y / height) * 100
+          )
+        )
+      )
+    },
+    [origin, vertical]
+  )
+
+  const handleTouchEnd = useCallback(() => {
+    setOrigin(null)
+  }, [])
+
+  if (React.Children.count(children) !== 2) {
+    return null
   }
 
-  getRelativePosition(event) {
-    if (
-      !this.splitter.current ||
-      !this.splitter.current.getBoundingClientRect
-    ) {
-      return null
-    }
-    const { x: rx, y: ry } = this.splitter.current.getBoundingClientRect()
-    const x = (event.touches ? event.touches[0] : event).clientX
-    const y = (event.touches ? event.touches[0] : event).clientY
-    return {
-      x: x - rx,
-      y: y - ry,
-    }
-  }
-
-  handleTouchStart(event) {
-    const origin = this.getRelativePosition(event)
-    this.setState({ origin })
-  }
-
-  handleTouchMove() {
-    const { vertical } = this.props
-    const { origin } = this.state
-    if (!origin) {
-      return
-    }
-    const position = this.getRelativePosition(event)
-    if (!position) {
-      return null
-    }
-    const { width, height } = this.splitter.current.getBoundingClientRect()
-    this.setState({
-      ratio: (vertical ? position.x / width : position.y / height) * 100,
-    })
-  }
-
-  handleTouchEnd() {
-    this.setState({ origin: null })
-  }
-
-  render() {
-    const { classes, children, className, vertical } = this.props
-    const { ratio } = this.state
-    if (React.Children.count(children) !== 2) {
-      return null
-    }
-
-    return (
+  return (
+    <div
+      className={classnames(
+        className,
+        classes.wrapper,
+        vertical ? classes.vertical : classes.horizontal
+      )}
+      ref={splitter}
+      onTouchMove={handleTouchMove}
+      onMouseMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onMouseUp={handleTouchEnd}
+    >
       <div
-        className={classnames(
-          className,
-          classes.wrapper,
-          vertical ? classes.vertical : classes.horizontal
-        )}
-        ref={this.splitter}
-        onTouchMove={this.handleTouchMove}
-        onMouseMove={this.handleTouchMove}
-        onTouchEnd={this.handleTouchEnd}
-        onMouseUp={this.handleTouchEnd}
+        style={{
+          [vertical ? 'width' : 'height']: `${ratio}%`,
+          display: 'flex',
+          minHeight: 0,
+          minWidth: 0,
+          overflow: 'hidden',
+        }}
       >
-        <div
-          style={{
-            [vertical ? 'width' : 'height']: `${ratio}%`,
-            display: 'flex',
-            minHeight: 0,
-            minWidth: 0,
-            overflow: 'hidden',
-          }}
-        >
-          {children[0]}
-        </div>
-        <ClickAwayListener onClickAway={this.handleTouchEnd}>
-          <div
-            className={classnames(
-              classes.divider,
-              vertical ? classes.verticalDivider : classes.horizontalDivider
-            )}
-            onTouchStart={this.handleTouchStart}
-            onMouseDown={this.handleTouchStart}
-          />
-        </ClickAwayListener>
-        <div
-          style={{
-            display: 'flex',
-            minHeight: 0,
-            minWidth: 0,
-            overflow: 'hidden',
-            flex: 1,
-          }}
-        >
-          {children[1]}
-        </div>
+        {children[0]}
       </div>
-    )
-  }
+      <ClickAwayListener onClickAway={handleTouchEnd}>
+        <div
+          className={classnames(
+            classes.divider,
+            vertical ? classes.verticalDivider : classes.horizontalDivider
+          )}
+          onTouchStart={handleTouchStart}
+          onMouseDown={handleTouchStart}
+        />
+      </ClickAwayListener>
+      <div
+        style={{
+          display: 'flex',
+          minHeight: 0,
+          minWidth: 0,
+          overflow: 'hidden',
+          flex: 1,
+        }}
+      >
+        {children[1]}
+      </div>
+    </div>
+  )
 }
