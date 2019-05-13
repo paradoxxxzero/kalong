@@ -11,7 +11,7 @@ import Prompt from './Prompt'
 }))
 @withStyles(() => ({
   scrollback: {
-    overflowY: 'scroll',
+    overflowY: 'auto',
     scrollBehavior: 'smooth',
   },
 }))

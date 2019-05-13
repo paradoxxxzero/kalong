@@ -96,22 +96,26 @@ export default class Exception extends React.PureComponent {
                 <ListItemText
                   primary={
                     <>
-                      <Typography inline color="textSecondary">
+                      <Typography display="inline" color="textSecondary">
                         {' '}
                         In{' '}
                       </Typography>
-                      <Typography inline>{frame.function}</Typography>
-                      <Typography inline color="textSecondary">
+                      <Typography display="inline">{frame.function}</Typography>
+                      <Typography display="inline" color="textSecondary">
                         {' '}
                         at line{' '}
                       </Typography>
-                      <Typography inline>{frame.lineNumber}</Typography>
-                      <Typography inline color="textSecondary">
+                      <Typography display="inline">
+                        {frame.lineNumber}
+                      </Typography>
+                      <Typography display="inline" color="textSecondary">
                         {' '}
                         of{' '}
                       </Typography>
                       <Tooltip title={frame.absoluteFilename}>
-                        <Typography inline>{frame.filename}</Typography>
+                        <Typography display="inline">
+                          {frame.filename}
+                        </Typography>
                       </Tooltip>
                     </>
                   }

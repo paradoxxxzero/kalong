@@ -3,9 +3,8 @@ import { withWidth } from '@material-ui/core'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import React from 'react'
 
+import Main from './Main'
 import SideDrawer from './SideDrawer'
-import Source from './Source'
-import Terminal from './Terminal'
 import TopBar from './TopBar'
 
 @withWidth()
@@ -87,11 +86,7 @@ export default class App extends React.PureComponent {
           rtl={theme.direction === 'rtl'}
           onDrawerClose={this.handleDrawerClose}
         />
-        <main className={classes.content}>
-          <div className={classes.toolbar} />
-          <Source className={classes.source} />
-          <Terminal className={classes.terminal} />
-        </main>
+        <Main />
       </div>
     )
   }
