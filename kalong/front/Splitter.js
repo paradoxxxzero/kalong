@@ -10,16 +10,36 @@ import classnames from 'classnames'
     flexDirection: 'column',
   },
   divider: {
-    backgroundColor: theme.palette.secondary.main,
-    minWidth: '5px',
-    minHeight: '5px',
+    backgroundColor: theme.palette.text.primary,
+    minWidth: '6px',
+    minHeight: '6px',
     userSelect: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+
+    '&::before': {
+      display: 'block',
+      content: "''",
+      background: theme.palette.background.paper,
+      borderRadius: '15%',
+    },
   },
   verticalDivider: {
     cursor: 'ew-resize',
+
+    '&::before': {
+      width: '50%',
+      height: '5%',
+    },
   },
   horizontalDivider: {
     cursor: 'ns-resize',
+
+    '&::before': {
+      width: '5%',
+      height: '50%',
+    },
   },
 }))
 export default class Splitter extends React.PureComponent {
