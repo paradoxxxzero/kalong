@@ -1,5 +1,4 @@
-import { Tooltip } from '@material-ui/core'
-import { withStyles } from '@material-ui/core/styles'
+import { Tooltip, makeStyles } from '@material-ui/core'
 import AppBar from '@material-ui/core/AppBar'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
@@ -13,7 +12,7 @@ import TopActions from './TopActions'
 
 const drawerWidth = 240
 
-@withStyles(theme => ({
+const useStyles = makeStyles(theme => ({
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
     transition: `${theme.transitions.create(['margin', 'width'], {
@@ -39,45 +38,42 @@ const drawerWidth = 240
     marginRight: 20,
   },
 }))
-export default class TopBar extends React.PureComponent {
-  render() {
-    const {
-      classes,
-      rtl,
-      open,
-      mobile,
-      onDrawerOpen,
-      onDrawerClose,
-    } = this.props
 
-    return (
-      <AppBar
-        position="fixed"
-        className={classnames(classes.appBar, {
-          [classes.appBarShift]: open && !mobile,
-        })}
-      >
-        <Toolbar>
-          <Tooltip title={`${open ? 'Close' : 'Open'} the call stack`}>
-            <IconButton
-              color="inherit"
-              onClick={open ? onDrawerClose : onDrawerOpen}
-              className={classes.menuButton}
-            >
-              {!mobile && open ? (
-                rtl ? (
-                  <ChevronRightIcon />
-                ) : (
-                  <ChevronLeftIcon />
-                )
+export default function TopBar({
+  rtl,
+  open,
+  mobile,
+  onDrawerOpen,
+  onDrawerClose,
+}) {
+  const classes = useStyles()
+  return (
+    <AppBar
+      position="fixed"
+      className={classnames(classes.appBar, {
+        [classes.appBarShift]: open && !mobile,
+      })}
+    >
+      <Toolbar>
+        <Tooltip title={`${open ? 'Close' : 'Open'} the call stack`}>
+          <IconButton
+            color="inherit"
+            onClick={open ? onDrawerClose : onDrawerOpen}
+            className={classes.menuButton}
+          >
+            {!mobile && open ? (
+              rtl ? (
+                <ChevronRightIcon />
               ) : (
-                <MenuIcon />
-              )}
-            </IconButton>
-          </Tooltip>
-          <TopActions mobile={mobile} />
-        </Toolbar>
-      </AppBar>
-    )
-  }
+                <ChevronLeftIcon />
+              )
+            ) : (
+              <MenuIcon />
+            )}
+          </IconButton>
+        </Tooltip>
+        <TopActions mobile={mobile} />
+      </Toolbar>
+    </AppBar>
+  )
 }

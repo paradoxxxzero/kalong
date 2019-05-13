@@ -1,5 +1,4 @@
-import { Link } from '@material-ui/core'
-import { withStyles } from '@material-ui/core/styles'
+import { Link, makeStyles } from '@material-ui/core'
 import Divider from '@material-ui/core/Divider'
 import Drawer from '@material-ui/core/Drawer'
 import React from 'react'
@@ -11,7 +10,7 @@ import GlobalIndicator from './GlobalIndicator'
 
 const drawerWidth = 240
 
-@withStyles(theme => ({
+const useStyles = makeStyles(theme => ({
   drawer: {
     [theme.breakpoints.up('sm')]: {
       width: drawerWidth,
@@ -47,45 +46,43 @@ const drawerWidth = 240
     fontSize: '1em',
   },
 }))
-export default class SideDrawer extends React.PureComponent {
-  render() {
-    const { classes, rtl, open, mobile, onDrawerClose } = this.props
 
-    return (
-      <Drawer
-        className={classnames(classes.drawer, {
+export default function SideDrawer({ rtl, open, mobile, onDrawerClose }) {
+  const classes = useStyles()
+  return (
+    <Drawer
+      className={classnames(classes.drawer, {
+        [classes.drawerOpen]: open,
+        [classes.drawerClose]: !open,
+      })}
+      classes={{
+        paper: classnames({
           [classes.drawerOpen]: open,
           [classes.drawerClose]: !open,
-        })}
-        classes={{
-          paper: classnames({
-            [classes.drawerOpen]: open,
-            [classes.drawerClose]: !open,
-          }),
-        }}
-        open={open}
-        variant={mobile ? 'temporary' : 'persistent'}
-        anchor={rtl ? 'right' : 'left'}
-        onClose={onDrawerClose}
-      >
-        <div className={classes.toolbar}>
-          <GlobalIndicator />
-          <div className={classes.brand}>
-            <Link href="http://github.com/paradoxxxzero/kalong/">
-              <Typography variant="h1" className={classes.title}>
-                Kalong
-              </Typography>
-            </Link>
-            <Link href="http://github.com/paradoxxxzero/kalong/releases">
-              <Typography variant="subtitle1" className={classes.subtitle}>
-                v0.0.0
-              </Typography>
-            </Link>
-          </div>
+        }),
+      }}
+      open={open}
+      variant={mobile ? 'temporary' : 'persistent'}
+      anchor={rtl ? 'right' : 'left'}
+      onClose={onDrawerClose}
+    >
+      <div className={classes.toolbar}>
+        <GlobalIndicator />
+        <div className={classes.brand}>
+          <Link href="http://github.com/paradoxxxzero/kalong/">
+            <Typography variant="h1" className={classes.title}>
+              Kalong
+            </Typography>
+          </Link>
+          <Link href="http://github.com/paradoxxxzero/kalong/releases">
+            <Typography variant="subtitle1" className={classes.subtitle}>
+              v0.0.0
+            </Typography>
+          </Link>
         </div>
-        <Divider />
-        <Frames />
-      </Drawer>
-    )
-  }
+      </div>
+      <Divider />
+      <Frames />
+    </Drawer>
+  )
 }

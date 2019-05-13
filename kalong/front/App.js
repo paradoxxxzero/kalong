@@ -1,7 +1,7 @@
 import { makeStyles } from '@material-ui/core'
 import { useTheme } from '@material-ui/core/styles'
 import CssBaseline from '@material-ui/core/CssBaseline'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 
 import Main from './Main'
@@ -40,6 +40,8 @@ export default function App() {
     },
     [mobile] // only set if value has changed i.e. resize
   )
+  const openDrawer = useCallback(() => setOpen(true), [])
+  const closeDrawer = useCallback(() => setOpen(false), [])
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -47,14 +49,14 @@ export default function App() {
         mobile={mobile}
         open={open}
         rtl={theme.direction === 'rtl'}
-        onDrawerOpen={() => setOpen(true)}
-        onDrawerClose={() => setOpen(false)}
+        onDrawerOpen={openDrawer}
+        onDrawerClose={closeDrawer}
       />
       <SideDrawer
         mobile={mobile}
         open={open}
         rtl={theme.direction === 'rtl'}
-        onDrawerClose={() => setOpen(false)}
+        onDrawerClose={closeDrawer}
       />
       <Main />
     </div>
