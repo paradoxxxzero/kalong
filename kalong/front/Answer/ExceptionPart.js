@@ -9,16 +9,16 @@ import {
   ListItemText,
   Tooltip,
   Typography,
-  withStyles,
+  makeStyles,
 } from '@material-ui/core'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
-import React from 'react'
+import React, { useCallback } from 'react'
 import WarningIcon from '@material-ui/icons/Warning'
 
 import Inspectable from './Inspectable'
 import Snippet from '../Code/Snippet'
 
-@withStyles(theme => ({
+const useStyles = makeStyles(theme => ({
   centered: {
     alignItems: 'center',
   },
@@ -37,95 +37,87 @@ import Snippet from '../Code/Snippet'
     paddingTop: '5px',
   },
 }))
-export default class Exception extends React.PureComponent {
-  constructor(props) {
-    super(props)
 
-    this.handleExpand = this.handleExpand.bind(this)
-  }
+export default function Exception({
+  id,
+  name,
+  description,
+  subtype,
+  traceback,
+  expanded,
+  i,
+  onChange,
+}) {
+  const handleExpand = useCallback(
+    () => {
+      onChange(expanded ? null : i)
+    },
+    [i, expanded, onChange]
+  )
 
-  handleExpand() {
-    const { expanded, i, onChange } = this.props
-    onChange(expanded ? null : i)
-  }
+  const classes = useStyles()
 
-  render() {
-    const {
-      classes,
-      id,
-      name,
-      description,
-      subtype,
-      traceback,
-      expanded,
-    } = this.props
-
-    return (
-      <ExpansionPanel expanded={expanded} onChange={this.handleExpand}>
-        <ExpansionPanelSummary
-          expandIcon={<ExpandMoreIcon />}
-          className={classes.centered}
-        >
-          <Grid container direction="row" alignItems="center">
-            <Typography className={classes.warn}>
-              <WarningIcon />
+  return (
+    <ExpansionPanel expanded={expanded} onChange={handleExpand}>
+      <ExpansionPanelSummary
+        expandIcon={<ExpandMoreIcon />}
+        className={classes.centered}
+      >
+        <Grid container direction="row" alignItems="center">
+          <Typography className={classes.warn}>
+            <WarningIcon />
+          </Typography>
+          {subtype !== 'root' && (
+            <Typography color="textSecondary" className={classes.cause}>
+              {subtype === 'cause' ? 'Caused by' : 'Issued from'}
             </Typography>
-            {subtype !== 'root' && (
-              <Typography color="textSecondary" className={classes.cause}>
-                {subtype === 'cause' ? 'Caused by' : 'Issued from'}
-              </Typography>
-            )}
-            <Inspectable id={id} className={classes.button}>
-              <Typography variant="h6">
-                <Snippet value={name} mode={null} noBreakAll />
-              </Typography>
-              <Typography variant="subtitle1">
-                <Snippet value={' ― '} mode={null} />
-              </Typography>
-              <Typography>
-                <Snippet value={description} mode={null} />
-              </Typography>
-            </Inspectable>
-          </Grid>
-        </ExpansionPanelSummary>
-        <Divider />
-        <ExpansionPanelDetails>
-          <List>
-            {traceback.map((frame, i) => (
-              <ListItem key={frame.key} divider={i !== traceback.length - 1}>
-                <ListItemText
-                  primary={
-                    <>
-                      <Typography display="inline" color="textSecondary">
-                        {' '}
-                        In{' '}
-                      </Typography>
-                      <Typography display="inline">{frame.function}</Typography>
-                      <Typography display="inline" color="textSecondary">
-                        {' '}
-                        at line{' '}
-                      </Typography>
-                      <Typography display="inline">
-                        {frame.lineNumber}
-                      </Typography>
-                      <Typography display="inline" color="textSecondary">
-                        {' '}
-                        of{' '}
-                      </Typography>
-                      <Tooltip title={frame.absoluteFilename}>
-                        <Typography display="inline">
-                          {frame.filename}
-                        </Typography>
-                      </Tooltip>
-                    </>
-                  }
-                  secondary={<Snippet value={frame.lineSource || '?'} />}
-                />
-              </ListItem>
-            ))}
-          </List>
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
-    )
-  }
+          )}
+          <Inspectable id={id} className={classes.button}>
+            <Typography variant="h6">
+              <Snippet value={name} mode={null} noBreakAll />
+            </Typography>
+            <Typography variant="subtitle1">
+              <Snippet value={' ― '} mode={null} />
+            </Typography>
+            <Typography>
+              <Snippet value={description} mode={null} />
+            </Typography>
+          </Inspectable>
+        </Grid>
+      </ExpansionPanelSummary>
+      <Divider />
+      <ExpansionPanelDetails>
+        <List>
+          {traceback.map((frame, n) => (
+            <ListItem key={frame.key} divider={n !== traceback.length - 1}>
+              <ListItemText
+                primary={
+                  <>
+                    <Typography display="inline" color="textSecondary">
+                      {' '}
+                      In{' '}
+                    </Typography>
+                    <Typography display="inline">{frame.function}</Typography>
+                    <Typography display="inline" color="textSecondary">
+                      {' '}
+                      at line{' '}
+                    </Typography>
+                    <Typography display="inline">{frame.lineNumber}</Typography>
+                    <Typography display="inline" color="textSecondary">
+                      {' '}
+                      of{' '}
+                    </Typography>
+                    <Tooltip title={frame.absoluteFilename}>
+                      <Typography display="inline">{frame.filename}</Typography>
+                    </Tooltip>
+                  </>
+                }
+                secondary={<Snippet value={frame.lineSource || '?'} />}
+              />
+            </ListItem>
+          ))}
+        </List>
+      </ExpansionPanelDetails>
+    </ExpansionPanel>
+  )
 }

@@ -7,12 +7,12 @@ import {
   Divider,
   IconButton,
   Typography,
-  withStyles,
+  makeStyles,
 } from '@material-ui/core'
-import { connect } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import CloseIcon from '@material-ui/icons/Close'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
-import React from 'react'
+import React, { useState, useCallback } from 'react'
 import classnames from 'classnames'
 
 import { prettyTime } from '../util'
@@ -20,13 +20,7 @@ import { removePromptAnswer } from '../actions'
 import AnswerDispatch from './AnswerDispatch'
 import Snippet from '../Code/Snippet'
 
-@connect(
-  () => ({}),
-  dispatch => ({
-    remove: key => dispatch(removePromptAnswer(key)),
-  })
-)
-@withStyles(theme => ({
+const useStyles = makeStyles(theme => ({
   answer: {
     minWidth: 0,
     padding: '0 16px',
@@ -55,76 +49,64 @@ import Snippet from '../Code/Snippet'
     display: 'flex',
   },
 }))
-export default class Answer extends React.PureComponent {
-  constructor(props) {
-    super(props)
 
-    this.state = {
-      expanded: true,
-    }
-
-    this.handleExpand = this.handleExpand.bind(this)
-    this.handleClose = this.handleClose.bind(this)
-  }
-
-  handleExpand() {
-    this.setState(({ expanded }) => ({ expanded: !expanded }))
-  }
-
-  handleClose() {
-    const { uid, remove } = this.props
-    remove(uid)
-  }
-
-  render() {
-    const { classes, answer, duration, prompt, command } = this.props
-    return (
-      <Card className={classes.element}>
-        <CardHeader
-          avatar={
-            <>
-              <IconButton
-                className={classnames(classes.expand, {
-                  [classes.expandOpen]: this.state.expanded,
-                })}
-                onClick={this.handleExpand}
-              >
-                <ExpandMoreIcon />
-              </IconButton>
-              {command && <Chip label={command} />}
-            </>
-          }
-          title={<Snippet className={classes.prompt} value={prompt} />}
-          titleTypographyProps={{ variant: 'h5' }}
-          action={
-            <IconButton onClick={this.handleClose}>
-              <CloseIcon />
-            </IconButton>
-          }
-        />
-        {!!(answer && answer.length) && (
+export default function Answer({ uid, answer, duration, prompt, command }) {
+  const classes = useStyles()
+  const dispatch = useDispatch()
+  const [expanded, setExpanded] = useState(true)
+  const handleExpand = useCallback(() => setExpanded(x => !x), [])
+  const handleClose = useCallback(
+    () => {
+      dispatch(removePromptAnswer(uid))
+    },
+    [dispatch, uid]
+  )
+  return (
+    <Card className={classes.element}>
+      <CardHeader
+        avatar={
           <>
-            <Divider />
-            <Collapse in={this.state.expanded} timeout="auto" unmountOnExit>
-              <CardContent className={classes.content}>
-                <Typography variant="h6" className={classes.answer}>
-                  {answer.map((props, i) => (
-                    // eslint-disable-next-line react/no-array-index-key
-                    <AnswerDispatch key={i} {...props} />
-                  ))}
-                </Typography>
-                {duration && (
-                  <Snippet
-                    className={classes.duration}
-                    value={prettyTime(duration)}
-                    noBreakAll
-                  />
-                )}
-              </CardContent>
-            </Collapse>
+            <IconButton
+              className={classnames(classes.expand, {
+                [classes.expandOpen]: expanded,
+              })}
+              onClick={handleExpand}
+            >
+              <ExpandMoreIcon />
+            </IconButton>
+            {command && <Chip label={command} />}
           </>
-        )}
-      </Card>
-    )
-  }
+        }
+        title={<Snippet className={classes.prompt} value={prompt} />}
+        titleTypographyProps={{ variant: 'h5' }}
+        action={
+          <IconButton onClick={handleClose}>
+            <CloseIcon />
+          </IconButton>
+        }
+      />
+      {!!(answer && answer.length) && (
+        <>
+          <Divider />
+          <Collapse in={expanded} timeout="auto" unmountOnExit>
+            <CardContent className={classes.content}>
+              <Typography variant="h6" className={classes.answer}>
+                {answer.map((props, i) => (
+                  // eslint-disable-next-line react/no-array-index-key
+                  <AnswerDispatch key={i} {...props} />
+                ))}
+              </Typography>
+              {duration && (
+                <Snippet
+                  className={classes.duration}
+                  value={prettyTime(duration)}
+                  noBreakAll
+                />
+              )}
+            </CardContent>
+          </Collapse>
+        </>
+      )}
+    </Card>
+  )
 }

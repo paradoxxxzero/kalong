@@ -398,7 +398,7 @@ export default function Prompt({ onScrollUp, onScrollDown }) {
 
                 {search.highlight && <Code.Highlight mode={search.highlight} />}
               </Code>
-              {search.valueéu !== null && (
+              {search.value !== null && (
                 <label
                   className={classnames(classes.dialog, {
                     [classes.notFound]: search.notFound,

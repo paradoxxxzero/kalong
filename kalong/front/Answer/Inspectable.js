@@ -1,18 +1,12 @@
+import { Button, makeStyles } from '@material-ui/core'
+import { useDispatch } from 'react-redux'
+import React, { useCallback } from 'react'
 import classnames from 'classnames'
-import { Button, withStyles } from '@material-ui/core'
-import { connect } from 'react-redux'
-import React from 'react'
 
 import { requestInspect } from '../actions'
 import { uid } from '../util'
 
-@connect(
-  () => ({}),
-  dispatch => ({
-    inspect: (key, id) => dispatch(requestInspect(key, id)),
-  })
-)
-@withStyles(() => ({
+const useStyles = makeStyles(() => ({
   button: {
     minWidth: 'auto',
     textTransform: 'none',
@@ -20,27 +14,22 @@ import { uid } from '../util'
     backgroundColor: 'rgba(0, 0, 0, 0.02)',
   },
 }))
-export default class Inspectable extends React.PureComponent {
-  constructor(props) {
-    super(props)
 
-    this.handleClick = this.handleClick.bind(this)
-  }
-
-  handleClick() {
-    const { id, inspect } = this.props
-    inspect(uid(), id)
-  }
-
-  render() {
-    const { classes, className, children } = this.props
-    return (
-      <Button
-        onClick={this.handleClick}
-        className={classnames(classes.button, className)}
-      >
-        {children}
-      </Button>
-    )
-  }
+export default function Inspectable({ id, className, children }) {
+  const classes = useStyles()
+  const dispatch = useDispatch()
+  const handleClick = useCallback(
+    () => {
+      dispatch(requestInspect(uid(), id))
+    },
+    [dispatch, id]
+  )
+  return (
+    <Button
+      onClick={handleClick}
+      className={classnames(classes.button, className)}
+    >
+      {children}
+    </Button>
+  )
 }

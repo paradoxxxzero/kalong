@@ -18,10 +18,7 @@ const TYPES = {
   exception: Exception,
 }
 
-export default class AnswerDispatch extends React.PureComponent {
-  render() {
-    const { type, ...props } = this.props
-    const AnswerPart = TYPES[type]
-    return <AnswerPart {...props} />
-  }
+export default function AnswerDispatch({ type, ...props }) {
+  const AnswerPart = TYPES[type]
+  return <AnswerPart {...props} />
 }
