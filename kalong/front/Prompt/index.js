@@ -20,8 +20,8 @@ import {
 } from '../actions'
 import { uid } from '../util'
 import Code from '../Code'
-import searchReducer from './searchReducer'
-import valueReducer from './valueReducer'
+import searchReducer, { initialSearch } from './searchReducer'
+import valueReducer, { initialValue } from './valueReducer'
 
 const commandShortcuts = {
   i: 'inspect',
@@ -85,38 +85,23 @@ const useStyles = makeStyles(theme => ({
   searchLabel: {
     padding: '4px 0',
   },
-  searchNotFound: {
+  notFound: {
     color: theme.palette.error.main,
   },
 }))
 
 export default function Prompt({ onScrollUp, onScrollDown }) {
+  const classes = useStyles()
   const code = useRef()
-
-  const [{ index, value, command }, valueDispatch] = useReducer(valueReducer, {
-    index: -1,
-    value: '',
-    transientValue: '',
-    command: null,
-  })
-
-  const [
-    { search, reverse, insensitive, searchNotFound, searchHighlight },
-    searchDispatch,
-  ] = useReducer(searchReducer, {
-    search: '',
-    reverse: null,
-    insensitive: false,
-    searchNotFound: false,
-    searchHighlight: null,
-  })
 
   const history = useSelector(state => state.history)
   const scrollback = useSelector(state => state.scrollback)
   const suggestions = useSelector(state => state.suggestions)
 
-  const classes = useStyles()
   const dispatch = useDispatch()
+
+  const [prompt, valueDispatch] = useReducer(valueReducer, initialValue)
+  const [search, searchDispatch] = useReducer(searchReducer, initialSearch)
 
   const handleGlobalFocus = useCallback(
     ({ target }) => {
@@ -156,21 +141,21 @@ export default function Prompt({ onScrollUp, onScrollDown }) {
 
   const handleEnter = useCallback(
     () => {
-      if (!value) {
+      if (!prompt.value) {
         return
       }
       const key = uid()
-      switch (command) {
+      switch (prompt.command) {
         case 'inspect':
-          dispatch(requestInspectEval(key, value))
+          dispatch(requestInspectEval(key, prompt.value))
           break
         default:
-          dispatch(setPrompt(key, value))
+          dispatch(setPrompt(key, prompt.value))
       }
 
       valueDispatch({ type: 'reset' })
     },
-    [dispatch, command, value]
+    [dispatch, prompt]
   )
 
   const handleUp = useCallback(
@@ -204,10 +189,10 @@ export default function Prompt({ onScrollUp, onScrollDown }) {
         ch: token.string === ' ' ? token.end : token.start,
       }
       const to = { line: cursor.line, ch: token.end }
-      if (!value.includes(' ') && value.startsWith('?')) {
+      if (!prompt.value.includes(' ') && prompt.value.startsWith('?')) {
         dispatch(
           setSuggestion({
-            prompt: value,
+            prompt: prompt.value,
             from,
             to,
             suggestion: {
@@ -221,20 +206,20 @@ export default function Prompt({ onScrollUp, onScrollDown }) {
         )
         return
       }
-      dispatch(requestSuggestion(value, from, to))
+      dispatch(requestSuggestion(prompt.value, from, to))
     },
-    [dispatch, value]
+    [dispatch, prompt]
   )
 
   const handleBackspace = useCallback(
     cm => {
-      if (!value && command) {
+      if (!prompt.value && prompt.command) {
         valueDispatch({ type: 'remove-command' })
       } else {
         cm.execCommand('delCharBefore')
       }
     },
-    [value, command]
+    [prompt]
   )
 
   const handleRemoveCommand = useCallback(() => {
@@ -273,7 +258,7 @@ export default function Prompt({ onScrollUp, onScrollDown }) {
       reset: options.reset || false,
       history,
     })
-    handleIncrementalSearch(search)
+    handleIncrementalSearch(search.value)
   }
 
   const handleSearchClose = useCallback(
@@ -294,23 +279,23 @@ export default function Prompt({ onScrollUp, onScrollDown }) {
       }
       const valueRE = new RegExp(
         newSearch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
-        `g${insensitive ? 'i' : ''}`
+        `g${search.insensitive ? 'i' : ''}`
       )
-      const baseIndex = reverse ? index + 1 : index - 1
-      const historySearched = reverse
+      const baseIndex = search.reverse ? prompt.index + 1 : prompt.index - 1
+      const historySearched = search.reverse
         ? history.slice(baseIndex)
         : [...history].sort(() => -1).slice(history.length - baseIndex - 1)
-      const newIndex = historySearched.findIndex(prompt =>
-        prompt.match(valueRE)
-      )
+      const newIndex = historySearched.findIndex(p => p.match(valueRE))
       if (newIndex === -1) {
-        searchDispatch({ type: 'not-found', search: newSearch })
+        searchDispatch({ type: 'not-found', value: newSearch })
         return
       }
-      const finalIndex = reverse ? baseIndex + newIndex : baseIndex - newIndex
+      const finalIndex = search.reverse
+        ? baseIndex + newIndex
+        : baseIndex - newIndex
       searchDispatch({
         type: 'found',
-        search: newSearch,
+        value: newSearch,
         highlight: getHighlighter(valueRE),
       })
       valueDispatch({
@@ -319,7 +304,7 @@ export default function Prompt({ onScrollUp, onScrollDown }) {
         value: history[finalIndex],
       })
     },
-    [history, reverse, insensitive, index]
+    [history, search, prompt]
   )
 
   const handleTabOrComplete = () => {}
@@ -358,8 +343,8 @@ export default function Prompt({ onScrollUp, onScrollDown }) {
               >
                 <ExpandMoreIcon />
               </IconButton>
-              {command && (
-                <Chip label={command} onDelete={handleRemoveCommand} />
+              {prompt.command && (
+                <Chip label={prompt.command} onDelete={handleRemoveCommand} />
               )}
             </>
           }
@@ -368,7 +353,7 @@ export default function Prompt({ onScrollUp, onScrollDown }) {
               <Code
                 ref={code}
                 className={classes.prompt}
-                value={value}
+                value={prompt.value}
                 onChange={handleChange}
                 height="auto"
                 cursorBlinkRate={0}
@@ -407,25 +392,25 @@ export default function Prompt({ onScrollUp, onScrollDown }) {
                   'Alt-Down': handleInsertHistoryDown,
                 }}
               >
-                {suggestions && suggestions.prompt === value && (
+                {suggestions && suggestions.prompt === prompt.value && (
                   <Code.Hint hint={provideSuggestion} />
                 )}
 
-                {searchHighlight && <Code.Highlight mode={searchHighlight} />}
+                {search.highlight && <Code.Highlight mode={search.highlight} />}
               </Code>
-              {reverse !== null && (
+              {search.valueéu !== null && (
                 <label
                   className={classnames(classes.dialog, {
-                    [classes.searchNotFound]: searchNotFound,
+                    [classes.notFound]: search.notFound,
                   })}
                 >
                   <span className={classes.searchLabel}>
-                    {insensitive && 'I-'}Search{' '}
-                    {reverse ? 'backward' : 'forward'}:
+                    {search.insensitive && 'I-'}Search{' '}
+                    {search.reverse ? 'backward' : 'forward'}:
                   </span>
                   <Code
                     className={classes.search}
-                    value={search}
+                    value={search.value}
                     height="auto"
                     autofocus
                     width="100%"

@@ -3,39 +3,48 @@ export default (state, action) => {
     case 'search':
       return {
         ...state,
+        value: '',
         reverse: action.reverse,
         insensitive: action.insensitive,
       }
     case 'found':
       return {
         ...state,
-        search: action.search,
-        searchNotFound: false,
-        searchHighlight: action.highlight,
+        value: action.value,
+        notFound: false,
+        highlight: action.highlight,
       }
     case 'empty':
       return {
         ...state,
-        search: '',
-        searchNotFound: false,
-        searchHighlight: null,
+        value: '',
+        notFound: false,
+        highlight: null,
       }
     case 'not-found':
       return {
         ...state,
-        search: action.search,
-        searchNotFound: true,
-        searchHighlight: null,
+        value: action.value,
+        notFound: true,
+        highlight: null,
       }
     case 'reset':
       return {
-        search: '',
+        value: null,
         insensitive: false,
-        reverse: null,
-        searchNotFound: false,
-        searchHighlight: null,
+        reverse: false,
+        notFound: false,
+        highlight: null,
       }
     default:
       throw new Error()
   }
+}
+
+export const initialSearch = {
+  value: null,
+  reverse: false,
+  insensitive: false,
+  notFound: false,
+  highlight: null,
 }

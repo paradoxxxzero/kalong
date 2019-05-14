@@ -59,3 +59,10 @@ export default (state, action) => {
       throw new Error()
   }
 }
+
+export const initialValue = {
+  index: -1,
+  value: '',
+  transientValue: '',
+  command: null,
+}
