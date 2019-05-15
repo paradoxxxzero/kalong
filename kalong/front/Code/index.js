@@ -1,4 +1,4 @@
-import React, { useRef, useLayoutEffect, useEffect, useState } from 'react'
+import React, { useRef, useLayoutEffect, useState } from 'react'
 
 import CodeMirror from './codemirror'
 
@@ -165,12 +165,16 @@ function Code(
       if (!codeMirror) {
         return
       }
-      const handleChange = (cm, change) =>
-        onChange && onChange(cm.getValue(), change)
+      const handleChange = (cm, change) => {
+        const newValue = cm.getValue()
+        if (newValue !== value) {
+          onChange && onChange(newValue, change)
+        }
+      }
       codeMirror.on('change', handleChange)
       return () => codeMirror.off('change', handleChange)
     },
-    [codeMirror, onChange]
+    [codeMirror, value, onChange]
   )
 
   useLayoutEffect(
