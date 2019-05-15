@@ -1,23 +1,17 @@
-import React from 'react'
+import { useContext, useLayoutEffect } from 'react'
 
-export default class Source extends React.PureComponent {
-  componentDidMount() {
-    this.componentDidUpdate({})
-  }
+import { CodeContext } from '.'
 
-  componentDidUpdate({ code: oldCode }) {
-    const { codeMirror, code } = this.props
-    if (oldCode !== code) {
+export default function Source({ code }) {
+  const codeMirror = useContext(CodeContext)
+  useLayoutEffect(
+    () => {
       codeMirror.setValue(code)
-    }
-  }
-
-  componentWillUnmount() {
-    const { codeMirror } = this.props
-    codeMirror.setValue('')
-  }
-
-  render() {
-    return null
-  }
+      return () => {
+        codeMirror.setValue('')
+      }
+    },
+    [codeMirror, code]
+  )
+  return null
 }

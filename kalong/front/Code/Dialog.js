@@ -1,23 +1,35 @@
 import 'codemirror/addon/dialog/dialog'
 import 'codemirror/addon/dialog/dialog.css'
-import React from 'react'
+import { useContext, useEffect } from 'react'
 
-export default class Dialog extends React.PureComponent {
-  componentDidMount() {
-    this.componentDidUpdate({})
-  }
+import { CodeContext } from '.'
 
-  componentDidUpdate({
-    template: oldTemplate,
-    onEnter: oldOnEnter,
-    closeOnEnter: oldCloseOnEnter,
-    closeOnBlur: oldCloseOnBlur,
-    bottom: oldBottom,
-    onKeyDown: oldOnKeyDown,
-    onInput: oldOnInput,
-    onClose: oldOnClose,
-  }) {
-    const {
+export default function Dialog({
+  template,
+  onEnter,
+  closeOnEnter,
+  closeOnBlur,
+  bottom,
+  onKeyDown,
+  onInput,
+  onClose,
+}) {
+  const codeMirror = useContext(CodeContext)
+  useEffect(
+    () => {
+      const close = codeMirror.openDialog(template, onEnter || (() => {}), {
+        closeOnEnter,
+        closeOnBlur,
+        bottom,
+        onKeyDown,
+        onInput,
+        onClose,
+      })
+      return () => {
+        close()
+      }
+    },
+    [
       codeMirror,
       template,
       onEnter,
@@ -27,33 +39,7 @@ export default class Dialog extends React.PureComponent {
       onKeyDown,
       onInput,
       onClose,
-    } = this.props
-    if (
-      template !== oldTemplate ||
-      onEnter !== oldOnEnter ||
-      closeOnEnter !== oldCloseOnEnter ||
-      closeOnBlur !== oldCloseOnBlur ||
-      bottom !== oldBottom ||
-      onKeyDown !== oldOnKeyDown ||
-      onInput !== oldOnInput ||
-      onClose !== oldOnClose
-    ) {
-      this.close = codeMirror.openDialog(template, onEnter || (() => {}), {
-        closeOnEnter,
-        closeOnBlur,
-        bottom,
-        onKeyDown,
-        onInput,
-        onClose,
-      })
-    }
-  }
-
-  componentWillUnmount() {
-    this.close && this.close()
-  }
-
-  render() {
-    return null
-  }
+    ]
+  )
+  return null
 }

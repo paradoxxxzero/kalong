@@ -20,6 +20,8 @@ import {
 } from '../actions'
 import { uid } from '../util'
 import Code from '../Code'
+import Highlight from '../Code/Highlight'
+import Hint from '../Code/Hint'
 import searchReducer, { initialSearch } from './searchReducer'
 import valueReducer, { initialValue } from './valueReducer'
 
@@ -103,21 +105,20 @@ export default function Prompt({ onScrollUp, onScrollDown }) {
   const [prompt, valueDispatch] = useReducer(valueReducer, initialValue)
   const [search, searchDispatch] = useReducer(searchReducer, initialSearch)
 
-  const handleGlobalFocus = useCallback(
-    ({ target }) => {
-      if (code.current) {
-        if (!target.closest('[tabindex]')) {
-          code.current.codeMirror.focus()
+  useEffect(
+    () => {
+      const handleGlobalFocus = ({ target }) => {
+        if (code.current) {
+          if (!target.closest('[tabindex]')) {
+            code.current.focus()
+          }
         }
       }
+      addEventListener('click', handleGlobalFocus)
+      return () => removeEventListener('click', handleGlobalFocus)
     },
     [code]
   )
-
-  useEffect(() => {
-    addEventListener('click', handleGlobalFocus)
-    return () => removeEventListener('click', handleGlobalFocus)
-  })
 
   const handleChange = useCallback(newValue => {
     const commandMatch = newValue.match(/^\?(\S+)\s(.*)/)
@@ -174,8 +175,10 @@ export default function Prompt({ onScrollUp, onScrollDown }) {
 
   const handleEntered = useCallback(
     () => {
-      code.current.codeMirror.refresh()
-      code.current.codeMirror.focus()
+      if (code.current) {
+        code.current.refresh()
+        code.current.focus()
+      }
     },
     [code]
   )
@@ -265,7 +268,7 @@ export default function Prompt({ onScrollUp, onScrollDown }) {
     () => {
       searchDispatch({ type: 'reset' })
       if (code.current) {
-        code.current.codeMirror.focus()
+        code.current.focus()
       }
     },
     [code]
@@ -337,9 +340,7 @@ export default function Prompt({ onScrollUp, onScrollDown }) {
                   [classes.expandOpen]: grow,
                 })}
                 onClick={handleEnter}
-                disabled={
-                  !code.current || !code.current.codeMirror.getValue().length
-                }
+                disabled={!code.current || !code.current.getValue().length}
               >
                 <ExpandMoreIcon />
               </IconButton>
@@ -393,10 +394,10 @@ export default function Prompt({ onScrollUp, onScrollDown }) {
                 }}
               >
                 {suggestions && suggestions.prompt === prompt.value && (
-                  <Code.Hint hint={provideSuggestion} />
+                  <Hint hint={provideSuggestion} />
                 )}
 
-                {search.highlight && <Code.Highlight mode={search.highlight} />}
+                {search.highlight && <Highlight mode={search.highlight} />}
               </Code>
               {search.value !== null && (
                 <label

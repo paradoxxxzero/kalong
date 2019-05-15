@@ -1,34 +1,20 @@
-import React from 'react'
+import { useContext, useLayoutEffect } from 'react'
 
-export default class Highlight extends React.PureComponent {
-  componentDidMount() {
-    this.componentDidUpdate({})
-  }
+import { CodeContext } from '.'
 
-  componentDidUpdate({
-    mode: oldMode,
-    opaque: oldOpaque,
-    priority: oldPriority,
-  }) {
-    const { codeMirror, mode, opaque, priority } = this.props
-    if (mode !== oldMode || opaque !== oldOpaque || priority !== oldPriority) {
-      if (this.lastMode) {
-        codeMirror.removeOverlay(this.lastMode)
-      }
+export default function Highlight({ mode, opaque, priority }) {
+  const codeMirror = useContext(CodeContext)
+  useLayoutEffect(
+    () => {
       codeMirror.addOverlay(mode, {
         opaque,
         priority,
       })
-      this.lastMode = mode
-    }
-  }
-
-  componentWillUnmount() {
-    const { codeMirror } = this.props
-    codeMirror.removeOverlay(this.lastMode)
-  }
-
-  render() {
-    return null
-  }
+      return () => {
+        codeMirror.removeOverlay(mode)
+      }
+    },
+    [codeMirror, mode, opaque, priority]
+  )
+  return null
 }

@@ -1,33 +1,21 @@
-import React from 'react'
-import equal from 'fast-deep-equal'
+import { useContext, useLayoutEffect } from 'react'
 
-export default class Line extends React.PureComponent {
-  componentDidMount() {
-    this.componentDidUpdate({})
-  }
+import { CodeContext } from '.'
 
-  componentDidUpdate({ line: oldLine, classes: oldClasses }) {
-    const { codeMirror, line, classes } = this.props
-    if (line !== oldLine || !equal(classes, oldClasses)) {
-      if (oldLine && oldClasses) {
-        Object.entries(oldClasses).forEach(([key, cls]) =>
-          codeMirror.removeLineClass(oldLine - 1, key, cls)
-        )
-      }
+export default function Line({ line, classes }) {
+  const codeMirror = useContext(CodeContext)
+  useLayoutEffect(
+    () => {
       Object.entries(classes).forEach(([key, cls]) =>
         codeMirror.addLineClass(line - 1, key, cls)
       )
-    }
-  }
-
-  componentWillUnmount() {
-    const { codeMirror, line, classes } = this.props
-    Object.entries(classes).forEach(([key, cls]) =>
-      codeMirror.removeLineClass(line - 1, key, cls)
-    )
-  }
-
-  render() {
-    return null
-  }
+      return () => {
+        Object.entries(classes).forEach(([key, cls]) =>
+          codeMirror.removeLineClass(line - 1, key, cls)
+        )
+      }
+    },
+    [codeMirror, line, classes]
+  )
+  return null
 }

@@ -1,21 +1,17 @@
-import React from 'react'
+import { useContext, useLayoutEffect } from 'react'
 
-export default class InView extends React.PureComponent {
-  componentDidMount() {
-    this.componentDidUpdate({})
-  }
+import { CodeContext } from '.'
 
-  componentDidUpdate({ line: oldLine }) {
-    const { codeMirror, line } = this.props
-    if (oldLine !== line) {
+export default function InView({ line }) {
+  const codeMirror = useContext(CodeContext)
+  useLayoutEffect(
+    () => {
       codeMirror.scrollIntoView(
         line,
         codeMirror.getScrollerElement().clientHeight / 2
       )
-    }
-  }
-
-  render() {
-    return null
-  }
+    },
+    [codeMirror, line]
+  )
+  return null
 }

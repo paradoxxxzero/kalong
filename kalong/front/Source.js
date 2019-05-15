@@ -8,6 +8,10 @@ import classnames from 'classnames'
 import { getFile } from './actions'
 import { range } from './util'
 import Code from './Code'
+import CodeSource from './Code/Source'
+import Gutter from './Code/Gutter'
+import InView from './Code/InView'
+import Line from './Code/Line'
 
 const cmBg = f => f(tinycolor(blueGrey[900])).toString()
 
@@ -68,31 +72,27 @@ export default function Source({ className }) {
       gutters={['CodeMirror-linemarkers', 'CodeMirror-linenumbers']}
       height="100%"
     >
-      <Code.Source code={files[filename]} />
+      <CodeSource code={files[filename]} />
       {/* Active line */}
-      <Code.Line line={lineNumber} classes={{ background: classes.active }} />
-      <Code.Gutter
-        line={lineNumber}
-        gutter="CodeMirror-linemarkers"
-        marker="➤"
-      />
+      <Line line={lineNumber} classes={{ background: classes.active }} />
+      <Gutter line={lineNumber} gutter="CodeMirror-linemarkers" marker="➤" />
       {/* Context */}
-      <Code.Line
+      <Line
         line={firstFunctionLineNumber}
         classes={{ background: classes.contextTop }}
       />
       {range(firstFunctionLineNumber, lastFunctionLineNumber + 1).map(line => (
-        <Code.Line
+        <Line
           key={line}
           line={line}
           classes={{ background: classes.context }}
         />
       ))}
-      <Code.Line
+      <Line
         line={lastFunctionLineNumber}
         classes={{ background: classes.contextBottom }}
       />
-      <Code.InView line={lineNumber} />
+      <InView line={lineNumber} />
     </Code>
   )
 }
