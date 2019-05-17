@@ -9,7 +9,7 @@ import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
 import PlayArrowIcon from '@material-ui/icons/PlayArrow'
-import React, { useCallback, useLayoutEffect, useState } from 'react'
+import React, { useCallback, useLayoutEffect, useState, useMemo } from 'react'
 import RedoIcon from '@material-ui/icons/Redo'
 import StopIcon from '@material-ui/icons/Stop'
 import Typography from '@material-ui/core/Typography'
@@ -61,8 +61,15 @@ export default function TopActions({ mobile }) {
   const dispatch = useDispatch()
   const classes = useStyles()
   const [menuEl, setMenuEl] = useState(null)
-  // TODO: Optimize this
-  const handleCommand = action => () => dispatch(doCommand(action))
+  const handleCommand = useMemo(
+    () =>
+      actions.reduce((functions, { action }) => {
+        functions[action] = () => dispatch(doCommand(action))
+        return functions
+      }, {}),
+    [dispatch]
+  )
+
   const closeMenu = useCallback(() => setMenuEl(null), [])
   const openMenu = useCallback(
     ({ currentTarget }) => setMenuEl(currentTarget),
@@ -87,7 +94,7 @@ export default function TopActions({ mobile }) {
           </IconButton>
           <Menu anchorEl={menuEl} open={!!menuEl} onClose={closeMenu}>
             {actions.map(({ label, action, Icon }) => (
-              <MenuItem key={action} onClick={handleCommand(action)}>
+              <MenuItem key={action} onClick={handleCommand[action]}>
                 <ListItemIcon>
                   <Icon />
                 </ListItemIcon>
@@ -102,7 +109,7 @@ export default function TopActions({ mobile }) {
         <div className={classes.steps}>
           {actions.map(({ label, action, Icon }) => (
             <Tooltip key={action} title={label}>
-              <IconButton color="inherit" onClick={handleCommand(action)}>
+              <IconButton color="inherit" onClick={handleCommand[action]}>
                 <Icon />
               </IconButton>
             </Tooltip>
