@@ -1,5 +1,6 @@
 import React from 'react'
 
+import Diff from './Diff'
 import Err from './Err'
 import Exception from './Exception'
 import Inspect from './Inspect'
@@ -12,6 +13,7 @@ const TYPES = {
   out: Out,
   err: Err,
   obj: Obj,
+  diff: Diff,
   inspect: Inspect,
   iterable: Iterable,
   mapping: Mapping,

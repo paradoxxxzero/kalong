@@ -57,15 +57,6 @@ export const setPrompt = (key, prompt) => ({
   remote: true,
 })
 
-export const SET_PROMPT_ANSWER = 'SET_PROMPT_ANSWER'
-export const setPromptAnswer = ({ key, prompt, answer, duration }) => ({
-  type: SET_PROMPT_ANSWER,
-  key,
-  prompt,
-  answer,
-  duration,
-})
-
 export const REMOVE_PROMPT_ANSWER = 'REMOVE_PROMPT_ANSWER'
 export const removePromptAnswer = key => ({
   type: REMOVE_PROMPT_ANSWER,
@@ -87,18 +78,30 @@ export const requestInspect = (key, id) => ({
 })
 
 export const REQUEST_INSPECT_EVAL = 'REQUEST_INSPECT_EVAL'
-export const requestInspectEval = (key, prompt) => ({
+export const requestInspectEval = (key, prompt, command) => ({
   type: REQUEST_INSPECT_EVAL,
   key,
   prompt,
+  command,
   remote: true,
 })
 
-export const SET_INSPECT_ANSWER = 'SET_INSPECT_ANSWER'
-export const setInspectAnswer = ({ key, prompt, answer }) => ({
-  type: SET_INSPECT_ANSWER,
+export const REQUEST_DIFF_EVAL = 'REQUEST_DIFF_EVAL'
+export const requestDiffEval = (key, left, right, command) => ({
+  type: REQUEST_DIFF_EVAL,
+  key,
+  left,
+  right,
+  command,
+  remote: true,
+})
+
+export const SET_ANSWER = 'SET_ANSWER'
+export const setAnswer = ({ key, prompt, command, answer }) => ({
+  type: SET_ANSWER,
   key,
   prompt,
+  command,
   answer,
 })
 

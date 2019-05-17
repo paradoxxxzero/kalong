@@ -4,13 +4,14 @@ import {
   CLEAR_SCROLLBACK,
   CLEAR_SUGGESTION,
   REMOVE_PROMPT_ANSWER,
+  REQUEST_DIFF_EVAL,
   REQUEST_INSPECT,
   REQUEST_INSPECT_EVAL,
   SET_ACTIVE_FRAME,
   SET_CONNECTION_STATE,
+  SET_ANSWER,
   SET_FILE,
   SET_FRAMES,
-  SET_INSPECT_ANSWER,
   SET_PROMPT,
   SET_PROMPT_ANSWER,
   SET_SUGGESTION,
@@ -66,19 +67,8 @@ const scrollback = (state = [], action) => {
     case SET_PROMPT:
       return [
         ...state,
-        { key: action.key, prompt: action.prompt, answer: null },
+        { key: action.key, prompt: `${action.prompt}…`, answer: null },
       ]
-    case SET_PROMPT_ANSWER:
-      return state.map(promptAnswer =>
-        action.key === promptAnswer.key
-          ? {
-              key: action.key,
-              prompt: action.prompt,
-              answer: action.answer,
-              duration: action.duration,
-            }
-          : promptAnswer
-      )
     case REMOVE_PROMPT_ANSWER:
       return state.filter(promptAnswer => action.key !== promptAnswer.key)
     case REQUEST_INSPECT:
@@ -91,7 +81,7 @@ const scrollback = (state = [], action) => {
         ...state,
         { key: action.key, prompt: `${action.prompt}…`, answer: null },
       ]
-    case SET_INSPECT_ANSWER:
+    case SET_ANSWER:
       return state.map(promptAnswer =>
         action.key === promptAnswer.key
           ? {
@@ -99,9 +89,16 @@ const scrollback = (state = [], action) => {
               prompt: action.prompt,
               command: action.command,
               answer: action.answer,
+              duration: action.duration,
             }
           : promptAnswer
       )
+    case REQUEST_DIFF_EVAL:
+      return [
+        ...state,
+        { key: action.key, prompt: `${action.prompt}…`, answer: null },
+      ]
+
     case CLEAR_SCROLLBACK:
       return []
     default:
@@ -134,6 +131,21 @@ const history = (state = [], action) => {
       return [
         action.prompt,
         ...state.filter(historyPrompt => historyPrompt !== action.prompt),
+      ]
+    case REQUEST_INSPECT_EVAL:
+      return [
+        `?i ${action.prompt}`,
+        ...state.filter(
+          historyPrompt => historyPrompt !== `?i ${action.prompt}`
+        ),
+      ]
+    case REQUEST_DIFF_EVAL:
+      return [
+        `?d ${action.left} ? ${action.right}`,
+        ...state.filter(
+          historyPrompt =>
+            historyPrompt !== `?d ${action.left} ? ${action.right}`
+        ),
       ]
     default:
       return state

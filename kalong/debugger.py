@@ -1,4 +1,5 @@
 import dis
+import difflib
 import linecache
 import logging
 import os
@@ -191,6 +192,40 @@ def serialize_inspect(key, frame):
     ]
 
     return {'prompt': repr(obj), 'answer': answer}
+
+def serialize_diff_eval(leftStr, rightStr, frame):
+    try:
+        leftKey = get_id_from_expression(leftStr, frame)
+    except Exception:
+        return {
+            'prompt': leftStr,
+            'answer': [serialize_exception(*sys.exc_info())],
+        }
+
+    try:
+        rightKey = get_id_from_expression(rightStr, frame)
+    except Exception:
+        return {
+            'prompt': rightStr,
+            'answer': [serialize_exception(*sys.exc_info())],
+        }
+
+    left = obj_cache.get(leftKey)
+    right = obj_cache.get(rightKey)
+
+    answer = [
+        {
+            'type': 'diff',
+            'diff': '\n'.join(difflib.unified_diff(
+                repr(left).splitlines(keepends=True),
+                repr(right).splitlines(keepends=True),
+                fromfile=leftStr,
+                tofile=rightStr
+            ))
+        }
+    ]
+
+    return {'prompt': f'{leftStr} ? {rightStr}', 'answer': answer}
 
 
 def serialize_suggestion(prompt, from_, to, frame):

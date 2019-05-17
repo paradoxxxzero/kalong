@@ -20,11 +20,12 @@ import classnames from 'classnames'
 import {
   clearScrollback,
   requestInspectEval,
+  requestDiffEval,
   requestSuggestion,
   setPrompt,
   setSuggestion,
 } from '../actions'
-import { lexArgs } from './utils'
+import { lexArgs, splitDiff } from './utils'
 import { uid } from '../util'
 import Code from '../Code'
 import Highlight from '../Code/Highlight'
@@ -34,6 +35,7 @@ import valueReducer, { initialValue } from './valueReducer'
 
 const commandShortcuts = {
   i: 'inspect',
+  d: 'diff',
 }
 
 const getHighlighter = re => ({
@@ -154,10 +156,15 @@ export default function Prompt({ onScrollUp, onScrollDown }) {
       const key = uid()
       switch (prompt.command) {
         case 'inspect':
-          dispatch(requestInspectEval(key, prompt.value))
+          dispatch(requestInspectEval(key, prompt.value, prompt.command))
+          break
+        case 'diff':
+          dispatch(
+            requestDiffEval(key, ...splitDiff(prompt.value), prompt.command)
+          )
           break
         default:
-          dispatch(setPrompt(key, prompt.value))
+          dispatch(setPrompt(key, prompt.value, prompt.command))
       }
 
       valueDispatch({ type: 'reset' })

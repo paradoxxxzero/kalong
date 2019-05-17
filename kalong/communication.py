@@ -10,6 +10,7 @@ from .debugger import (
     serialize_frames,
     serialize_inspect,
     serialize_inspect_eval,
+    serialize_diff_eval,
     serialize_suggestion,
 )
 from .loops import run
@@ -73,23 +74,31 @@ async def communication_loop(frame, tb=None):
                 }
             elif data['type'] == 'SET_PROMPT':
                 response = {
-                    'type': 'SET_PROMPT_ANSWER',
+                    'type': 'SET_ANSWER',
                     'key': data['key'],
+                    'command': data['command'],
                     **serialize_answer(data['prompt'], frame),
                 }
             elif data['type'] == 'REQUEST_INSPECT':
                 response = {
-                    'type': 'SET_INSPECT_ANSWER',
+                    'type': 'SET_ANSWER',
                     'key': data['key'],
-                    'command': 'inspect',
+                    'command': data['command'],
                     **serialize_inspect(data['id'], frame),
                 }
             elif data['type'] == 'REQUEST_INSPECT_EVAL':
                 response = {
-                    'type': 'SET_INSPECT_ANSWER',
+                    'type': 'SET_ANSWER',
                     'key': data['key'],
-                    'command': 'inspect',
+                    'command': data['command'],
                     **serialize_inspect_eval(data['prompt'], frame),
+                }
+            elif data['type'] == 'REQUEST_DIFF_EVAL':
+                response = {
+                    'type': 'SET_ANSWER',
+                    'key': data['key'],
+                    'command': data['command'],
+                    **serialize_diff_eval(data['left'], data['right'], frame),
                 }
             elif data['type'] == 'REQUEST_SUGGESTION':
                 response = {

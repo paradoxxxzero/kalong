@@ -1,77 +1,83 @@
-export const lexArgs = str => {
-  let args = []
-  let i = 0
-  let c = ''
+const consumeUntil = (it, ...chars) => {
+  let consumed = ''
+  let inStr = ''
+  let inComment = false
+  while (
+    it.i < it.str.length &&
+    !(chars.includes(it.str[it.i]) && !inStr && !inComment)
+  ) {
+    if (inStr && it.str[it.i] === inStr) {
+      inStr = ''
+    } else if (!inStr && !inComment && ["'", '"'].includes(it.str[it.i])) {
+      inStr = it.str[it.i]
+    }
+    if (!inComment && !inStr && it.str[it.i] === '#') {
+      inComment = true
+    }
+    if (inComment && it.str[it.i] === '\n') {
+      inComment = false
+    }
 
-  const consumeUntil = (...chars) => {
-    let rv = ''
-    let inStr = ''
-    let inComment = false
-
-    while (i < str.length && !(chars.includes(c) && !inStr && !inComment)) {
-      if (inStr && c === inStr) {
-        inStr = ''
-      } else if (!inStr && !inComment && ["'", '"'].includes(c)) {
-        inStr = c
-      }
-      if (!inComment && !inStr && c === '#') {
-        inComment = true
-      }
-      if (inComment && c === '\n') {
-        inComment = false
-      }
-
-      if (c === '\\') {
-        if (!inComment) {
-          rv += c
-        }
-        c = str[i++]
-      }
+    if (it.str[it.i] === '\\') {
       if (!inComment) {
-        rv += c
+        consumed += it.str[it.i]
       }
-      c = str[i++]
+      it.i++
     }
-
-    return rv
+    if (!inComment) {
+      consumed += it.str[it.i]
+    }
+    it.i++
   }
 
-  const consumeArguments = () => {
-    let subargs = []
-    if (c === '(') {
-      let fullArg = c
-      c = str[i++]
-      while (i < str.length && c !== ')') {
-        if (c === '(') {
-          subargs = [...subargs, ...consumeArguments()]
-          fullArg += subargs.slice(-1)[0]
-        } else {
-          const arg = consumeUntil('(', ',', ')')
-          fullArg += arg
-          if (arg.trim()) {
-            subargs.push(arg.trim())
-          }
-          if (c === ',') {
-            fullArg += c
-            c = str[i++]
-          }
+  return consumed
+}
+
+const consumeArguments = it => {
+  let subargs = []
+
+  if (it.str[it.i] === '(') {
+    let fullArg = it.str[it.i]
+    it.i++
+    while (it.i < it.str.length && it.str[it.i] !== ')') {
+      if (it.str[it.i] === '(') {
+        subargs = [...subargs, ...consumeArguments(it)]
+        fullArg += subargs.slice(-1)[0]
+      } else {
+        const arg = consumeUntil(it, '(', ',', ')')
+        fullArg += arg
+        if (arg.trim()) {
+          subargs.push(arg.trim())
+        }
+        if (it.str[it.i] === ',') {
+          fullArg += it.str[it.i]
+          it.i++
         }
       }
-      if (c === ')') {
-        fullArg += c
-        c = str[i++]
-      }
-      subargs.push(fullArg)
     }
-    return subargs
+    if (it.str[it.i] === ')') {
+      fullArg += it.str[it.i]
+      it.i++
+    }
+    subargs.push(fullArg)
   }
+  return subargs
+}
 
-  while (i < str.length) {
-    c = str[i++]
-    consumeUntil('(')
-    args = [...args, ...consumeArguments()]
+export const lexArgs = (str, i) => {
+  let args = []
+  const it = { str, i: i || 0 }
+
+  while (it.i < it.str.length) {
+    consumeUntil(it, '(')
+    args = [...args, ...consumeArguments(it)]
+    it.i++
   }
   return args
 }
 
-window.lexArgs = lexArgs
+export const splitDiff = str => {
+  const it = { str, i: 0 }
+  const left = consumeUntil(it, '?')
+  return [left.trim(), str.slice(it.i + 1).trim()]
+}
