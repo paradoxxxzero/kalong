@@ -187,9 +187,6 @@ function Code(
         line: codeMirror.lastLine(),
         ch: codeMirror.getLine(codeMirror.lastLine()).length,
       })
-      return () => {
-        codeMirror.setValue('')
-      }
     },
     [codeMirror, value]
   )

@@ -8,7 +8,13 @@ import {
 } from '@material-ui/core'
 import { useDispatch, useSelector } from 'react-redux'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
-import React, { useReducer, useEffect, useCallback, useRef } from 'react'
+import React, {
+  useReducer,
+  useEffect,
+  useCallback,
+  useRef,
+  useState,
+} from 'react'
 import classnames from 'classnames'
 
 import {
@@ -18,6 +24,7 @@ import {
   setPrompt,
   setSuggestion,
 } from '../actions'
+import { lexArgs } from './utils'
 import { uid } from '../util'
 import Code from '../Code'
 import Highlight from '../Code/Highlight'
@@ -104,7 +111,6 @@ export default function Prompt({ onScrollUp, onScrollDown }) {
 
   const [prompt, valueDispatch] = useReducer(valueReducer, initialValue)
   const [search, searchDispatch] = useReducer(searchReducer, initialSearch)
-
   useEffect(
     () => {
       const handleGlobalFocus = ({ target }) => {
@@ -310,11 +316,67 @@ export default function Prompt({ onScrollUp, onScrollDown }) {
     [history, search, prompt]
   )
 
-  const handleTabOrComplete = () => {}
+  const handleTabOrComplete = useCallback(
+    codeMirror => {
+      const { line, ch } = codeMirror.getCursor()
+      if (
+        codeMirror
+          .getLine(line)
+          .slice(0, ch)
+          .match(/^\s*$/)
+      ) {
+        codeMirror.execCommand('defaultTab')
+      } else {
+        handleCompletion(codeMirror)
+      }
+    },
+    [handleCompletion]
+  )
 
-  const handleInsertHistoryUp = () => {}
+  const [historyInsert, setHistoryInsert] = useState(null)
+  const handleInsertHistoryArg = useCallback(
+    (codeMirror, way) => {
+      const historyArgs = history.reduce(
+        (args, expr) => [...args, ...lexArgs(expr)],
+        []
+      )
+      const initialIndex = way === 'up' ? 0 : history.length - 1
+      const incrementalIndex =
+        historyInsert !== null &&
+        (way === 'up' ? historyInsert + 1 : historyInsert - 1)
+      const historyIndex =
+        !codeMirror.getSelection() || historyInsert === null
+          ? initialIndex
+          : incrementalIndex
+      const insert = historyArgs[historyIndex]
 
-  const handleInsertHistoryDown = () => {}
+      codeMirror.setSelection(
+        codeMirror.getCursor('from'),
+        codeMirror.getCursor('to')
+      )
+      if (insert) {
+        codeMirror.replaceSelection(insert, 'around')
+        setHistoryInsert(historyIndex)
+      } else {
+        codeMirror.replaceSelection('', 'around')
+      }
+    },
+    [history, historyInsert, setHistoryInsert]
+  )
+
+  const handleInsertHistoryArgUp = useCallback(
+    codeMirror => {
+      handleInsertHistoryArg(codeMirror, 'up')
+    },
+    [handleInsertHistoryArg]
+  )
+
+  const handleInsertHistoryArgDown = useCallback(
+    codeMirror => {
+      handleInsertHistoryArg(codeMirror, 'down')
+    },
+    [handleInsertHistoryArg]
+  )
 
   const provideSuggestion = useCallback(() => suggestions.suggestion, [
     suggestions,
@@ -389,8 +451,8 @@ export default function Prompt({ onScrollUp, onScrollDown }) {
                   'Shift-PageUp': onScrollUp,
                   'Shift-PageDown': onScrollDown,
                   Tab: handleTabOrComplete,
-                  'Alt-Up': handleInsertHistoryUp,
-                  'Alt-Down': handleInsertHistoryDown,
+                  'Alt-Up': handleInsertHistoryArgUp,
+                  'Alt-Down': handleInsertHistoryArgDown,
                 }}
               >
                 {suggestions && suggestions.prompt === prompt.value && (
