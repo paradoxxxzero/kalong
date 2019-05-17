@@ -6,18 +6,30 @@ export const lexArgs = str => {
   const consumeUntil = (...chars) => {
     let rv = ''
     let inStr = ''
+    let inComment = false
 
-    while (i < str.length && !(chars.includes(c) && !inStr)) {
+    while (i < str.length && !(chars.includes(c) && !inStr && !inComment)) {
       if (inStr && c === inStr) {
         inStr = ''
-      } else if (!inStr && ["'", '"'].includes(c)) {
+      } else if (!inStr && !inComment && ["'", '"'].includes(c)) {
         inStr = c
       }
+      if (!inComment && !inStr && c === '#') {
+        inComment = true
+      }
+      if (inComment && c === '\n') {
+        inComment = false
+      }
+
       if (c === '\\') {
-        rv += c
+        if (!inComment) {
+          rv += c
+        }
         c = str[i++]
       }
-      rv += c
+      if (!inComment) {
+        rv += c
+      }
       c = str[i++]
     }
 
