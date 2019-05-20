@@ -31,12 +31,7 @@ import Code from '../Code'
 import Highlight from '../Code/Highlight'
 import Hint from '../Code/Hint'
 import searchReducer, { initialSearch } from './searchReducer'
-import valueReducer, { initialValue } from './valueReducer'
-
-const commandShortcuts = {
-  i: 'inspect',
-  d: 'diff',
-}
+import valueReducer, { commandShortcuts, initialValue } from './valueReducer'
 
 const getHighlighter = re => ({
   token: stream => {
@@ -127,26 +122,25 @@ export default function Prompt({ onScrollUp, onScrollDown }) {
     },
     [code]
   )
-
-  const handleChange = useCallback(newValue => {
-    const commandMatch = newValue.match(/^\?(\S+)\s(.*)/)
-    if (commandMatch) {
-      const [, cmd, expr] = commandMatch
-      const fullCommand = commandShortcuts[cmd] || cmd
-      const newCommand = Object.values(commandShortcuts).includes(fullCommand)
-        ? fullCommand
-        : null
-      if (newCommand) {
-        valueDispatch({
-          type: 'new-command',
-          value: expr,
-          command: newCommand,
-        })
-        return
+  useEffect(
+    () => {
+      const handleGlobalEval = () => {
+        const selection = getSelection().toString()
+        if (selection) {
+          const key = uid()
+          dispatch(requestInspectEval(key, selection))
+        }
       }
-    }
-    valueDispatch({ type: 'new-value', value: newValue })
-  }, [])
+      addEventListener('keydown', handleGlobalEval)
+      return () => removeEventListener('keydown', handleGlobalEval)
+    },
+    [dispatch]
+  )
+
+  const handleChange = useCallback(
+    newValue => valueDispatch({ type: 'new-value', value: newValue }),
+    []
+  )
 
   const handleEnter = useCallback(
     () => {
@@ -301,7 +295,7 @@ export default function Prompt({ onScrollUp, onScrollDown }) {
       const historySearched = search.reverse
         ? history.slice(baseIndex)
         : [...history].sort(() => -1).slice(history.length - baseIndex - 1)
-      const newIndex = historySearched.findIndex(p => p.match(valueRE))
+      const newIndex = historySearched.findIndex(p => p && p.match(valueRE))
       if (newIndex === -1) {
         searchDispatch({ type: 'not-found', value: newSearch })
         return

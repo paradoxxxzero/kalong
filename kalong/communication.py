@@ -76,28 +76,28 @@ async def communication_loop(frame, tb=None):
                 response = {
                     'type': 'SET_ANSWER',
                     'key': data['key'],
-                    'command': data['command'],
+                    'command': data.get('command'),
                     **serialize_answer(data['prompt'], frame),
                 }
             elif data['type'] == 'REQUEST_INSPECT':
                 response = {
                     'type': 'SET_ANSWER',
                     'key': data['key'],
-                    'command': data['command'],
+                    'command': data.get('command'),
                     **serialize_inspect(data['id'], frame),
                 }
             elif data['type'] == 'REQUEST_INSPECT_EVAL':
                 response = {
                     'type': 'SET_ANSWER',
                     'key': data['key'],
-                    'command': data['command'],
+                    'command': data.get('command'),
                     **serialize_inspect_eval(data['prompt'], frame),
                 }
             elif data['type'] == 'REQUEST_DIFF_EVAL':
                 response = {
                     'type': 'SET_ANSWER',
                     'key': data['key'],
-                    'command': data['command'],
+                    'command': data.get('command'),
                     **serialize_diff_eval(data['left'], data['right'], frame),
                 }
             elif data['type'] == 'REQUEST_SUGGESTION':

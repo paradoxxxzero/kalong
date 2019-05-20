@@ -1,5 +1,5 @@
-import dis
 import difflib
+import dis
 import linecache
 import logging
 import os
@@ -17,6 +17,7 @@ from inspect import (
 )
 from itertools import groupby
 from pathlib import Path
+from pprint import pformat
 
 from jedi import Interpreter
 
@@ -216,9 +217,9 @@ def serialize_diff_eval(leftStr, rightStr, frame):
     answer = [
         {
             'type': 'diff',
-            'diff': '\n'.join(difflib.unified_diff(
-                repr(left).splitlines(keepends=True),
-                repr(right).splitlines(keepends=True),
+            'diff': ''.join(difflib.unified_diff(
+                (pformat(left, indent=2, width=5) + '\n').splitlines(keepends=True),
+                (pformat(right, indent=2, width=5) + '\n').splitlines(keepends=True),
                 fromfile=leftStr,
                 tofile=rightStr
             ))
