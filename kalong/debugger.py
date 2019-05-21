@@ -194,6 +194,7 @@ def serialize_inspect(key, frame):
 
     return {'prompt': repr(obj), 'answer': answer}
 
+
 def serialize_diff_eval(leftStr, rightStr, frame):
     try:
         leftKey = get_id_from_expression(leftStr, frame)
@@ -217,12 +218,18 @@ def serialize_diff_eval(leftStr, rightStr, frame):
     answer = [
         {
             'type': 'diff',
-            'diff': ''.join(difflib.unified_diff(
-                (pformat(left, indent=2, width=5) + '\n').splitlines(keepends=True),
-                (pformat(right, indent=2, width=5) + '\n').splitlines(keepends=True),
-                fromfile=leftStr,
-                tofile=rightStr
-            ))
+            'diff': ''.join(
+                difflib.unified_diff(
+                    (pformat(left, indent=2, width=5) + '\n').splitlines(
+                        keepends=True
+                    ),
+                    (pformat(right, indent=2, width=5) + '\n').splitlines(
+                        keepends=True
+                    ),
+                    fromfile=leftStr,
+                    tofile=rightStr,
+                )
+            ),
         }
     ]
 

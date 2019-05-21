@@ -7,10 +7,10 @@ from aiohttp import WSMsgType
 from .config import basicConfig, log_level
 from .debugger import (
     serialize_answer,
+    serialize_diff_eval,
     serialize_frames,
     serialize_inspect,
     serialize_inspect_eval,
-    serialize_diff_eval,
     serialize_suggestion,
 )
 from .loops import run
