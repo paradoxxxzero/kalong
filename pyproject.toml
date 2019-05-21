@@ -28,6 +28,7 @@ test = [
   'pytest',
 ]
 tools = ["sphinx"]
+dev = ['black', 'flake8', 'isort']
 
 [tool.black]
 line-length = 79

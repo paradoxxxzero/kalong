@@ -4,6 +4,7 @@ __version__ = "0.0.0"
 
 import sys
 
+
 def breakpoint():
     from .stepping import add_step, start_trace, stop_trace
 

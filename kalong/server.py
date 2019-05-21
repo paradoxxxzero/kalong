@@ -87,7 +87,7 @@ async def websocket(request):
     return ws
 
 
-def main():
+def serve():
     app = web.Application()
     app['front'] = {}
     app['back'] = {}
