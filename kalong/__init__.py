@@ -1,8 +1,11 @@
 """A new take on debugging"""
 __version__ = "0.0.0"
-
-
 import sys
+
+from .config import Config
+
+config = Config()
+config.from_env()
 
 
 def breakpoint():

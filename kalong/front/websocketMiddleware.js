@@ -10,6 +10,7 @@ export default store => {
       )}//${window.location.host.replace(59998, 59999)}${
         window.location.pathname
       }`
+      // TODO: remove the 59998 dev hack
     )
   let ws = (window.ws = connect())
   ws.onopen = () => {

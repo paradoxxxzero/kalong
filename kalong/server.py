@@ -7,11 +7,12 @@ from pathlib import Path
 from aiohttp import WSMsgType, web
 from aiohttp.web_runner import GracefulExit
 
-from .config import basicConfig, detached, host, log_level, port
+from . import config
 from .errors import NoClientFoundError
+from .utils import basicConfig
 
 log = logging.getLogger(__name__)
-basicConfig(level=log_level)
+basicConfig(level=config.log_level)
 
 
 def maybe_bail(app):
@@ -79,7 +80,7 @@ async def websocket(request):
     await ws.close()
     del request.app[side][origin]
 
-    if not detached and origin in request.app[other_side]:
+    if not config.detached and origin in request.app[other_side]:
         log.debug(f'Closing {other_side} due to {side} closing.')
         await request.app[other_side][origin].close()
 
@@ -94,4 +95,4 @@ def serve():
     app.on_shutdown.append(shutdown)
     app.router.add_get(r'/{side:(front|back)}/{origin}', websocket)
     app.router.add_static('/assets/', Path(__file__).parent / 'assets')
-    web.run_app(app, host=host, port=port)
+    web.run_app(app, host=config.host, port=config.port)

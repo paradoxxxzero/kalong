@@ -4,7 +4,7 @@ import logging
 
 from aiohttp import WSMsgType
 
-from .config import basicConfig, log_level
+from . import config
 from .debugger import (
     serialize_answer,
     serialize_diff_eval,
@@ -15,10 +15,11 @@ from .debugger import (
 )
 from .loops import run
 from .stepping import add_step, clear_step, stop_trace
+from .utils import basicConfig
 from .websockets import close_websocket, websocket
 
 log = logging.getLogger(__name__)
-basicConfig(level=log_level)
+basicConfig(level=config.log_level)
 
 
 def communicate(frame, tb=None):

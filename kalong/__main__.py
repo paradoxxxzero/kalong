@@ -1,15 +1,10 @@
-import argparse
 import sys
 
-parser = argparse.ArgumentParser(description='Kalong cli')
-parser.add_argument(
-    '--server',
-    action='store_true',
-    help='Launch the kalong server. This option is used by kalong itself',
-)
+from . import config
 
-args = parser.parse_args()
-if args.server:
+config.from_args()
+
+if config.server:
     from .server import serve
 
     serve()

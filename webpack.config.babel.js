@@ -6,7 +6,7 @@ export default {
   mode: process.env.NODE_ENV,
   entry: path.resolve(__dirname, 'kalong', 'front', 'index.js'),
   output: {
-    filename: 'front.js',
+    filename: 'front.[hash].js',
     publicPath: '/assets/',
     path: path.resolve(__dirname, 'kalong', 'assets'),
   },
