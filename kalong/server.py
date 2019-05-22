@@ -95,4 +95,4 @@ def serve():
     app.on_shutdown.append(shutdown)
     app.router.add_get(r'/{side:(front|back)}/{origin}', websocket)
     app.router.add_static('/assets/', Path(__file__).parent / 'assets')
-    web.run_app(app, host=config.host, port=config.port)
+    web.run_app(app, host=config.host, port=config.port, print=False)
