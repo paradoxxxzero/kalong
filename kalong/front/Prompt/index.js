@@ -250,10 +250,10 @@ export default function Prompt({ onScrollUp, onScrollDown }) {
 
   const handleDieIfEmpty = useCallback(
     () => {
-      valueDispatch({ type: 'prepare-exit' })
-      handleEnter()
+      const key = uid()
+      dispatch(setPrompt(key, 'import sys; sys.exit(1)', null))
     },
-    [handleEnter]
+    [dispatch]
   )
 
   const handleClearScreen = useCallback(

@@ -44,13 +44,6 @@ export default (state, action) => {
           ...state,
           command: null,
         }
-      case 'prepare-exit':
-        return {
-          index: -1,
-          value: 'import sys; sys.exit(1)',
-          transientValue: 'import sys; sys.exit(1)',
-          command: null,
-        }
       case 'reset':
         return {
           index: -1,
