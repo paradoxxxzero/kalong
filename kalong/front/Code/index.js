@@ -23,7 +23,7 @@ const useOption = (codeMirror, option) => {
 
 const useEvent = (codeMirror, event) => {
   const [[name, handler]] = Object.entries(event)
-  const eventName = name.replace(/^on/, '').replace(/^\w/, c => c.toUpperCase())
+  const eventName = name.replace(/^on/, '').replace(/^\w/, c => c.toLowerCase())
   useLayoutEffect(
     () => {
       if (!codeMirror) {
