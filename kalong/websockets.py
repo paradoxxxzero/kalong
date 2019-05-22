@@ -67,13 +67,16 @@ async def websocket():
 async def close_websocket():
     origin = current_origin()
     try:
-        await websockets[origin].close()
+        if origin not in websockets:
+            await websockets[origin].close()
     finally:
-        del websockets[origin]
-        try:
-            await sessions[origin].close()
-        finally:
-            del sessions[origin]
+        if origin not in websockets:
+            del websockets[origin]
+        if origin not in sessions:
+            try:
+                await sessions[origin].close()
+            finally:
+                del sessions[origin]
 
 
 def die():
@@ -82,20 +85,22 @@ def die():
     loop.run_until_complete(close_websocket())
 
 
-def clean_websockets():
-    log.info(
-        f'Cleaning at exit {len(websockets)} ws and {len(sessions)} sessions'
-    )
-    if not websockets:
+def close_all(closeables):
+    if not closeables:
         return
     loop = get_loop()
     loop.run_until_complete(
         asyncio.gather(
-            *[
-                ws.close()
-                for ws in chain(websockets.values(), sessions.values())
-            ],
+            *[closeable.close() for closeable in closeables.values()],
             loop=loop,
             return_exceptions=True,
         )
     )
+
+
+def clean_websockets():
+    log.info(
+        f'Cleaning at exit {len(websockets)} ws and {len(sessions)} sessions'
+    )
+    close_all(websockets)
+    close_all(sessions)

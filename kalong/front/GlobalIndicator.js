@@ -8,7 +8,7 @@ import red from '@material-ui/core/colors/red'
 
 const useStyles = makeStyles(theme => ({
   loader: {
-    margin: theme.spacing(2),
+    margin: theme.spacing(1),
     transition: theme.transitions.create(['color'], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.standard,

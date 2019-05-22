@@ -16,7 +16,9 @@ import Line from './Code/Line'
 const cmBg = f => f(tinycolor(blueGrey[900])).toString()
 
 const useStyles = makeStyles({
-  source: {},
+  source: {
+    fontSize: '1rem',
+  },
   context: {
     backgroundColor: cmBg(c => c.darken(2)),
     borderRight: `1px solid ${cmBg(c => c.darken(6))}`,

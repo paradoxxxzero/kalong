@@ -36,9 +36,4 @@ def clean_loops():
 
 def run(coro):
     loop = get_loop()
-    try:
-        loop.run_until_complete(coro)
-    except KeyboardInterrupt:
-        from .websockets import die
-
-        die()
+    loop.run_until_complete(coro)
