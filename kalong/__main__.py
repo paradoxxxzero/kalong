@@ -1,4 +1,4 @@
-from . import config
+from . import config, run_file, shell
 
 config.from_args()
 
@@ -7,6 +7,7 @@ if config.server:
 
     serve()
 else:
-    from . import breakpoint
-
-    breakpoint()
+    if config.command:
+        run_file(*config.command)
+    else:
+        shell()

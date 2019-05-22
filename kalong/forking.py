@@ -2,6 +2,8 @@ import os
 import subprocess
 import sys
 
+from . import config
+
 
 def forkserver():
     """
@@ -17,7 +19,7 @@ def forkserver():
         else {'start_new_session': True}
     )
     server = subprocess.Popen(
-        [sys.executable, '-m', 'kalong', '--server', *sys.argv[1:]],
+        [sys.executable, '-m', 'kalong', '--server', *config._original_args],
         close_fds=True,
         env=os.environ,
         **popen_args,

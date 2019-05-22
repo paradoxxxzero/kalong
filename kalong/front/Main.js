@@ -1,4 +1,5 @@
 import { makeStyles } from '@material-ui/core'
+import { useSelector } from 'react-redux'
 import React from 'react'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 
@@ -30,11 +31,17 @@ const useStyles = makeStyles(theme => ({
 export default function Main() {
   const vertical = useMediaQuery('(min-aspect-ratio: 1/1)')
   const classes = useStyles()
+  const frames = useSelector(state => state.frames)
+  const activeFrame = useSelector(state => state.activeFrame)
+  const currentFile = frames.find(({ key }) => key === activeFrame)
+
   return (
     <main className={classes.main}>
       <div className={classes.toolbar} />
       <Splitter className={classes.splitter} vertical={vertical}>
-        <Source className={classes.source} />
+        {currentFile && (
+          <Source className={classes.source} currentFile={currentFile} />
+        )}
         <Terminal className={classes.terminal} />
       </Splitter>
     </main>

@@ -35,13 +35,17 @@ def initiate(event, frame, arg):
         title = f'Returning from {frame.f_code.co_name}'
     elif event == 'exception':
         title = f'{arg[0].__name__}: {arg[1]}'
+    elif event == 'shell':
+        title = 'Shell'
     run(
         send_once(
             {'type': 'SET_THEME', 'theme': event},
             {'type': 'SET_TITLE', 'title': title},
             {
                 'type': 'SET_FRAMES',
-                'frames': list(serialize_frames(frame, None)),
+                'frames': list(serialize_frames(frame, None))
+                if event != 'shell'
+                else [],
             },
         )
     )

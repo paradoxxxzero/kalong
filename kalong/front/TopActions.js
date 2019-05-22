@@ -58,6 +58,7 @@ const useStyles = makeStyles({
 
 export default function TopActions({ mobile }) {
   const title = useSelector(state => state.title)
+  const frames = useSelector(state => state.frames)
   const dispatch = useDispatch()
   const classes = useStyles()
   const [menuEl, setMenuEl] = useState(null)
@@ -86,35 +87,39 @@ export default function TopActions({ mobile }) {
       <Typography variant="h6" color="inherit" noWrap>
         {title}
       </Typography>
-      <div className={classes.grow} />
-      {mobile ? (
+      {!!frames.length && (
         <>
-          <IconButton onClick={openMenu}>
-            <MoreVertIcon />
-          </IconButton>
-          <Menu anchorEl={menuEl} open={!!menuEl} onClose={closeMenu}>
-            {actions.map(({ label, action, Icon }) => (
-              <MenuItem key={action} onClick={handleCommand[action]}>
-                <ListItemIcon>
-                  <Icon />
-                </ListItemIcon>
-                <Typography variant="inherit" noWrap>
-                  {label}
-                </Typography>
-              </MenuItem>
-            ))}
-          </Menu>
-        </>
-      ) : (
-        <div className={classes.steps}>
-          {actions.map(({ label, action, Icon }) => (
-            <Tooltip key={action} title={label}>
-              <IconButton color="inherit" onClick={handleCommand[action]}>
-                <Icon />
+          <div className={classes.grow} />
+          {mobile ? (
+            <>
+              <IconButton onClick={openMenu}>
+                <MoreVertIcon />
               </IconButton>
-            </Tooltip>
-          ))}
-        </div>
+              <Menu anchorEl={menuEl} open={!!menuEl} onClose={closeMenu}>
+                {actions.map(({ label, action, Icon }) => (
+                  <MenuItem key={action} onClick={handleCommand[action]}>
+                    <ListItemIcon>
+                      <Icon />
+                    </ListItemIcon>
+                    <Typography variant="inherit" noWrap>
+                      {label}
+                    </Typography>
+                  </MenuItem>
+                ))}
+              </Menu>
+            </>
+          ) : (
+            <div className={classes.steps}>
+              {actions.map(({ label, action, Icon }) => (
+                <Tooltip key={action} title={label}>
+                  <IconButton color="inherit" onClick={handleCommand[action]}>
+                    <Icon />
+                  </IconButton>
+                </Tooltip>
+              ))}
+            </div>
+          )}
+        </>
       )}
     </>
   )

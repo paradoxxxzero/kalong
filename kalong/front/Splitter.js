@@ -94,8 +94,11 @@ export default function Splitter({ children, className, vertical }) {
     setOrigin(null)
   }, [])
 
-  if (React.Children.count(children) !== 2) {
-    return null
+  if (
+    React.Children.count(children) !== 2 ||
+    !React.Children.map(children, c => !!c).every(c => c)
+  ) {
+    return children
   }
 
   return (

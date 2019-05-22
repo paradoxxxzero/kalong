@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function Mapping(subtype, values, id) {
+export default function Mapping({ subtype, values, id }) {
   const classes = useStyles()
   const [expanded, setExpanded] = useState(false)
 

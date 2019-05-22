@@ -1,6 +1,7 @@
 import logging
 import os
-from argparse import ArgumentParser
+import sys
+from argparse import REMAINDER, ArgumentParser
 
 defaults = {
     'server': True,
@@ -9,12 +10,14 @@ defaults = {
     'port': 59999,
     'front_port': 59999,
     'log': 'WARNING',
+    'command': [],
 }
 
 
 class Config:
     def __init__(self):
         self.__dict__.update(defaults)
+        self._original_args = sys.argv[1:]
 
     def get_parser(self):
         parser = ArgumentParser(description='Kalong cli')
@@ -24,7 +27,6 @@ class Config:
             help='Launch the kalong server. '
             'This option is used by kalong itself',
         )
-
         parser.add_argument(
             '--protocol',
             default=self.protocol,
@@ -55,6 +57,12 @@ class Config:
             '--detached',
             action='store_true',
             help="Server won't exit in this mode after last client disconnect",
+        )
+        parser.add_argument(
+            'command',
+            nargs=REMAINDER,
+            help='A python file to trace with kalong and its arguments or '
+            'nothing to launch a shell instead',
         )
         return parser
 

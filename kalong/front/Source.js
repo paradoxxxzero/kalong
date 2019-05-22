@@ -35,33 +35,25 @@ const useStyles = makeStyles({
   },
 })
 
-export default function Source({ className }) {
-  const frames = useSelector(state => state.frames)
-  const files = useSelector(state => state.files)
-  const activeFrame = useSelector(state => state.activeFrame)
-  const dispatch = useDispatch()
+export default function Source({ currentFile, className }) {
   const classes = useStyles()
-
-  const current = frames.find(({ key }) => key === activeFrame)
-  useEffect(
-    () => {
-      if (current && current.filename && !files[current.filename]) {
-        dispatch(getFile(current.filename))
-      }
-    },
-    [dispatch, current, files]
-  )
-
-  if (!current) {
-    return null
-  }
+  const dispatch = useDispatch()
+  const files = useSelector(state => state.files)
   const {
-    filename,
+    absoluteFilename,
     lineNumber,
     firstFunctionLineNumber,
     lastFunctionLineNumber,
-  } = current
-  if (!files[filename]) {
+  } = currentFile
+  useEffect(
+    () => {
+      if (absoluteFilename && !files[absoluteFilename]) {
+        dispatch(getFile(absoluteFilename))
+      }
+    },
+    [dispatch, files, absoluteFilename]
+  )
+  if (!files[absoluteFilename]) {
     return null
   }
   return (
@@ -74,7 +66,7 @@ export default function Source({ className }) {
       gutters={['CodeMirror-linemarkers', 'CodeMirror-linenumbers']}
       height="100%"
     >
-      <CodeSource code={files[filename]} />
+      <CodeSource code={files[absoluteFilename]} />
       {/* Active line */}
       <Line line={lineNumber} classes={{ background: classes.active }} />
       <Gutter line={lineNumber} gutter="CodeMirror-linemarkers" marker="➤" />

@@ -124,7 +124,10 @@ export default function Prompt({ onScrollUp, onScrollDown }) {
   )
   useEffect(
     () => {
-      const handleGlobalEval = () => {
+      const handleGlobalEval = ({ keyCode }) => {
+        if (keyCode !== 13) {
+          return
+        }
         const selection = getSelection().toString()
         if (selection) {
           const key = uid()

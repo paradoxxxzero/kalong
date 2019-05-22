@@ -1,4 +1,5 @@
 import { makeStyles } from '@material-ui/core'
+import { useSelector } from 'react-redux'
 import { useTheme } from '@material-ui/core/styles'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import React, { useState, useEffect, useCallback } from 'react'
@@ -33,12 +34,13 @@ export default function App() {
   const classes = useStyles()
   const theme = useTheme()
   const mobile = useMediaQuery(theme.breakpoints.down('sm'))
+  const frames = useSelector(state => state.frames)
   const [open, setOpen] = useState(!mobile)
   useEffect(
     () => {
-      setOpen(!mobile)
+      setOpen(!mobile && !!frames.length)
     },
-    [mobile] // only set if value has changed i.e. resize
+    [mobile, frames] // only set if value has changed i.e. resize
   )
   const openDrawer = useCallback(() => setOpen(true), [])
   const closeDrawer = useCallback(() => setOpen(false), [])

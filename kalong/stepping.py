@@ -16,7 +16,7 @@ steppings = {}
 kalong_dir = str(Path(__file__).resolve().parent)
 
 
-def add_step(type, frame):
+def add_step(type, frame=None):
     origin = current_origin()
     steppings[origin] = {'type': type, 'frame': frame}
 
