@@ -1,6 +1,6 @@
 import 'codemirror/addon/hint/show-hint'
 import 'codemirror/addon/hint/show-hint.css'
-import { useContext, useEffect } from 'react'
+import { useContext, useEffect, useLayoutEffect } from 'react'
 
 import { CodeContext } from '.'
 
@@ -14,6 +14,8 @@ export default function Hint({
   container,
   customKeys,
   extraKeys,
+  onStartCompletion,
+  onEndCompletion,
 }) {
   const codeMirror = useContext(CodeContext)
   useEffect(
@@ -45,6 +47,26 @@ export default function Hint({
       customKeys,
       extraKeys,
     ]
+  )
+  useLayoutEffect(
+    () => {
+      if (!onStartCompletion) {
+        return
+      }
+      codeMirror.on('startCompletion', onStartCompletion)
+      return () => codeMirror.off('startCompletion', onStartCompletion)
+    },
+    [codeMirror, onStartCompletion]
+  )
+  useLayoutEffect(
+    () => {
+      if (!onEndCompletion) {
+        return
+      }
+      codeMirror.on('endCompletion', onEndCompletion)
+      return () => codeMirror.off('endCompletion', onEndCompletion)
+    },
+    [codeMirror, onEndCompletion]
   )
   return null
 }

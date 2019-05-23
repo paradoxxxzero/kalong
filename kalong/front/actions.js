@@ -111,11 +111,12 @@ export const clearScrollback = () => ({
 })
 
 export const REQUEST_SUGGESTION = 'REQUEST_SUGGESTION'
-export const requestSuggestion = (prompt, from, to) => ({
+export const requestSuggestion = (prompt, from, to, cursor) => ({
   type: REQUEST_SUGGESTION,
   prompt,
   from,
   to,
+  cursor,
   remote: true,
 })
 

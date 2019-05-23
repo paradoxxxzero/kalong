@@ -109,7 +109,11 @@ async def communication_loop(frame, tb=None):
                 response = {
                     'type': 'SET_SUGGESTION',
                     **serialize_suggestion(
-                        data['prompt'], data['from'], data['to'], frame
+                        data['prompt'],
+                        data['from'],
+                        data['to'],
+                        data['cursor'],
+                        frame,
                     ),
                 }
             elif data['type'] == 'DO_COMMAND':

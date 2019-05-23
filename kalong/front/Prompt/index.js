@@ -19,8 +19,9 @@ import classnames from 'classnames'
 
 import {
   clearScrollback,
-  requestInspectEval,
+  clearSuggestion,
   requestDiffEval,
+  requestInspectEval,
   requestSuggestion,
   setPrompt,
   setSuggestion,
@@ -199,7 +200,7 @@ export default function Prompt({ onScrollUp, onScrollDown }) {
       const token = codeMirror.getTokenAt(cursor)
       const from = {
         line: cursor.line,
-        ch: token.string === ' ' ? token.end : token.start,
+        ch: token.type && token.type !== 'operator' ? token.start : token.end,
       }
       const to = { line: cursor.line, ch: token.end }
       if (!prompt.value.includes(' ') && prompt.value.startsWith('?')) {
@@ -219,7 +220,7 @@ export default function Prompt({ onScrollUp, onScrollDown }) {
         )
         return
       }
-      dispatch(requestSuggestion(prompt.value, from, to))
+      dispatch(requestSuggestion(prompt.value, from, to, cursor))
     },
     [dispatch, prompt]
   )
@@ -398,6 +399,10 @@ export default function Prompt({ onScrollUp, onScrollDown }) {
     suggestions,
   ])
 
+  const removeSuggestion = useCallback(() => dispatch(clearSuggestion()), [
+    dispatch,
+  ])
+
   const grow =
     scrollback.length === 0 || scrollback.slice(-1)[0].answer !== null
 
@@ -472,7 +477,10 @@ export default function Prompt({ onScrollUp, onScrollDown }) {
                 }}
               >
                 {suggestions && suggestions.prompt === prompt.value && (
-                  <Hint hint={provideSuggestion} />
+                  <Hint
+                    hint={provideSuggestion}
+                    onEndCompletion={removeSuggestion}
+                  />
                 )}
 
                 {search.highlight && <Highlight mode={search.highlight} />}
