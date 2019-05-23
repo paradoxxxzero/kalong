@@ -270,6 +270,17 @@ export default function Prompt({ onScrollUp, onScrollDown }) {
       insensitive: options.insensitive || false,
       reset: options.reset || false,
       history,
+      index: options.reset
+        ? options.reverse
+          ? prompt.index === -1
+            ? 0
+            : prompt.index
+          : prompt.index === -1
+          ? history.length - 1
+          : prompt.index
+        : options.reverse
+        ? search.index + 1
+        : search.index - 1,
     })
     handleIncrementalSearch(search.value)
   }
@@ -294,22 +305,23 @@ export default function Prompt({ onScrollUp, onScrollDown }) {
         newSearch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
         `g${search.insensitive ? 'i' : ''}`
       )
-      const baseIndex = search.reverse ? prompt.index + 1 : prompt.index - 1
+
       const historySearched = search.reverse
-        ? history.slice(baseIndex)
-        : [...history].sort(() => -1).slice(history.length - baseIndex - 1)
+        ? history.slice(search.index)
+        : [...history].sort(() => -1).slice(history.length - search.index - 1)
       const newIndex = historySearched.findIndex(p => p && p.match(valueRE))
       if (newIndex === -1) {
         searchDispatch({ type: 'not-found', value: newSearch })
         return
       }
       const finalIndex = search.reverse
-        ? baseIndex + newIndex
-        : baseIndex - newIndex
+        ? search.index + newIndex
+        : search.index - newIndex
       searchDispatch({
         type: 'found',
         value: newSearch,
         highlight: getHighlighter(valueRE),
+        index: finalIndex,
       })
       valueDispatch({
         type: 'jump',
@@ -317,7 +329,7 @@ export default function Prompt({ onScrollUp, onScrollDown }) {
         value: history[finalIndex],
       })
     },
-    [history, search, prompt]
+    [history, search]
   )
 
   const handleTabOrComplete = useCallback(

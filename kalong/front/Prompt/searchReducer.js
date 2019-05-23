@@ -6,6 +6,7 @@ export default (state, action) => {
         value: '',
         reverse: action.reverse,
         insensitive: action.insensitive,
+        index: action.index,
       }
     case 'found':
       return {
@@ -13,6 +14,7 @@ export default (state, action) => {
         value: action.value,
         notFound: false,
         highlight: action.highlight,
+        index: action.index,
       }
     case 'empty':
       return {
@@ -35,6 +37,7 @@ export default (state, action) => {
         reverse: false,
         notFound: false,
         highlight: null,
+        index: 0,
       }
     default:
       throw new Error()
@@ -47,4 +50,5 @@ export const initialSearch = {
   insensitive: false,
   notFound: false,
   highlight: null,
+  index: 0,
 }
