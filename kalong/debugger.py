@@ -174,7 +174,10 @@ def serialize_inspect(key, frame):
 
     grouped_attributes = {
         group: [serialize_attribute(attr, group) for attr in attrs]
-        for group, attrs in groupby(attributes, key=attribute_classifier)
+        for group, attrs in groupby(
+            sorted(attributes, key=attribute_classifier),
+            key=attribute_classifier,
+        )
     }
     infos = get_infos(obj)
     doc = getdoc(obj)
