@@ -227,7 +227,8 @@ export default function Prompt({ onScrollUp, onScrollDown }) {
 
   const handleBackspace = useCallback(
     cm => {
-      if (!prompt.value && prompt.command) {
+      const { line, ch } = cm.getCursor()
+      if (line === 0 && ch === 0 && prompt.command) {
         valueDispatch({ type: 'remove-command' })
       } else {
         cm.execCommand('delCharBefore')
