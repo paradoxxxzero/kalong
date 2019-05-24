@@ -44,7 +44,6 @@ export default function Inspect({ attributes, doc, source, infos }) {
   const classes = useStyles()
   const [tab, setTab] = useState(0)
   const handleChange = useCallback((event, value) => setTab(value), [])
-
   return (
     <div className={classes.root}>
       <Tabs
@@ -71,7 +70,7 @@ export default function Inspect({ attributes, doc, source, infos }) {
           <Tab label="source" value={Object.keys(attributes).length + 2} />
         )}
       </Tabs>
-      <SwipeableViews axis="x" index={tab} onChangeIndex={i => setTab(i)}>
+      <SwipeableViews axis="x" index={tab} onChangeIndex={setTab}>
         <div className={classes.tabContent}>
           <Table>
             <TableBody>
