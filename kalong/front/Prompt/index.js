@@ -6,6 +6,7 @@ import {
   IconButton,
   makeStyles,
 } from '@material-ui/core'
+import ReactDOM from 'react-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import React, {
@@ -94,6 +95,25 @@ const useStyles = makeStyles(theme => ({
   },
   notFound: {
     color: theme.palette.error.main,
+  },
+  '@global': {
+    '.CodeMirror-hints': {
+      maxHeight: '35em',
+    },
+  },
+  suggestion: {
+    padding: '8px',
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  completion: {
+    fontSize: '1.25em',
+  },
+  base: {
+    fontWeight: 'bold',
+  },
+  description: {
+    color: theme.palette.text.secondary,
   },
 }))
 
@@ -396,9 +416,30 @@ export default function Prompt({ onScrollUp, onScrollDown }) {
     [handleInsertHistoryArg]
   )
 
-  const provideSuggestion = useCallback(() => suggestions.suggestion, [
-    suggestions,
-  ])
+  const provideSuggestion = useCallback(
+    () => ({
+      from: suggestions.suggestion.from,
+      to: suggestions.suggestion.to,
+      list: suggestions.suggestion.list.map(
+        ({ text, base, complete, description }) => ({
+          text,
+          render: elt => {
+            ReactDOM.render(
+              <div className={classes.suggestion}>
+                <span className={classes.completion}>
+                  <span className={classes.base}>{base}</span>
+                  {complete}
+                </span>
+                <span className={classes.description}>{description}</span>
+              </div>,
+              elt
+            )
+          },
+        })
+      ),
+    }),
+    [suggestions, classes]
+  )
 
   const removeSuggestion = useCallback(() => dispatch(clearSuggestion()), [
     dispatch,

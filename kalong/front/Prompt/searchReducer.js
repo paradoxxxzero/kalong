@@ -22,6 +22,7 @@ export default (state, action) => {
         value: '',
         notFound: false,
         highlight: null,
+        index: 0,
       }
     case 'not-found':
       return {

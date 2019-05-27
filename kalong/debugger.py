@@ -253,10 +253,20 @@ def serialize_suggestion(prompt, from_, to, cursor, frame):
         log.exception('Completion failed')
         return answer
 
+    params_first_completions = [
+        c for c in completions if c.name_with_symbols != c.name
+    ] + [c for c in completions if c.name_with_symbols == c.name]
+
     completions = [
-        {'text': comp.name}
-        for comp in completions
-        if comp.name.endswith(comp.complete)
+        {
+            'text': comp.name_with_symbols,
+            'description': comp.description,
+            'base': comp.name_with_symbols[
+                : len(comp.name_with_symbols) - len(comp.complete)
+            ],
+            'complete': comp.complete,
+        }
+        for comp in params_first_completions
     ]
 
     suggestion = {'from': from_, 'to': to, 'list': completions}
