@@ -19,7 +19,7 @@ def forkserver():
         else {'start_new_session': True}
     )
     server = subprocess.Popen(
-        [sys.executable, '-m', 'kalong', '--server', *config._original_args],
+        [sys.executable, '-m', 'kalong', *config.get_args_for_server()],
         close_fds=True,
         env=os.environ,
         **popen_args,

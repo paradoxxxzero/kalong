@@ -10,6 +10,7 @@ defaults = {
     'port': 59999,
     'front_port': 59999,
     'log': 'WARNING',
+    'detached': False,
     'command': [],
 }
 
@@ -17,7 +18,6 @@ defaults = {
 class Config:
     def __init__(self):
         self.__dict__.update(defaults)
-        self._original_args = sys.argv[1:]
 
     def get_parser(self):
         parser = ArgumentParser(description='Kalong cli')
@@ -81,6 +81,20 @@ class Config:
             value = os.getenv(f'KALONG_{name.upper()}')
             if value:
                 setattr(self, name, type(name)(value))
+
+    def get_args_for_server(self):
+        yield '--server'
+
+        if self.detached:
+            yield '--detached'
+
+        for name, default in defaults.items():
+            if name in ['server', 'detached', 'command']:
+                continue
+            value = getattr(self, name)
+            if value != default:
+                pretty_name = name.replace('_', '-')
+                yield f'--{pretty_name}={value}'
 
     @property
     def log_level(self):
