@@ -15,6 +15,7 @@ import React, {
   useCallback,
   useRef,
   useState,
+  useMemo,
 } from 'react'
 import classnames from 'classnames'
 
@@ -129,90 +130,81 @@ export default function Prompt({ onScrollUp, onScrollDown }) {
 
   const [prompt, valueDispatch] = useReducer(valueReducer, initialValue)
   const [search, searchDispatch] = useReducer(searchReducer, initialSearch)
-  useEffect(
-    () => {
-      const handleGlobalFocus = ({ target }) => {
-        if (code.current) {
-          if (!target.closest('[tabindex]')) {
-            code.current.focus()
-          }
+  useEffect(() => {
+    const handleGlobalFocus = ({ target }) => {
+      if (code.current) {
+        if (!target.closest('[tabindex]')) {
+          code.current.focus()
         }
       }
-      addEventListener('click', handleGlobalFocus)
-      return () => removeEventListener('click', handleGlobalFocus)
-    },
-    [code]
-  )
-  useEffect(
-    () => {
-      const handleGlobalEval = ({ keyCode }) => {
-        if (keyCode !== 13) {
-          return
-        }
-        const selection = getSelection().toString()
-        if (selection) {
-          const key = uid()
-          dispatch(requestInspectEval(key, selection))
-        }
+    }
+    addEventListener('click', handleGlobalFocus)
+    return () => removeEventListener('click', handleGlobalFocus)
+  }, [code])
+  useEffect(() => {
+    const handleGlobalEval = ({ keyCode }) => {
+      if (keyCode !== 13) {
+        return
       }
-      addEventListener('keydown', handleGlobalEval)
-      return () => removeEventListener('keydown', handleGlobalEval)
-    },
-    [dispatch]
-  )
+      const selection = getSelection().toString()
+      if (selection) {
+        const key = uid()
+        dispatch(requestInspectEval(key, selection))
+      }
+    }
+    addEventListener('keydown', handleGlobalEval)
+    return () => removeEventListener('keydown', handleGlobalEval)
+  }, [dispatch])
 
   const handleChange = useCallback(
     newValue => valueDispatch({ type: 'new-value', value: newValue }),
     []
   )
-
-  const handleEnter = useCallback(
-    () => {
-      if (!prompt.value) {
-        return
-      }
-      const key = uid()
-      switch (prompt.command) {
-        case 'inspect':
-          dispatch(requestInspectEval(key, prompt.value, prompt.command))
-          break
-        case 'diff':
-          dispatch(
-            requestDiffEval(key, ...splitDiff(prompt.value), prompt.command)
-          )
-          break
-        default:
-          dispatch(setPrompt(key, prompt.value, prompt.command))
-      }
-
-      valueDispatch({ type: 'reset' })
-    },
-    [dispatch, prompt]
+  const handleCommand = useMemo(
+    () =>
+      Object.entries(commandShortcuts).reduce((functions, [key, command]) => {
+        functions[key] = () =>
+          valueDispatch({ type: 'toggle-command', command })
+        return functions
+      }, {}),
+    [valueDispatch]
   )
 
-  const handleUp = useCallback(
-    () => {
-      valueDispatch({ type: 'handle-up', history })
-    },
-    [history]
-  )
+  const handleEnter = useCallback(() => {
+    if (!prompt.value) {
+      return
+    }
+    const key = uid()
+    switch (prompt.command) {
+      case 'inspect':
+        dispatch(requestInspectEval(key, prompt.value, prompt.command))
+        break
+      case 'diff':
+        dispatch(
+          requestDiffEval(key, ...splitDiff(prompt.value), prompt.command)
+        )
+        break
+      default:
+        dispatch(setPrompt(key, prompt.value, prompt.command))
+    }
 
-  const handleDown = useCallback(
-    () => {
-      valueDispatch({ type: 'handle-down', history })
-    },
-    [history]
-  )
+    valueDispatch({ type: 'reset' })
+  }, [dispatch, prompt])
 
-  const handleEntered = useCallback(
-    () => {
-      if (code.current) {
-        code.current.refresh()
-        code.current.focus()
-      }
-    },
-    [code]
-  )
+  const handleUp = useCallback(() => {
+    valueDispatch({ type: 'handle-up', history })
+  }, [history])
+
+  const handleDown = useCallback(() => {
+    valueDispatch({ type: 'handle-down', history })
+  }, [history])
+
+  const handleEntered = useCallback(() => {
+    if (code.current) {
+      code.current.refresh()
+      code.current.focus()
+    }
+  }, [code])
 
   const handleCompletion = useCallback(
     codeMirror => {
@@ -270,20 +262,14 @@ export default function Prompt({ onScrollUp, onScrollDown }) {
     }
   }, [])
 
-  const handleDieIfEmpty = useCallback(
-    () => {
-      const key = uid()
-      dispatch(setPrompt(key, 'import sys; sys.exit(1)', null))
-    },
-    [dispatch]
-  )
+  const handleDieIfEmpty = useCallback(() => {
+    const key = uid()
+    dispatch(setPrompt(key, 'import sys; sys.exit(1)', null))
+  }, [dispatch])
 
-  const handleClearScreen = useCallback(
-    () => {
-      dispatch(clearScrollback())
-    },
-    [dispatch]
-  )
+  const handleClearScreen = useCallback(() => {
+    dispatch(clearScrollback())
+  }, [dispatch])
 
   const handleSearch = options => () => {
     searchDispatch({
@@ -307,15 +293,12 @@ export default function Prompt({ onScrollUp, onScrollDown }) {
     handleIncrementalSearch(search.value)
   }
 
-  const handleSearchClose = useCallback(
-    () => {
-      searchDispatch({ type: 'reset' })
-      if (code.current) {
-        code.current.focus()
-      }
-    },
-    [code]
-  )
+  const handleSearchClose = useCallback(() => {
+    searchDispatch({ type: 'reset' })
+    if (code.current) {
+      code.current.focus()
+    }
+  }, [code])
 
   const handleIncrementalSearch = useCallback(
     newSearch => {
@@ -516,6 +499,8 @@ export default function Prompt({ onScrollUp, onScrollDown }) {
                   Tab: handleTabOrComplete,
                   'Alt-Up': handleInsertHistoryArgUp,
                   'Alt-Down': handleInsertHistoryArgDown,
+                  'Alt-I': handleCommand.i,
+                  'Alt-D': handleCommand.d,
                 }}
               >
                 {suggestions && suggestions.prompt === prompt.value && (

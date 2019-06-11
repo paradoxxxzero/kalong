@@ -39,6 +39,11 @@ export default (state, action) => {
           value: action.value,
           command: null,
         }
+      case 'toggle-command':
+        return {
+          ...state,
+          command: state.command === action.command ? null : action.command,
+        }
       case 'remove-command':
         return {
           ...state,
