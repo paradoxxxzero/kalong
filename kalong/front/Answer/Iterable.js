@@ -17,8 +17,7 @@ const useStyles = makeStyles(theme => ({
     fontSize: theme.typography.button.fontSize,
   },
   indented: {
-    display: 'block',
-    paddingLeft: '8px',
+    paddingLeft: '2em',
   },
   inline: {
     display: 'inline',
@@ -38,12 +37,9 @@ export default function Iterable({ subtype, values, id }) {
 
   const handleExpand = useCallback(() => setExpanded(x => !x), [])
   const handleFold = useCallback(() => setFolded(x => !x), [])
-  useEffect(
-    () => {
-      setExpanded(values.length > 5)
-    },
-    [values]
-  )
+  useEffect(() => {
+    setExpanded(values.length > 5)
+  }, [values])
 
   const open = { list: '[', set: '{', tuple: '(' }[subtype]
   const close = { list: ']', set: '}', tuple: ')' }[subtype]
@@ -65,11 +61,9 @@ export default function Iterable({ subtype, values, id }) {
       {folded ? (
         '...'
       ) : (
-        <>
-          {expanded && <br />}
+        <section className={expanded ? classes.indented : classes.inline}>
           {values.map((props, i) => (
-            <section
-              className={expanded ? classes.indented : classes.inline}
+            <React.Fragment
               // eslint-disable-next-line react/no-array-index-key
               key={i}
             >
@@ -80,16 +74,9 @@ export default function Iterable({ subtype, values, id }) {
                 </Inspectable>
               )}
               {expanded && <br />}
-            </section>
+            </React.Fragment>
           ))}
-          <IconButton onClick={handleExpand} className={classes.expandButton}>
-            {expanded ? (
-              <ExpandLessIcon className={classes.expandIcon} />
-            ) : (
-              <ExpandMoreIcon className={classes.expandIcon} />
-            )}
-          </IconButton>
-        </>
+        </section>
       )}
       <Inspectable id={id}>
         {values.length === 1 && open === '(' && (
@@ -97,6 +84,15 @@ export default function Iterable({ subtype, values, id }) {
         )}
         <Snippet mode={null} value={close || ')'} />
       </Inspectable>
+      {!folded && (
+        <IconButton onClick={handleExpand} className={classes.expandButton}>
+          {expanded ? (
+            <ExpandLessIcon className={classes.expandIcon} />
+          ) : (
+            <ExpandMoreIcon className={classes.expandIcon} />
+          )}
+        </IconButton>
+      )}
     </>
   )
 }

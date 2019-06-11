@@ -17,7 +17,10 @@ const useStyles = makeStyles(theme => ({
     fontSize: theme.typography.button.fontSize,
   },
   indented: {
-    marginLeft: '8px',
+    paddingLeft: '2em',
+  },
+  inline: {
+    display: 'inline',
   },
   expandIcon: {
     fontSize: '16px',
@@ -34,12 +37,9 @@ export default function Mapping({ subtype, values, id }) {
 
   const handleExpand = useCallback(() => setExpanded(x => !x), [])
   const handleFold = useCallback(() => setFolded(x => !x), [])
-  useEffect(
-    () => {
-      setExpanded(values.length > 5)
-    },
-    [values]
-  )
+  useEffect(() => {
+    setExpanded(values.length > 5)
+  }, [values])
 
   return (
     <>
@@ -61,8 +61,7 @@ export default function Mapping({ subtype, values, id }) {
       {folded ? (
         '...'
       ) : (
-        <>
-          {expanded && <br />}
+        <section className={expanded ? classes.indented : classes.inline}>
           {values.map(({ key, value }, i) => (
             <React.Fragment
               // eslint-disable-next-line react/no-array-index-key
@@ -81,18 +80,20 @@ export default function Mapping({ subtype, values, id }) {
               {expanded && <br />}
             </React.Fragment>
           ))}
-          <IconButton onClick={handleExpand} className={classes.expandButton}>
-            {expanded ? (
-              <ExpandLessIcon className={classes.expandIcon} />
-            ) : (
-              <ExpandMoreIcon className={classes.expandIcon} />
-            )}
-          </IconButton>
-        </>
+        </section>
       )}
       <Inspectable id={id}>
         <Snippet mode={null} value={subtype === 'dict' ? '}' : '})'} />
       </Inspectable>
+      {!folded && (
+        <IconButton onClick={handleExpand} className={classes.expandButton}>
+          {expanded ? (
+            <ExpandLessIcon className={classes.expandIcon} />
+          ) : (
+            <ExpandMoreIcon className={classes.expandIcon} />
+          )}
+        </IconButton>
+      )}
     </>
   )
 }
