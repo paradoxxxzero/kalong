@@ -3,6 +3,7 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 import green from '@material-ui/core/colors/green'
 import grey from '@material-ui/core/colors/grey'
+import brown from '@material-ui/core/colors/brown'
 import orange from '@material-ui/core/colors/orange'
 import blueGrey from '@material-ui/core/colors/blueGrey'
 
@@ -11,7 +12,7 @@ import App from './App'
 const base = {}
 
 const muiThemes = {
-  init: createMuiTheme({ ...base, palette: { primary: { main: grey[400] } } }),
+  init: createMuiTheme({ ...base, palette: { primary: { main: brown[500] } } }),
   line: createMuiTheme({ ...base, palette: { primary: { main: green[600] } } }),
   call: createMuiTheme({ ...base, palette: { primary: { main: green[400] } } }),
   return: createMuiTheme({
