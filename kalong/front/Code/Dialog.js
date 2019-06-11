@@ -15,31 +15,28 @@ export default function Dialog({
   onClose,
 }) {
   const codeMirror = useContext(CodeContext)
-  useEffect(
-    () => {
-      const close = codeMirror.openDialog(template, onEnter || (() => {}), {
-        closeOnEnter,
-        closeOnBlur,
-        bottom,
-        onKeyDown,
-        onInput,
-        onClose,
-      })
-      return () => {
-        close()
-      }
-    },
-    [
-      codeMirror,
-      template,
-      onEnter,
+  useEffect(() => {
+    const close = codeMirror.openDialog(template, onEnter || (() => {}), {
       closeOnEnter,
       closeOnBlur,
       bottom,
       onKeyDown,
       onInput,
       onClose,
-    ]
-  )
+    })
+    return () => {
+      close()
+    }
+  }, [
+    codeMirror,
+    template,
+    onEnter,
+    closeOnEnter,
+    closeOnBlur,
+    bottom,
+    onKeyDown,
+    onInput,
+    onClose,
+  ])
   return null
 }

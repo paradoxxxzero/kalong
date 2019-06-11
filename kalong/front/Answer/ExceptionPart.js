@@ -48,12 +48,9 @@ export default function Exception({
   i,
   onChange,
 }) {
-  const handleExpand = useCallback(
-    () => {
-      onChange(expanded ? null : i)
-    },
-    [i, expanded, onChange]
-  )
+  const handleExpand = useCallback(() => {
+    onChange(expanded ? null : i)
+  }, [i, expanded, onChange])
 
   const classes = useStyles()
 

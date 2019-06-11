@@ -9,12 +9,9 @@ export default function Frames() {
   const frames = useSelector(state => state.frames)
   const dispatch = useDispatch()
 
-  useEffect(
-    () => {
-      frames.length && dispatch(setActiveFrame(frames[0].key))
-    },
-    [dispatch, frames]
-  )
+  useEffect(() => {
+    frames.length && dispatch(setActiveFrame(frames[0].key))
+  }, [dispatch, frames])
 
   return (
     <List>

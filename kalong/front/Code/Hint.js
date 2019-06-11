@@ -18,25 +18,8 @@ export default function Hint({
   onEndCompletion,
 }) {
   const codeMirror = useContext(CodeContext)
-  useEffect(
-    () => {
-      codeMirror.showHint({
-        hint,
-        completeSingle,
-        alignWithWord,
-        closeCharacters,
-        closeOnUnfocus,
-        completeOnSingleClick,
-        container,
-        customKeys,
-        extraKeys,
-      })
-      return () => {
-        codeMirror.closeHint()
-      }
-    },
-    [
-      codeMirror,
+  useEffect(() => {
+    codeMirror.showHint({
       hint,
       completeSingle,
       alignWithWord,
@@ -46,27 +29,35 @@ export default function Hint({
       container,
       customKeys,
       extraKeys,
-    ]
-  )
-  useLayoutEffect(
-    () => {
-      if (!onStartCompletion) {
-        return
-      }
-      codeMirror.on('startCompletion', onStartCompletion)
-      return () => codeMirror.off('startCompletion', onStartCompletion)
-    },
-    [codeMirror, onStartCompletion]
-  )
-  useLayoutEffect(
-    () => {
-      if (!onEndCompletion) {
-        return
-      }
-      codeMirror.on('endCompletion', onEndCompletion)
-      return () => codeMirror.off('endCompletion', onEndCompletion)
-    },
-    [codeMirror, onEndCompletion]
-  )
+    })
+    return () => {
+      codeMirror.closeHint()
+    }
+  }, [
+    codeMirror,
+    hint,
+    completeSingle,
+    alignWithWord,
+    closeCharacters,
+    closeOnUnfocus,
+    completeOnSingleClick,
+    container,
+    customKeys,
+    extraKeys,
+  ])
+  useLayoutEffect(() => {
+    if (!onStartCompletion) {
+      return
+    }
+    codeMirror.on('startCompletion', onStartCompletion)
+    return () => codeMirror.off('startCompletion', onStartCompletion)
+  }, [codeMirror, onStartCompletion])
+  useLayoutEffect(() => {
+    if (!onEndCompletion) {
+      return
+    }
+    codeMirror.on('endCompletion', onEndCompletion)
+    return () => codeMirror.off('endCompletion', onEndCompletion)
+  }, [codeMirror, onEndCompletion])
   return null
 }

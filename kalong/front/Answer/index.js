@@ -55,12 +55,9 @@ export default function Answer({ uid, answer, duration, prompt, command }) {
   const dispatch = useDispatch()
   const [expanded, setExpanded] = useState(true)
   const handleExpand = useCallback(() => setExpanded(x => !x), [])
-  const handleClose = useCallback(
-    () => {
-      dispatch(removePromptAnswer(uid))
-    },
-    [dispatch, uid]
-  )
+  const handleClose = useCallback(() => {
+    dispatch(removePromptAnswer(uid))
+  }, [dispatch, uid])
   return (
     <Card className={classes.element}>
       <CardHeader

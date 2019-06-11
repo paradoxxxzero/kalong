@@ -18,12 +18,9 @@ const useStyles = makeStyles(() => ({
 export default function Inspectable({ id, className, children }) {
   const classes = useStyles()
   const dispatch = useDispatch()
-  const handleClick = useCallback(
-    () => {
-      dispatch(requestInspect(uid(), id))
-    },
-    [dispatch, id]
-  )
+  const handleClick = useCallback(() => {
+    dispatch(requestInspect(uid(), id))
+  }, [dispatch, id])
   return (
     <Button
       onClick={handleClick}

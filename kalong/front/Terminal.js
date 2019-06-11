@@ -17,19 +17,13 @@ export default function Terminal({ className }) {
   const scrollback = useSelector(state => state.scrollback)
   const classes = useStyles()
   const scroller = useRef()
-  const handleScrollUp = useCallback(
-    () => {
-      scroller.current.scrollTop -= 300
-    },
-    [scroller]
-  )
+  const handleScrollUp = useCallback(() => {
+    scroller.current.scrollTop -= 300
+  }, [scroller])
 
-  const handleScrollDown = useCallback(
-    () => {
-      scroller.current.scrollTop += 300
-    },
-    [scroller]
-  )
+  const handleScrollDown = useCallback(() => {
+    scroller.current.scrollTop += 300
+  }, [scroller])
 
   useEffect(() => {
     scroller.current.scrollTop = scroller.current.scrollHeight

@@ -45,14 +45,11 @@ export default function Source({ currentFile, className }) {
     firstFunctionLineNumber,
     lastFunctionLineNumber,
   } = currentFile
-  useEffect(
-    () => {
-      if (absoluteFilename && !files[absoluteFilename]) {
-        dispatch(getFile(absoluteFilename))
-      }
-    },
-    [dispatch, files, absoluteFilename]
-  )
+  useEffect(() => {
+    if (absoluteFilename && !files[absoluteFilename]) {
+      dispatch(getFile(absoluteFilename))
+    }
+  }, [dispatch, files, absoluteFilename])
   if (!files[absoluteFilename]) {
     return null
   }

@@ -8,38 +8,32 @@ export const CodeContext = React.createContext({
 
 const useOption = (codeMirror, option) => {
   const [[name, value]] = Object.entries(option)
-  useLayoutEffect(
-    () => {
-      if (!codeMirror) {
-        return
-      }
-      if (value !== void 0) {
-        codeMirror.setOption(name, value)
-      }
-    },
-    [codeMirror, name, value]
-  )
+  useLayoutEffect(() => {
+    if (!codeMirror) {
+      return
+    }
+    if (value !== void 0) {
+      codeMirror.setOption(name, value)
+    }
+  }, [codeMirror, name, value])
 }
 
 const useEvent = (codeMirror, event) => {
   const [[name, handler]] = Object.entries(event)
   const eventName = name.replace(/^on/, '').replace(/^\w/, c => c.toLowerCase())
-  useLayoutEffect(
-    () => {
-      if (!codeMirror) {
-        return
-      }
+  useLayoutEffect(() => {
+    if (!codeMirror) {
+      return
+    }
+    if (handler !== void 0) {
+      codeMirror.on(eventName, handler)
+    }
+    return () => {
       if (handler !== void 0) {
-        codeMirror.on(eventName, handler)
+        codeMirror.off(eventName, handler)
       }
-      return () => {
-        if (handler !== void 0) {
-          codeMirror.off(eventName, handler)
-        }
-      }
-    },
-    [codeMirror, eventName, handler]
-  )
+    }
+  }, [codeMirror, eventName, handler])
 }
 
 function Code(
@@ -149,58 +143,46 @@ function Code(
   const root = useRef()
   const [codeMirror, setCodeMirror] = useState(null)
 
-  useLayoutEffect(
-    () => {
-      const cm = CodeMirror(root.current)
-      if (codeMirrorRef) {
-        codeMirrorRef.current = cm
-      }
-      setCodeMirror(cm)
-    },
-    [codeMirrorRef]
-  )
+  useLayoutEffect(() => {
+    const cm = CodeMirror(root.current)
+    if (codeMirrorRef) {
+      codeMirrorRef.current = cm
+    }
+    setCodeMirror(cm)
+  }, [codeMirrorRef])
 
-  useLayoutEffect(
-    () => {
-      if (!codeMirror) {
-        return
+  useLayoutEffect(() => {
+    if (!codeMirror) {
+      return
+    }
+    const handleChange = (cm, change) => {
+      const newValue = cm.getValue()
+      if (newValue !== value) {
+        onChange && onChange(newValue, change)
       }
-      const handleChange = (cm, change) => {
-        const newValue = cm.getValue()
-        if (newValue !== value) {
-          onChange && onChange(newValue, change)
-        }
-      }
-      codeMirror.on('change', handleChange)
-      return () => codeMirror.off('change', handleChange)
-    },
-    [codeMirror, value, onChange]
-  )
+    }
+    codeMirror.on('change', handleChange)
+    return () => codeMirror.off('change', handleChange)
+  }, [codeMirror, value, onChange])
 
-  useLayoutEffect(
-    () => {
-      if (!codeMirror || value === void 0 || value === codeMirror.getValue()) {
-        return
-      }
-      codeMirror.setValue(value || '')
-      codeMirror.setCursor({
-        line: codeMirror.lastLine(),
-        ch: codeMirror.getLine(codeMirror.lastLine()).length,
-      })
-    },
-    [codeMirror, value]
-  )
+  useLayoutEffect(() => {
+    if (!codeMirror || value === void 0 || value === codeMirror.getValue()) {
+      return
+    }
+    codeMirror.setValue(value || '')
+    codeMirror.setCursor({
+      line: codeMirror.lastLine(),
+      ch: codeMirror.getLine(codeMirror.lastLine()).length,
+    })
+  }, [codeMirror, value])
 
-  useLayoutEffect(
-    () => {
-      if (!codeMirror) {
-        return
-      }
-      codeMirror.setSize(width, height)
-      codeMirror.refresh()
-    },
-    [codeMirror, width, height]
-  )
+  useLayoutEffect(() => {
+    if (!codeMirror) {
+      return
+    }
+    codeMirror.setSize(width, height)
+    codeMirror.refresh()
+  }, [codeMirror, width, height])
 
   // This is gore but at least it's not a hack
   useOption(codeMirror, { mode })
