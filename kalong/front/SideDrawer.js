@@ -6,7 +6,6 @@ import Typography from '@material-ui/core/Typography'
 import classnames from 'classnames'
 
 import Frames from './Frames'
-import GlobalIndicator from './GlobalIndicator'
 
 const drawerWidth = 240
 
@@ -37,13 +36,17 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
   },
   brand: {
-    paddingTop: '0.8em',
+    padding: theme.spacing(1),
+    display: 'flex',
+    alignItems: 'baseline',
+    width: '100%',
+    justifyContent: 'space-around',
   },
   title: {
-    fontSize: '1.5em',
+    fontSize: '3em',
   },
   subtitle: {
-    fontSize: '1em',
+    fontSize: '1.5em',
   },
 }))
 
@@ -67,7 +70,6 @@ export default function SideDrawer({ rtl, open, mobile, onDrawerClose }) {
       onClose={onDrawerClose}
     >
       <div className={classes.toolbar}>
-        <GlobalIndicator />
         <div className={classes.brand}>
           <Link href="http://github.com/paradoxxxzero/kalong/">
             <Typography variant="h1" className={classes.title}>

@@ -1,4 +1,4 @@
-import { CircularProgress, Tooltip, makeStyles } from '@material-ui/core'
+import { CircularProgress, Paper, Tooltip, makeStyles } from '@material-ui/core'
 import { useSelector } from 'react-redux'
 import React from 'react'
 import classnames from 'classnames'
@@ -7,6 +7,9 @@ import pink from '@material-ui/core/colors/pink'
 import red from '@material-ui/core/colors/red'
 
 const useStyles = makeStyles(theme => ({
+  paper: {
+    alignSelf: 'center',
+  },
   loader: {
     margin: theme.spacing(1),
     transition: theme.transitions.create(['color'], {
@@ -25,7 +28,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function GlobalIndicator() {
+export default function GlobalIndicator({ className }) {
   const level = useSelector(state => state.loadingLevel)
   const connectionState = useSelector(state => state.connection.state)
   const classes = useStyles()
@@ -63,8 +66,10 @@ export default function GlobalIndicator() {
     }
   }
   return (
-    <Tooltip title={`${level} pending request${level > 1 ? 's' : ''}.`}>
-      {indicator}
-    </Tooltip>
+    <Paper elevation={4} className={classnames(className, classes.paper)}>
+      <Tooltip title={`${level} pending request${level > 1 ? 's' : ''}.`}>
+        {indicator}
+      </Tooltip>
+    </Paper>
   )
 }

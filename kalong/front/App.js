@@ -5,6 +5,7 @@ import CssBaseline from '@material-ui/core/CssBaseline'
 import React, { useState, useEffect, useCallback } from 'react'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 
+import GlobalIndicator from './GlobalIndicator'
 import Main from './Main'
 import SideDrawer from './SideDrawer'
 import TopBar from './TopBar'
@@ -15,6 +16,7 @@ const useStyles = makeStyles({
     width: '100vw',
     height: '100vh',
     justifyContent: 'center',
+    fontVariant: 'oldstyle-nums',
   },
   content: {
     flexGrow: 1,
@@ -27,6 +29,11 @@ const useStyles = makeStyles({
   },
   source: {
     flex: 1,
+  },
+  indicator: {
+    position: 'fixed',
+    right: '1em',
+    bottom: '1em',
   },
 })
 
@@ -61,6 +68,7 @@ export default function App() {
         onDrawerClose={closeDrawer}
       />
       <Main />
+      <GlobalIndicator className={classes.indicator} />
     </div>
   )
 }
