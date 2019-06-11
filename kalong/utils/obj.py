@@ -92,6 +92,10 @@ def get_infos(obj):
     infos['fqn'] = get_fqn(obj)
     if infos['fqn']:
         infos['online_doc'] = get_online_doc(infos['fqn'])
+    elif type(obj) != type:
+        type_fqn = get_fqn(type(obj))
+        if type_fqn:
+            infos['online_doc'] = get_online_doc(type_fqn)
 
     try:
         infos['bases'] = getbases(cls)

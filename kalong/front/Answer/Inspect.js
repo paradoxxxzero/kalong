@@ -144,7 +144,8 @@ export default function Inspect({ attributes, doc, source, infos }) {
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      {infos.fqn} <OpenInNewIcon fontSize="small" />
+                      {infos.fqn || infos.type}{' '}
+                      <OpenInNewIcon fontSize="small" />
                     </Link>
                   </TableCell>
                 </TableRow>
