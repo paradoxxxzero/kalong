@@ -5,6 +5,8 @@ import CssBaseline from '@material-ui/core/CssBaseline'
 import React, { useState, useEffect, useCallback } from 'react'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 
+import FiraCode from './font/FiraCode-Medium.otf'
+import FiraCodeBold from './font/FiraCode-Bold.otf'
 import GlobalIndicator from './GlobalIndicator'
 import Main from './Main'
 import SideDrawer from './SideDrawer'
@@ -34,6 +36,22 @@ const useStyles = makeStyles({
     position: 'fixed',
     right: '1em',
     bottom: '1em',
+  },
+  '@global': {
+    '@font-face': [
+      {
+        fontFamily: 'Fira Code',
+        fontWeight: 'normal',
+        fontStyle: 'normal',
+        src: `url(${FiraCode}) format("opentype")`,
+      },
+      {
+        fontFamily: 'Fira Code',
+        fontWeight: 'bold',
+        fontStyle: 'normal',
+        src: `url(${FiraCodeBold}) format("opentype")`,
+      },
+    ],
   },
 })
 

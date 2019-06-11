@@ -6,6 +6,9 @@ import CodeMirror from './codemirror'
 
 const useStyles = makeStyles(() => ({
   snippet: {
+    fontFamily: 'Fira Code',
+  },
+  nonBreakingSnippet: {
     whiteSpace: 'pre-wrap',
     wordBreak: 'break-all',
     overflowWrap: 'break-word',
@@ -36,8 +39,9 @@ export default function Snippet({
       ref={code}
       className={classnames(
         `cm-s-${theme}`,
+        classes.snippet,
         className,
-        noBreakAll ? classes.breakingSnippet : classes.snippet
+        noBreakAll ? classes.breakingSnippet : classes.nonBreakingSnippet
       )}
       onClick={onClick}
     />

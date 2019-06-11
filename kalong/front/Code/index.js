@@ -1,10 +1,22 @@
+import { makeStyles } from '@material-ui/core'
 import React, { useRef, useLayoutEffect, useState } from 'react'
+import classnames from 'classnames'
 
 import CodeMirror from './codemirror'
 
 export const CodeContext = React.createContext({
   codeMirror: null,
 })
+
+const useStyles = makeStyles(() => ({
+  code: {
+    '@global': {
+      '.CodeMirror': {
+        fontFamily: 'Fira Code',
+      },
+    },
+  },
+}))
 
 const useOption = (codeMirror, option) => {
   const [[name, value]] = Object.entries(option)
@@ -141,6 +153,7 @@ function Code(
   mode = mode || 'python'
 
   const root = useRef()
+  const classes = useStyles()
   const [codeMirror, setCodeMirror] = useState(null)
 
   useLayoutEffect(() => {
@@ -282,7 +295,7 @@ function Code(
   })
 
   return (
-    <div ref={root} className={className}>
+    <div ref={root} className={classnames(className, classes.code)}>
       {codeMirror && (
         <CodeContext.Provider value={codeMirror}>
           {children}
