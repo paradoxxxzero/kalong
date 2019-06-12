@@ -133,6 +133,14 @@ export default function Inspect({ attributes, doc, source, infos }) {
                   <TableCell>{infos.fqn}</TableCell>
                 </TableRow>
               ) : null}
+              <TableRow>
+                <TableCell className={classes.name} align="right">
+                  Identity
+                </TableCell>
+                <TableCell>
+                  {infos.id} (0x{infos.id.toString(16)})
+                </TableCell>
+              </TableRow>
               {infos.online_doc ? (
                 <TableRow>
                   <TableCell className={classes.name} align="right">

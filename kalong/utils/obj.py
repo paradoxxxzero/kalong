@@ -126,6 +126,8 @@ def get_infos(obj):
 
     infos['comments'] = getcomments(obj)
 
+    infos['id'] = id(obj)
+
     return infos
 
 
