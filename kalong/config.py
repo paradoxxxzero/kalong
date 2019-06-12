@@ -1,6 +1,5 @@
 import logging
 import os
-import sys
 from argparse import REMAINDER, ArgumentParser
 
 defaults = {
@@ -12,6 +11,7 @@ defaults = {
     'log': 'WARNING',
     'detached': False,
     'command': [],
+    'inject': None,
 }
 
 
@@ -57,6 +57,12 @@ class Config:
             '--detached',
             action='store_true',
             help="Server won't exit in this mode after last client disconnect",
+        )
+        parser.add_argument(
+            '--inject',
+            type=int,
+            help="Pid of a running process in which a debugger will be "
+            "injected with gdb. This needs a working gdb and ptrace enabled",
         )
         parser.add_argument(
             'command',

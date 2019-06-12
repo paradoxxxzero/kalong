@@ -18,6 +18,19 @@ def breakpoint():
     start_trace(frame)
 
 
+def break_above(level):
+    from .stepping import add_step, start_trace, stop_trace
+
+    frame = sys._getframe()
+    while level > 0 and frame.f_back:
+        level += 1
+        frame = frame.f_back
+
+    stop_trace(frame)
+    add_step('step', frame)
+    start_trace(frame)
+
+
 def start_trace():
     from .stepping import start_trace
 
