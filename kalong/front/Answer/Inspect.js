@@ -44,7 +44,8 @@ const useStyles = makeStyles(theme => ({
 export default function Inspect({ attributes, doc, source, infos }) {
   const classes = useStyles()
   const [tab, setTab] = useState(0)
-  const handleChange = useCallback((event, value) => setTab(value), [])
+  const handleChange = useCallback((event, value) => setTab(value), [setTab])
+
   return (
     <div className={classes.root}>
       <Tabs
