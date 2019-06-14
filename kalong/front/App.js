@@ -5,7 +5,7 @@ import CssBaseline from '@material-ui/core/CssBaseline'
 import React, { useState, useEffect, useCallback } from 'react'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 
-import FiraCode from './font/FiraCode-Medium.otf'
+import FiraCode from './font/FiraCode-Regular.otf'
 import FiraCodeBold from './font/FiraCode-Bold.otf'
 import GlobalIndicator from './GlobalIndicator'
 import Main from './Main'
