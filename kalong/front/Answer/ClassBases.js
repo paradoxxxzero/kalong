@@ -1,6 +1,8 @@
-import { Chip, makeStyles } from '@material-ui/core'
+import { makeStyles } from '@material-ui/core'
 import React from 'react'
 import classnames from 'classnames'
+
+import Inspectable from './Inspectable'
 
 const arrowLength = '1em'
 const arrowThickness = '3px'
@@ -14,7 +16,6 @@ const useStyles = makeStyles(() => ({
   bases: {
     display: 'flex',
     flexDirection: 'column',
-    height: '50%',
   },
   clsName: {
     margin: '4px',
@@ -22,7 +23,6 @@ const useStyles = makeStyles(() => ({
   frontLiner: {
     borderBottom: `${arrowThickness} solid black`,
     width: arrowLength,
-    height: '50%«',
   },
   backLiner: {
     display: 'flex',
@@ -45,7 +45,7 @@ const useStyles = makeStyles(() => ({
 }))
 
 export default function ClassBases({
-  cls: { name, bases },
+  cls: { id, name, bases },
   first,
   last,
   root,
@@ -68,7 +68,9 @@ export default function ClassBases({
         </div>
       )}
       <div className={classes.clsName}>
-        <Chip
+        <Inspectable
+          id={id}
+          type="chip"
           label={name}
           color={['object', 'type'].includes(name) ? void 0 : 'secondary'}
         />
@@ -77,7 +79,7 @@ export default function ClassBases({
       <div className={classes.bases}>
         {bases.map((base, i) => (
           <ClassBases
-            key={base.name}
+            key={base.id}
             cls={base}
             classes={classes}
             first={i === 0}

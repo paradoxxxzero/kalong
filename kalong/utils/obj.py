@@ -69,6 +69,7 @@ def walk_obj(obj, walked):
 
 def getbases(cls):
     return {
+        'id': obj_cache.register(cls),
         'name': cls.__name__,
         'bases': [getbases(base) for base in cls.__bases__],
     }
@@ -101,7 +102,10 @@ def get_infos(obj):
         infos['bases'] = getbases(cls)
         if has_mixins(infos['bases']):
             try:
-                infos['mro'] = [m.__name__ for m in (getmro(cls))]
+                infos['mro'] = [
+                    {'id': obj_cache.register(m), 'type': m.__name__}
+                    for m in (getmro(cls))
+                ]
             except Exception:
                 pass
     except Exception:

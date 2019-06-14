@@ -15,6 +15,7 @@ import SwipeableViews from 'react-swipeable-views'
 
 import ClassBases from './ClassBases'
 import Code from '../Code'
+import Inspectable from './Inspectable'
 import Obj from './Obj'
 import Snippet from '../Code/Snippet'
 
@@ -100,11 +101,13 @@ export default function Inspect({ attributes, doc, source, infos }) {
                     MRO
                   </TableCell>
                   <TableCell>
-                    {infos.mro.map(type => (
-                      <Chip
+                    {infos.mro.map(({ id, type }) => (
+                      <Inspectable
                         key={type}
-                        className={classes.type}
+                        id={id}
+                        type="chip"
                         label={type.trim()}
+                        className={classes.type}
                         color={
                           ['object', 'type'].includes(type)
                             ? void 0

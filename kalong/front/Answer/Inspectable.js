@@ -1,4 +1,4 @@
-import { Button, makeStyles } from '@material-ui/core'
+import { Button, Chip, makeStyles } from '@material-ui/core'
 import { useDispatch } from 'react-redux'
 import React, { useCallback } from 'react'
 import classnames from 'classnames'
@@ -15,18 +15,26 @@ const useStyles = makeStyles(() => ({
   },
 }))
 
-export default function Inspectable({ id, className, children }) {
+export default function Inspectable({
+  id,
+  type,
+  className,
+  children,
+  ...props
+}) {
   const classes = useStyles()
   const dispatch = useDispatch()
   const handleClick = useCallback(() => {
     dispatch(requestInspect(uid(), id))
   }, [dispatch, id])
+  const Component = type === 'chip' ? Chip : Button
   return (
-    <Button
+    <Component
       onClick={handleClick}
-      className={classnames(classes.button, className)}
+      className={classnames(classes[type || 'button'], className)}
+      {...props}
     >
       {children}
-    </Button>
+    </Component>
   )
 }
