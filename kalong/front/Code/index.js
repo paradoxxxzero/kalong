@@ -150,7 +150,7 @@ function Code(
   codeMirrorRef
 ) {
   theme = theme || 'default'
-  mode = mode || 'python'
+  mode = mode === void 0 ? 'python' : mode
 
   const root = useRef()
   const classes = useStyles()

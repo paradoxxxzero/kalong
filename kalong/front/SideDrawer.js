@@ -42,8 +42,19 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     justifyContent: 'space-around',
   },
+  egg: {
+    transform: 'rotate3d(0, 1, 0, 0deg)',
+    transition: 'transform 500ms',
+    marginLeft: '-1px',
+  },
   title: {
     fontSize: '3em',
+    '&:hover $egg': {
+      display: 'inline-block',
+      transform: 'rotate3d(0, 1, 0, 180deg)',
+      transformOrigin: 'center',
+      textDecoration: 'underline',
+    },
   },
   subtitle: {
     fontSize: '1.5em',
@@ -73,7 +84,7 @@ export default function SideDrawer({ rtl, open, mobile, onDrawerClose }) {
         <div className={classes.brand}>
           <Link href="http://github.com/paradoxxxzero/kalong/">
             <Typography variant="h1" className={classes.title}>
-              Kalong
+              Kal<span className={classes.egg}>o</span>ng
             </Typography>
           </Link>
           <Link href="http://github.com/paradoxxxzero/kalong/releases">

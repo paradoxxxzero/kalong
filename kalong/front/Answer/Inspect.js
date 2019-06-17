@@ -12,6 +12,7 @@ import {
 import OpenInNewIcon from '@material-ui/icons/OpenInNew'
 import React, { useState, useCallback } from 'react'
 import SwipeableViews from 'react-swipeable-views'
+import classnames from 'classnames'
 
 import ClassBases from './ClassBases'
 import Code from '../Code'
@@ -25,13 +26,14 @@ const useStyles = makeStyles(theme => ({
   },
   doc: {
     padding: theme.spacing(3),
+    fontSize: '.7em',
   },
   source: {
     padding: theme.spacing(3),
+    fontSize: '.9em',
   },
   tabContent: {
     maxHeight: '400px',
-    overflowY: 'auto',
   },
   type: {
     margin: '4px',
@@ -205,11 +207,11 @@ export default function Inspect({ attributes, doc, source, infos }) {
             </Table>
           </div>
         ))}
-        <div className={classes.tabContent}>
-          <Code value={doc} mode={null} className={classes.doc} readOnly />
+        <div className={classnames(classes.tabContent, classes.doc)}>
+          <Snippet value={doc} mode={null} />
         </div>
-        <div className={classes.tabContent}>
-          <Code value={source} className={classes.source} readOnly />
+        <div className={classnames(classes.tabContent, classes.source)}>
+          <Snippet value={source} />
         </div>
       </SwipeableViews>
     </div>
