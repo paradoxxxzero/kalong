@@ -23,13 +23,24 @@ from jedi import Interpreter
 
 from .utils.io import capture_display, capture_exception, capture_std
 from .utils.iterators import iter_cause, iter_stack
-from .utils.obj import get_infos, obj_cache, sync_locals
+from .utils.obj import (
+    get_code,
+    get_infos,
+    obj_cache,
+    safe_getattr,
+    sync_locals,
+)
 
 try:
     from cutter import cut
     from cutter.utils import bang_compile as compile
 except ImportError:
     cut = None
+
+try:
+    from uncompyle6 import code_deparse
+except ImportError:
+    code_deparse = None
 
 log = logging.getLogger(__name__)
 
@@ -65,6 +76,7 @@ def serialize_frames(current_frame, current_tb):
 
 
 def serialize_answer(prompt, frame):
+    # TODO: Get last id from client and set _ = eval(id)
     prompt = prompt.strip()
     duration = 0
     answer = []
@@ -164,12 +176,19 @@ def serialize_inspect_eval(prompt, frame):
 def serialize_inspect(key, frame):
     obj = obj_cache.get(key)
     attributes = [
-        {
-            'key': key,
-            'value': getattr(obj, key, '?'),
-            'id': obj_cache.register(getattr(obj, key, '?')),
-        }
-        for key in dir(obj)
+        {'key': key, 'value': value, 'id': obj_cache.register(value)}
+        for key, value in [
+            (
+                key,
+                safe_getattr(
+                    obj,
+                    key,
+                    f'?! Broken obj: key {key!r} is listed in dir() but '
+                    + f'getattr(obj, {key!r}) raises.',
+                ),
+            )
+            for key in dir(obj)
+        ]
     ]
 
     grouped_attributes = {
@@ -181,10 +200,19 @@ def serialize_inspect(key, frame):
     }
     infos = get_infos(obj)
     doc = getdoc(obj)
+    source = None
     try:
         source = getsource(obj)
     except Exception:
-        source = None
+        if code_deparse:
+            try:
+                code = get_code(obj)
+                if code:
+                    uncompiled = code_deparse(code).text
+                    source = f'# Decompiled from {obj!r}\n\n{uncompiled}'
+            except Exception:
+                raise  # TODO REMOVE
+
     answer = [
         {
             'type': 'inspect',

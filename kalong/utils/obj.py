@@ -5,6 +5,7 @@ from inspect import (
     getmro,
     getsourcefile,
     getsourcelines,
+    iscode,
     signature,
 )
 
@@ -67,11 +68,11 @@ def walk_obj(obj, walked):
     return {'type': 'obj', 'value': repr(obj), 'id': id}
 
 
-def getbases(cls):
+def get_bases(cls):
     return {
         'id': obj_cache.register(cls),
         'name': cls.__name__,
-        'bases': [getbases(base) for base in cls.__bases__],
+        'bases': [get_bases(base) for base in cls.__bases__],
     }
 
 
@@ -99,7 +100,7 @@ def get_infos(obj):
             infos['online_doc'] = get_online_doc(type_fqn)
 
     try:
-        infos['bases'] = getbases(cls)
+        infos['bases'] = get_bases(cls)
         if has_mixins(infos['bases']):
             try:
                 infos['mro'] = [
@@ -151,3 +152,22 @@ def sync_locals(frame, f_locals):
         )
     except Exception:
         pass
+
+
+def get_code(obj):
+    if iscode(obj):
+        return obj
+    if hasattr(obj, '__func__'):
+        obj = obj.__func__
+    for attr in ['__code__', 'gi_code', 'ag_code', 'cr_code', 'f_code']:
+        if hasattr(obj, attr):
+            code = getattr(obj, attr)
+            if hasattr(code, 'co_code'):
+                return code
+
+
+def safe_getattr(obj, key, default):
+    try:
+        return getattr(obj, key)
+    except Exception:
+        return default

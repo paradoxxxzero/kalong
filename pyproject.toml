@@ -29,7 +29,7 @@ test = [
 ]
 tools = ["sphinx"]
 dev = ['black', 'flake8', 'isort']
-extras = ['cutter']
+extras = ['cutter', 'uncompyle6']
 
 [tool.black]
 line-length = 79
