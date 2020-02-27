@@ -39,7 +39,7 @@ except ImportError:
 
 try:
     from uncompyle6 import code_deparse
-except ImportError:
+except Exception:
     code_deparse = None
 
 log = logging.getLogger(__name__)

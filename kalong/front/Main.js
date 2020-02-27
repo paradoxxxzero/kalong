@@ -1,8 +1,7 @@
 import { makeStyles } from '@material-ui/core'
-import { useSelector } from 'react-redux'
-import React from 'react'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
-
+import React from 'react'
+import { useSelector } from 'react-redux'
 import Source from './Source'
 import Splitter from './Splitter'
 import Terminal from './Terminal'
@@ -19,6 +18,7 @@ const useStyles = makeStyles(theme => ({
   },
   splitter: {
     flex: 1,
+    minHeight: 0,
   },
   terminal: {
     flex: 1,
