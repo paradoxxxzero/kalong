@@ -16,6 +16,7 @@ import React, {
   useRef,
   useState,
   useMemo,
+  memo,
 } from 'react'
 import classnames from 'classnames'
 
@@ -118,7 +119,7 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function Prompt({ onScrollUp, onScrollDown }) {
+export default memo(function Prompt({ onScrollUp, onScrollDown }) {
   const classes = useStyles()
   const code = useRef()
 
@@ -340,12 +341,7 @@ export default function Prompt({ onScrollUp, onScrollDown }) {
   const handleTabOrComplete = useCallback(
     codeMirror => {
       const { line, ch } = codeMirror.getCursor()
-      if (
-        codeMirror
-          .getLine(line)
-          .slice(0, ch)
-          .match(/^\s*$/)
-      ) {
+      if (codeMirror.getLine(line).slice(0, ch).match(/^\s*$/)) {
         codeMirror.execCommand('defaultTab')
       } else {
         handleCompletion(codeMirror)
@@ -556,4 +552,4 @@ export default function Prompt({ onScrollUp, onScrollDown }) {
       </Card>
     </Grow>
   )
-}
+})

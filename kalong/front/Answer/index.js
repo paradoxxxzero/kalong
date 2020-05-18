@@ -12,7 +12,7 @@ import {
 import { useDispatch } from 'react-redux'
 import CloseIcon from '@material-ui/icons/Close'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, memo } from 'react'
 import classnames from 'classnames'
 
 import { prettyTime } from '../util'
@@ -50,7 +50,13 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function Answer({ uid, answer, duration, prompt, command }) {
+export default memo(function Answer({
+  uid,
+  answer,
+  duration,
+  prompt,
+  command,
+}) {
   const classes = useStyles()
   const dispatch = useDispatch()
   const [expanded, setExpanded] = useState(true)
@@ -106,4 +112,4 @@ export default function Answer({ uid, answer, duration, prompt, command }) {
       )}
     </Card>
   )
-}
+})

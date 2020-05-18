@@ -1,11 +1,11 @@
 import { useDispatch, useSelector } from 'react-redux'
 import List from '@material-ui/core/List'
-import React, { useEffect } from 'react'
+import React, { useEffect, memo } from 'react'
 
 import { /* getFrames,*/ setActiveFrame } from './actions'
 import Frame from './Frame'
 
-export default function Frames() {
+export default memo(function Frames() {
   const frames = useSelector(state => state.frames)
   const dispatch = useDispatch()
 
@@ -20,4 +20,4 @@ export default function Frames() {
       ))}
     </List>
   )
-}
+})

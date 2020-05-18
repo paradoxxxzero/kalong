@@ -1,7 +1,7 @@
 import { makeStyles } from '@material-ui/core'
 import { tinycolor } from '@thebespokepixel/es-tinycolor'
 import { useDispatch, useSelector } from 'react-redux'
-import React, { useEffect } from 'react'
+import React, { useEffect, memo } from 'react'
 import blueGrey from '@material-ui/core/colors/blueGrey'
 import classnames from 'classnames'
 
@@ -33,7 +33,7 @@ const useStyles = makeStyles({
   },
 })
 
-export default function Source({ currentFile, className }) {
+export default memo(function Source({ currentFile, className }) {
   const classes = useStyles()
   const dispatch = useDispatch()
   const files = useSelector(state => state.files)
@@ -84,4 +84,4 @@ export default function Source({ currentFile, className }) {
       <InView line={lineNumber} />
     </Code>
   )
-}
+})

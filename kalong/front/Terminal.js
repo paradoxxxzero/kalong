@@ -1,6 +1,6 @@
 import { makeStyles } from '@material-ui/core'
 import { useSelector } from 'react-redux'
-import React, { useRef, useCallback, useEffect } from 'react'
+import React, { useRef, useCallback, useEffect, memo } from 'react'
 import classnames from 'classnames'
 
 import Answer from './Answer'
@@ -13,7 +13,7 @@ const useStyles = makeStyles({
   },
 })
 
-export default function Terminal({ className }) {
+export default memo(function Terminal({ className }) {
   const scrollback = useSelector(state => state.scrollback)
   const classes = useStyles()
   const scroller = useRef()
@@ -36,4 +36,4 @@ export default function Terminal({ className }) {
       <Prompt onScrollUp={handleScrollUp} onScrollDown={handleScrollDown} />
     </div>
   )
-}
+})

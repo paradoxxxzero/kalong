@@ -9,7 +9,13 @@ import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
 import PlayArrowIcon from '@material-ui/icons/PlayArrow'
-import React, { useCallback, useLayoutEffect, useState, useMemo } from 'react'
+import React, {
+  useCallback,
+  useLayoutEffect,
+  useState,
+  useMemo,
+  memo,
+} from 'react'
 import RedoIcon from '@material-ui/icons/Redo'
 import StopIcon from '@material-ui/icons/Stop'
 import Typography from '@material-ui/core/Typography'
@@ -56,7 +62,7 @@ const useStyles = makeStyles({
   steps: {},
 })
 
-export default function TopActions({ mobile }) {
+export default memo(function TopActions({ mobile }) {
   const title = useSelector(state => state.title)
   const frames = useSelector(state => state.frames)
   const dispatch = useDispatch()
@@ -123,4 +129,4 @@ export default function TopActions({ mobile }) {
       )}
     </>
   )
-}
+})
