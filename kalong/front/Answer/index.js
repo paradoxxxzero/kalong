@@ -12,11 +12,12 @@ import {
 import { useDispatch } from 'react-redux'
 import CloseIcon from '@material-ui/icons/Close'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
+import EyeIcon from '@material-ui/icons/RemoveRedEye'
 import React, { useState, useCallback, memo } from 'react'
 import classnames from 'classnames'
 
 import { prettyTime } from '../util'
-import { removePromptAnswer } from '../actions'
+import { removePromptAnswer, setActiveFrame } from '../actions'
 import AnswerDispatch from './AnswerDispatch'
 import Snippet from '../Code/Snippet'
 
@@ -56,14 +57,20 @@ export default memo(function Answer({
   duration,
   prompt,
   command,
+  frame,
 }) {
   const classes = useStyles()
   const dispatch = useDispatch()
   const [expanded, setExpanded] = useState(true)
   const handleExpand = useCallback(() => setExpanded(x => !x), [])
+  const handleView = useCallback(() => dispatch(setActiveFrame(frame)), [
+    dispatch,
+    frame,
+  ])
   const handleClose = useCallback(() => {
     dispatch(removePromptAnswer(uid))
   }, [dispatch, uid])
+
   return (
     <Card className={classes.element}>
       <CardHeader
@@ -83,9 +90,14 @@ export default memo(function Answer({
         title={<Snippet className={classes.prompt} value={prompt} />}
         titleTypographyProps={{ variant: 'h5' }}
         action={
-          <IconButton onClick={handleClose}>
-            <CloseIcon />
-          </IconButton>
+          <>
+            <IconButton onClick={handleView}>
+              <EyeIcon />
+            </IconButton>
+            <IconButton onClick={handleClose}>
+              <CloseIcon />
+            </IconButton>
+          </>
         }
       />
       {!!(answer && answer.length) && (

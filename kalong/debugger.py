@@ -22,7 +22,7 @@ from pprint import pformat
 from jedi import Interpreter
 
 from .utils.io import capture_display, capture_exception, capture_std
-from .utils.iterators import iter_cause, iter_stack
+from .utils.iterators import iter_cause, iter_stack, iter_frame
 from .utils.obj import (
     get_code,
     get_infos,
@@ -43,6 +43,17 @@ except Exception:
     code_deparse = None
 
 log = logging.getLogger(__name__)
+
+
+def get_frame(frame, key):
+    if not key:
+        return frame
+
+    for f in iter_frame(frame):
+        if id(f.f_code) == key:
+            return f
+    log.warn(f"Frame {key} not found")
+    return frame
 
 
 def serialize_frames(current_frame, current_tb):

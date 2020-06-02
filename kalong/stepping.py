@@ -23,7 +23,8 @@ def add_step(type, frame=None):
 
 def clear_step():
     origin = current_origin()
-    del steppings[origin]
+    if origin in steppings:
+        del steppings[origin]
 
 
 def start_trace(frame):

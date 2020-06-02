@@ -88,6 +88,7 @@ const scrollback = (state = [], action) => {
               prompt: action.prompt,
               command: action.command,
               answer: action.answer,
+              frame: action.frame,
               duration: action.duration,
             }
           : promptAnswer

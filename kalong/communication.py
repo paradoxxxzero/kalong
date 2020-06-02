@@ -12,6 +12,7 @@ from .debugger import (
     serialize_inspect,
     serialize_inspect_eval,
     serialize_suggestion,
+    get_frame,
 )
 from .loops import run
 from .stepping import add_step, clear_step, stop_trace
@@ -82,7 +83,10 @@ async def communication_loop(frame, tb=None):
                     'type': 'SET_ANSWER',
                     'key': data['key'],
                     'command': data.get('command'),
-                    **serialize_answer(data['prompt'], frame),
+                    'frame': data.get('frame'),
+                    **serialize_answer(
+                        data['prompt'], get_frame(frame, data.get("frame"))
+                    ),
                 }
             elif data['type'] == 'REQUEST_INSPECT':
                 response = {

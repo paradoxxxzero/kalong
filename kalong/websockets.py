@@ -67,12 +67,12 @@ async def websocket():
 async def close_websocket():
     origin = current_origin()
     try:
-        if origin not in websockets:
+        if origin in websockets:
             await websockets[origin].close()
     finally:
-        if origin not in websockets:
+        if origin in websockets:
             del websockets[origin]
-        if origin not in sessions:
+        if origin in sessions:
             try:
                 await sessions[origin].close()
             finally:

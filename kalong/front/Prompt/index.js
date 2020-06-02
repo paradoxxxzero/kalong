@@ -126,6 +126,7 @@ export default memo(function Prompt({ onScrollUp, onScrollDown }) {
   const history = useSelector(state => state.history)
   const scrollback = useSelector(state => state.scrollback)
   const suggestions = useSelector(state => state.suggestions)
+  const activeFrame = useSelector(state => state.activeFrame)
 
   const dispatch = useDispatch()
 
@@ -186,11 +187,11 @@ export default memo(function Prompt({ onScrollUp, onScrollDown }) {
         )
         break
       default:
-        dispatch(setPrompt(key, prompt.value, prompt.command))
+        dispatch(setPrompt(key, prompt.value, prompt.command, activeFrame))
     }
 
     valueDispatch({ type: 'reset' })
-  }, [dispatch, prompt])
+  }, [activeFrame, dispatch, prompt.command, prompt.value])
 
   const handleUp = useCallback(() => {
     valueDispatch({ type: 'handle-up', history })
@@ -265,7 +266,7 @@ export default memo(function Prompt({ onScrollUp, onScrollDown }) {
 
   const handleDieIfEmpty = useCallback(() => {
     const key = uid()
-    dispatch(setPrompt(key, 'import sys; sys.exit(1)', null))
+    dispatch(setPrompt(key, 'import sys; sys.exit(1)', null, null))
   }, [dispatch])
 
   const handleClearScreen = useCallback(() => {
