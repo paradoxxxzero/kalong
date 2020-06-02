@@ -10,11 +10,9 @@ import {
   makeStyles,
 } from '@material-ui/core'
 import { useDispatch } from 'react-redux'
-import CloseIcon from '@material-ui/icons/Close'
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
-import EyeIcon from '@material-ui/icons/RemoveRedEye'
 import React, { useState, useCallback, memo } from 'react'
 import classnames from 'classnames'
+import { Close, RemoveRedEye, ExpandMore } from '@material-ui/icons'
 
 import { prettyTime } from '../util'
 import { removePromptAnswer, setActiveFrame } from '../actions'
@@ -82,7 +80,7 @@ export default memo(function Answer({
               })}
               onClick={handleExpand}
             >
-              <ExpandMoreIcon />
+              <ExpandMore />
             </IconButton>
             {command && <Chip label={command} />}
           </>
@@ -92,10 +90,10 @@ export default memo(function Answer({
         action={
           <>
             <IconButton onClick={handleView}>
-              <EyeIcon />
+              <RemoveRedEye />
             </IconButton>
             <IconButton onClick={handleClose}>
-              <CloseIcon />
+              <Close />
             </IconButton>
           </>
         }

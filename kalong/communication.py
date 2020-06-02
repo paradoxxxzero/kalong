@@ -133,8 +133,8 @@ async def communication_loop(frame, tb=None):
                     clear_step()
                 elif command == 'stop':
                     stop_trace(frame)
-                    await close_websocket()
-                    return
+                    # await close_websocket()
+                    # return
                 else:
                     add_step(command, frame)
                 stop = True

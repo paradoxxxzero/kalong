@@ -48,5 +48,6 @@ def stop_trace(frame):
 
 @atexit.register
 def cleanup():
+    stop_trace(sys._getframe())
     clean_websockets()
     clean_loops()

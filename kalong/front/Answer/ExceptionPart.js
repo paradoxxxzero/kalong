@@ -11,9 +11,8 @@ import {
   Typography,
   makeStyles,
 } from '@material-ui/core'
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import React, { useCallback } from 'react'
-import WarningIcon from '@material-ui/icons/Warning'
+import { Warning, ExpandMore } from '@material-ui/icons'
 
 import Inspectable from './Inspectable'
 import Snippet from '../Code/Snippet'
@@ -57,12 +56,12 @@ export default function Exception({
   return (
     <ExpansionPanel expanded={expanded} onChange={handleExpand}>
       <ExpansionPanelSummary
-        expandIcon={<ExpandMoreIcon />}
+        expandIcon={<ExpandMore />}
         className={classes.centered}
       >
         <Grid container direction="row" alignItems="center">
           <Typography className={classes.warn}>
-            <WarningIcon />
+            <Warning />
           </Typography>
           {subtype !== 'root' && (
             <Typography color="textSecondary" className={classes.cause}>

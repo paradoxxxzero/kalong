@@ -1,57 +1,69 @@
-import { Tooltip, makeStyles } from '@material-ui/core'
-import { useDispatch, useSelector } from 'react-redux'
-import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward'
-import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
-import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
-import IconButton from '@material-ui/core/IconButton'
-import ListItemIcon from '@material-ui/core/ListItemIcon'
-import Menu from '@material-ui/core/Menu'
-import MenuItem from '@material-ui/core/MenuItem'
-import MoreVertIcon from '@material-ui/icons/MoreVert'
-import PlayArrowIcon from '@material-ui/icons/PlayArrow'
+import {
+  IconButton,
+  ListItemIcon,
+  makeStyles,
+  Menu,
+  MenuItem,
+  Tooltip,
+} from '@material-ui/core'
+import Typography from '@material-ui/core/Typography'
+import {
+  ArrowDownward,
+  ArrowForward,
+  ArrowUpward,
+  Close,
+  MoreVert,
+  PlayArrow,
+  Redo,
+  SkipNext,
+} from '@material-ui/icons'
 import React, {
+  memo,
   useCallback,
   useLayoutEffect,
-  useState,
   useMemo,
-  memo,
+  useState,
 } from 'react'
-import RedoIcon from '@material-ui/icons/Redo'
-import StopIcon from '@material-ui/icons/Stop'
-import Typography from '@material-ui/core/Typography'
+import { useDispatch, useSelector } from 'react-redux'
 
-import { doCommand } from './actions'
+import { doCommand, setPrompt } from './actions'
+import { uid } from './util'
 
 const actions = [
   {
     label: 'Step Into function call',
     action: 'stepInto',
-    Icon: ArrowDownwardIcon,
+    Icon: ArrowDownward,
   },
   {
     label: 'Step to the next instruction',
     action: 'step',
-    Icon: ArrowForwardIcon,
+    Icon: ArrowForward,
   },
   {
     label: 'Step Out of the current function',
     action: 'stepOut',
-    Icon: ArrowUpwardIcon,
+    Icon: ArrowUpward,
   },
   {
     label: 'Step Until next line (bypass loops)',
     action: 'stepUntil',
-    Icon: RedoIcon,
+    Icon: Redo,
   },
   {
     label: 'Continue the program and stop at exceptions',
     action: 'continue',
-    Icon: PlayArrowIcon,
+    Icon: SkipNext,
   },
   {
-    label: 'Stop debugging',
+    label: 'Continue the program',
     action: 'stop',
-    Icon: StopIcon,
+    Icon: PlayArrow,
+  },
+  {
+    action: 'kill',
+    label: 'Close program',
+    Icon: Close,
   },
 ]
 
@@ -71,7 +83,10 @@ export default memo(function TopActions({ mobile }) {
   const handleCommand = useMemo(
     () =>
       actions.reduce((functions, { action }) => {
-        functions[action] = () => dispatch(doCommand(action))
+        functions[action] =
+          action === 'kill'
+            ? () => dispatch(setPrompt(uid(), 'import sys; sys.exit(1)'))
+            : () => dispatch(doCommand(action))
         return functions
       }, {}),
     [dispatch]
@@ -99,7 +114,7 @@ export default memo(function TopActions({ mobile }) {
           {mobile ? (
             <>
               <IconButton onClick={openMenu}>
-                <MoreVertIcon />
+                <MoreVert />
               </IconButton>
               <Menu anchorEl={menuEl} open={!!menuEl} onClose={closeMenu}>
                 {actions.map(({ label, action, Icon }) => (

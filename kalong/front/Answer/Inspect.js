@@ -9,13 +9,12 @@ import {
   Tabs,
   makeStyles,
 } from '@material-ui/core'
-import OpenInNewIcon from '@material-ui/icons/OpenInNew'
 import React, { useState, useCallback } from 'react'
 import SwipeableViews from 'react-swipeable-views'
 import classnames from 'classnames'
+import { OpenInNew } from '@material-ui/icons'
 
 import ClassBases from './ClassBases'
-import Code from '../Code'
 import Inspectable from './Inspectable'
 import Obj from './Obj'
 import Snippet from '../Code/Snippet'
@@ -158,8 +157,7 @@ export default function Inspect({ attributes, doc, source, infos }) {
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      {infos.fqn || infos.type}{' '}
-                      <OpenInNewIcon fontSize="small" />
+                      {infos.fqn || infos.type} <OpenInNew fontSize="small" />
                     </Link>
                   </TableCell>
                 </TableRow>

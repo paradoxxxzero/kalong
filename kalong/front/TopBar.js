@@ -1,12 +1,10 @@
-import { Tooltip, makeStyles } from '@material-ui/core'
+import { Tooltip, makeStyles, Menu } from '@material-ui/core'
 import AppBar from '@material-ui/core/AppBar'
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
-import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import IconButton from '@material-ui/core/IconButton'
-import MenuIcon from '@material-ui/icons/Menu'
 import React from 'react'
 import Toolbar from '@material-ui/core/Toolbar'
 import classnames from 'classnames'
+import { ChevronLeft, ChevronRight } from '@material-ui/icons'
 
 import TopActions from './TopActions'
 
@@ -63,12 +61,12 @@ export default function TopBar({
           >
             {!mobile && open ? (
               rtl ? (
-                <ChevronRightIcon />
+                <ChevronRight />
               ) : (
-                <ChevronLeftIcon />
+                <ChevronLeft />
               )
             ) : (
-              <MenuIcon />
+              <Menu />
             )}
           </IconButton>
         </Tooltip>

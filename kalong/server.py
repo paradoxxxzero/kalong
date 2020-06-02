@@ -83,6 +83,7 @@ async def websocket(request):
     if not config.detached and origin in request.app[other_side]:
         log.debug(f'Closing {other_side} due to {side} closing.')
         await request.app[other_side][origin].close()
+        del request.app[other_side][origin]
 
     maybe_bail(request.app)
     return ws

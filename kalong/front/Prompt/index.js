@@ -6,19 +6,19 @@ import {
   IconButton,
   makeStyles,
 } from '@material-ui/core'
-import ReactDOM from 'react-dom'
-import { useDispatch, useSelector } from 'react-redux'
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
+import { ExpandMore } from '@material-ui/icons'
+import classnames from 'classnames'
 import React, {
-  useReducer,
-  useEffect,
+  memo,
   useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
   useRef,
   useState,
-  useMemo,
-  memo,
 } from 'react'
-import classnames from 'classnames'
+import ReactDOM from 'react-dom'
+import { useDispatch, useSelector } from 'react-redux'
 
 import {
   clearScrollback,
@@ -29,12 +29,12 @@ import {
   setPrompt,
   setSuggestion,
 } from '../actions'
-import { lexArgs, splitDiff } from './utils'
-import { uid } from '../util'
 import Code from '../Code'
 import Highlight from '../Code/Highlight'
 import Hint from '../Code/Hint'
+import { uid } from '../util'
 import searchReducer, { initialSearch } from './searchReducer'
+import { lexArgs, splitDiff } from './utils'
 import valueReducer, { commandShortcuts, initialValue } from './valueReducer'
 
 const getHighlighter = re => ({
@@ -274,7 +274,7 @@ export default memo(function Prompt({ onScrollUp, onScrollDown }) {
 
   const handleDieIfEmpty = useCallback(() => {
     const key = uid()
-    dispatch(setPrompt(key, 'import sys; sys.exit(1)', null, null))
+    dispatch(setPrompt(key, 'import sys; sys.exit(1)'))
   }, [dispatch])
 
   const handleClearScreen = useCallback(() => {
@@ -455,7 +455,7 @@ export default memo(function Prompt({ onScrollUp, onScrollDown }) {
                 onClick={handleEnter}
                 disabled={!code.current || !code.current.getValue().length}
               >
-                <ExpandMoreIcon />
+                <ExpandMore />
               </IconButton>
               {prompt.command && (
                 <Chip label={prompt.command} onDelete={handleRemoveCommand} />

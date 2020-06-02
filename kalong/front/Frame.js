@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemText from '@material-ui/core/ListItemText'
 import React, { useCallback, memo } from 'react'
-import StarIcon from '@material-ui/icons/Star'
+import { Star } from '@material-ui/icons'
 
 import { setActiveFrame } from './actions'
 import Snippet from './Code/Snippet'
@@ -45,7 +45,7 @@ export default memo(function Frame({ frame, last }) {
         {frame.active && (
           <Tooltip title="Current Frame">
             <div>
-              <StarIcon fontSize="small" />
+              <Star fontSize="small" />
             </div>
           </Tooltip>
         )}

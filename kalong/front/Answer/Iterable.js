@@ -1,13 +1,15 @@
 import { IconButton, makeStyles } from '@material-ui/core'
 import React, { useCallback, useState, useEffect } from 'react'
-import UnfoldLessIcon from '@material-ui/icons/UnfoldLess'
-import UnfoldMoreIcon from '@material-ui/icons/UnfoldMore'
-import ExpandLessIcon from '@material-ui/icons/ExpandLess'
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
+import {
+  ExpandMore,
+  ExpandLess,
+  UnfoldLess,
+  UnfoldMore,
+} from '@material-ui/icons'
 
-import AnswerDispatch from './AnswerDispatch'
-import Inspectable from './Inspectable'
 import Snippet from '../Code/Snippet'
+import Inspectable from './Inspectable'
+import AnswerDispatch from './AnswerDispatch'
 
 const useStyles = makeStyles(theme => ({
   noWrap: {
@@ -52,9 +54,9 @@ export default function Iterable({ subtype, values, id }) {
       {!!values.length && (
         <IconButton onClick={handleFold} className={classes.expandButton}>
           {folded ? (
-            <UnfoldMoreIcon className={classes.expandIcon} />
+            <UnfoldMore className={classes.expandIcon} />
           ) : (
-            <UnfoldLessIcon className={classes.expandIcon} />
+            <UnfoldLess className={classes.expandIcon} />
           )}
         </IconButton>
       )}
@@ -87,9 +89,9 @@ export default function Iterable({ subtype, values, id }) {
       {!folded && (
         <IconButton onClick={handleExpand} className={classes.expandButton}>
           {expanded ? (
-            <ExpandLessIcon className={classes.expandIcon} />
+            <ExpandLess className={classes.expandIcon} />
           ) : (
-            <ExpandMoreIcon className={classes.expandIcon} />
+            <ExpandMore className={classes.expandIcon} />
           )}
         </IconButton>
       )}
