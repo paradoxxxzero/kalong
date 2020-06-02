@@ -143,6 +143,7 @@ export default memo(function Prompt({ onScrollUp, onScrollDown }) {
     addEventListener('click', handleGlobalFocus)
     return () => removeEventListener('click', handleGlobalFocus)
   }, [code])
+
   useEffect(() => {
     const handleGlobalEval = ({ keyCode }) => {
       if (keyCode !== 13) {
@@ -179,11 +180,18 @@ export default memo(function Prompt({ onScrollUp, onScrollDown }) {
     const key = uid()
     switch (prompt.command) {
       case 'inspect':
-        dispatch(requestInspectEval(key, prompt.value, prompt.command))
+        dispatch(
+          requestInspectEval(key, prompt.value, prompt.command, activeFrame)
+        )
         break
       case 'diff':
         dispatch(
-          requestDiffEval(key, ...splitDiff(prompt.value), prompt.command)
+          requestDiffEval(
+            key,
+            ...splitDiff(prompt.value),
+            prompt.command,
+            activeFrame
+          )
         )
         break
       default:
@@ -234,9 +242,9 @@ export default memo(function Prompt({ onScrollUp, onScrollDown }) {
         )
         return
       }
-      dispatch(requestSuggestion(prompt.value, from, to, cursor))
+      dispatch(requestSuggestion(prompt.value, from, to, cursor, activeFrame))
     },
-    [dispatch, prompt]
+    [activeFrame, dispatch, prompt.value]
   )
 
   const handleBackspace = useCallback(

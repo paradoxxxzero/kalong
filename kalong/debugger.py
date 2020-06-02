@@ -184,7 +184,7 @@ def serialize_inspect_eval(prompt, frame):
     return serialize_inspect(key, frame)
 
 
-def serialize_inspect(key, frame):
+def serialize_inspect(key):
     obj = obj_cache.get(key)
     attributes = [
         {'key': key, 'value': value, 'id': obj_cache.register(value)}

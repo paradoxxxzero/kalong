@@ -80,21 +80,23 @@ export const requestInspect = (key, id) => ({
 })
 
 export const REQUEST_INSPECT_EVAL = 'REQUEST_INSPECT_EVAL'
-export const requestInspectEval = (key, prompt, command) => ({
+export const requestInspectEval = (key, prompt, command, frame) => ({
   type: REQUEST_INSPECT_EVAL,
   key,
   prompt,
   command,
+  frame,
   remote: true,
 })
 
 export const REQUEST_DIFF_EVAL = 'REQUEST_DIFF_EVAL'
-export const requestDiffEval = (key, left, right, command) => ({
+export const requestDiffEval = (key, left, right, command, frame) => ({
   type: REQUEST_DIFF_EVAL,
   key,
   left,
   right,
   command,
+  frame,
   remote: true,
 })
 
@@ -113,12 +115,13 @@ export const clearScrollback = () => ({
 })
 
 export const REQUEST_SUGGESTION = 'REQUEST_SUGGESTION'
-export const requestSuggestion = (prompt, from, to, cursor) => ({
+export const requestSuggestion = (prompt, from, to, cursor, frame) => ({
   type: REQUEST_SUGGESTION,
   prompt,
   from,
   to,
   cursor,
+  frame,
   remote: true,
 })
 

@@ -28,6 +28,7 @@ export default function Inspectable({
     dispatch(requestInspect(uid(), id))
   }, [dispatch, id])
   const Component = type === 'chip' ? Chip : Button
+
   return (
     <Component
       onClick={handleClick}
