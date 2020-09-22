@@ -21,13 +21,14 @@ import ReactDOM from 'react-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
 import {
-  clearScrollback,
-  clearSuggestion,
-  requestDiffEval,
-  requestInspectEval,
-  requestSuggestion,
-  setPrompt,
-  setSuggestion,
+    clearScrollback,
+    clearSuggestion,
+    requestDiffEval,
+    requestInspectEval,
+    requestSuggestion,
+    setPrompt,
+    setSuggestion,
+    doCommand
 } from '../actions'
 import Code from '../Code'
 import Highlight from '../Code/Highlight'
@@ -273,9 +274,10 @@ export default memo(function Prompt({ onScrollUp, onScrollDown }) {
   }, [])
 
   const handleDieIfEmpty = useCallback(() => {
-    const key = uid()
-    dispatch(setPrompt(key, 'import sys; sys.exit(1)'))
-  }, [dispatch])
+    if (!prompt.value) {
+      dispatch(doCommand('kill'))
+    }
+  }, [dispatch, prompt.value])
 
   const handleClearScreen = useCallback(() => {
     dispatch(clearScrollback())

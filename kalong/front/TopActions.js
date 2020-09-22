@@ -14,6 +14,7 @@ import {
   Close,
   MoreVert,
   PlayArrow,
+  Pause,
   Redo,
   SkipNext,
 } from '@material-ui/icons'
@@ -27,8 +28,7 @@ import React, {
 } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { doCommand, setPrompt } from './actions'
-import { uid } from './util'
+import { doCommand } from './actions'
 
 const actions = [
   {
@@ -62,6 +62,12 @@ const actions = [
     key: 'F8'
   },
   {
+    label: 'Pause the program',
+    action: 'break',
+    Icon: Pause,
+    key: 'Shift+F8'
+  },
+  {
     label: 'Continue the program',
     action: 'stop',
     Icon: PlayArrow,
@@ -92,10 +98,7 @@ export default memo(function TopActions({ mobile }) {
   const handleCommand = useMemo(
     () =>
       actions.reduce((functions, { action }) => {
-        functions[action] =
-          action === 'kill'
-            ? () => dispatch(setPrompt(uid(), 'import sys; sys.exit(1)'))
-            : () => dispatch(doCommand(action))
+        functions[action] = () => dispatch(doCommand(action))
         return functions
       }, {}),
     [dispatch]
@@ -144,8 +147,8 @@ export default memo(function TopActions({ mobile }) {
                 <MoreVert />
               </IconButton>
               <Menu anchorEl={menuEl} open={!!menuEl} onClose={closeMenu}>
-                {actions.map(({ key, label, action, Icon }) => (
-                  <MenuItem key={action} onClick={handleCommand[action]} disabled={running}>
+                {actions.map(({ label, action, Icon }) => (
+                  <MenuItem key={action} onClick={handleCommand[action]} disabled={running && action !== 'break'}>
                     <ListItemIcon>
                       <Icon />
                     </ListItemIcon>
@@ -160,7 +163,7 @@ export default memo(function TopActions({ mobile }) {
             <div className={classes.steps}>
               {actions.map(({ key, label, action, Icon }) => (
                 <Tooltip key={action} title={`${label} [${key}]`}>
-                  <IconButton color="inherit" onClick={handleCommand[action]} disabled={running}>
+                  <IconButton color="inherit" onClick={handleCommand[action]} disabled={running && action !== 'break'}>
                     <Icon />
                   </IconButton>
                 </Tooltip>

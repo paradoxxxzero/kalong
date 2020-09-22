@@ -1,6 +1,8 @@
 import asyncio
 import json
 import logging
+import os
+import signal
 from itertools import chain
 from pathlib import Path
 
@@ -72,6 +74,18 @@ async def websocket(request):
             data = json.loads(msg.data)
             log.debug(f'{side} -> {other_side}: {data}')
             pair = await peer(request.app, other_side, origin)
+
+            if data["type"] == "DO_COMMAND":
+                if data["command"] in ["break", "kill"]:
+                    pid = int(origin.split("__")[1].split("--")[0])
+                    os.kill(
+                        pid,
+                        signal.SIGTERM
+                        if data["command"] == "kill"
+                        else signal.SIGUSR1,
+                    )
+                    continue
+
             await pair.send_json(data)
         elif msg.type == WSMsgType.ERROR:
             log.error(f'{side.title()} closed', exc_info=ws.exception())

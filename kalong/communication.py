@@ -17,7 +17,7 @@ from .debugger import (
 from .loops import run
 from .stepping import add_step, clear_step, stop_trace
 from .utils import basicConfig
-from .websockets import close_websocket, websocket
+from .websockets import websocket
 
 log = logging.getLogger(__name__)
 basicConfig(level=config.log_level)
@@ -134,8 +134,6 @@ async def communication_loop(frame, tb=None):
                     clear_step()
                 elif command == 'stop':
                     stop_trace(frame)
-                    # await close_websocket()
-                    # return
                 else:
                     add_step(command, frame)
                 stop = True

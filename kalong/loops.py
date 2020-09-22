@@ -1,5 +1,7 @@
 import asyncio
 import logging
+import signal
+import sys
 
 from .utils import current_origin
 
@@ -34,6 +36,20 @@ def clean_loops():
         loop.close()
 
 
+def stop():
+    for task in asyncio.Task.all_tasks():
+        task.cancel()
+
+
 def run(coro):
     loop = get_loop()
-    loop.run_until_complete(coro)
+    try:
+        loop.run_until_complete(coro)
+    except asyncio.exceptions.CancelledError:
+        from .websockets import die
+
+        log.info("Loop got cancelled")
+        die()
+        sys.exit(0)
+
+    loop.add_signal_handler(signal.SIGTERM, stop)

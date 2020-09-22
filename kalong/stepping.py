@@ -1,6 +1,7 @@
 import atexit
 import linecache
 import logging
+import signal
 import sys
 from functools import partial
 from pathlib import Path
@@ -48,6 +49,20 @@ def stop_trace(frame):
 
 @atexit.register
 def cleanup():
+    log.debug("Cleaning up at exit")
     stop_trace(sys._getframe())
     clean_websockets()
     clean_loops()
+
+
+sigusr1_handler = None
+
+
+def handle_sigusr1(*args, **kwargs):
+    log.info("Handling breakpoint on SIGUSR1")
+    start_trace(sys._getframe().f_back)
+    if sigusr1_handler not in (signal.SIG_IGN, signal.SIG_DFL):
+        sigusr1_handler(*args, **kwargs)
+
+
+sigusr1_handler = signal.signal(signal.SIGUSR1, handle_sigusr1)
