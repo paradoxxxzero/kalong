@@ -1,7 +1,7 @@
 import { CircularProgress, Paper, Tooltip, makeStyles } from '@material-ui/core'
 import { useSelector } from 'react-redux'
 import React from 'react'
-import classnames from 'classnames'
+import clsx from 'clsx'
 import green from '@material-ui/core/colors/green'
 import pink from '@material-ui/core/colors/pink'
 import red from '@material-ui/core/colors/red'
@@ -37,13 +37,13 @@ export default function GlobalIndicator({ className }) {
   if (connectionState === 'connecting') {
     indicator = (
       <CircularProgress
-        className={classnames(classes.loader, classes.connecting)}
+        className={clsx(classes.loader, classes.connecting)}
       />
     )
   } else if (connectionState === 'closed') {
     indicator = (
       <CircularProgress
-        className={classnames(classes.loader, classes.dead)}
+        className={clsx(classes.loader, classes.dead)}
         variant="static"
         value={100}
       />
@@ -52,13 +52,13 @@ export default function GlobalIndicator({ className }) {
     if (level > 0) {
       indicator = (
         <CircularProgress
-          className={classnames(classes.loader, classes.loading)}
+          className={clsx(classes.loader, classes.loading)}
         />
       )
     } else {
       indicator = (
         <CircularProgress
-          className={classnames(classes.loader, classes.allgood)}
+          className={clsx(classes.loader, classes.allgood)}
           variant="static"
           value={100}
         />
@@ -66,7 +66,7 @@ export default function GlobalIndicator({ className }) {
     }
   }
   return (
-    <Paper elevation={4} className={classnames(className, classes.paper)}>
+    <Paper elevation={4} className={clsx(className, classes.paper)}>
       <Tooltip title={`${level} pending request${level > 1 ? 's' : ''}.`}>
         {indicator}
       </Tooltip>

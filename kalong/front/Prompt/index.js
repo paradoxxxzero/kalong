@@ -7,7 +7,7 @@ import {
   makeStyles,
 } from '@material-ui/core'
 import { ExpandMore } from '@material-ui/icons'
-import classnames from 'classnames'
+import clsx from 'clsx'
 import React, {
   memo,
   useCallback,
@@ -449,7 +449,7 @@ export default memo(function Prompt({ onScrollUp, onScrollDown }) {
           avatar={
             <>
               <IconButton
-                className={classnames(classes.expand, {
+                className={clsx(classes.expand, {
                   [classes.expandOpen]: grow,
                 })}
                 onClick={handleEnter}
@@ -519,7 +519,7 @@ export default memo(function Prompt({ onScrollUp, onScrollDown }) {
               </Code>
               {search.value !== null && (
                 <label
-                  className={classnames(classes.dialog, {
+                  className={clsx(classes.dialog, {
                     [classes.notFound]: search.notFound,
                   })}
                 >

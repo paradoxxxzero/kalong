@@ -1,7 +1,7 @@
 import { makeStyles } from '@material-ui/core'
 import { useSelector } from 'react-redux'
 import React, { useRef, useCallback, useEffect, memo } from 'react'
-import classnames from 'classnames'
+import clsx from 'clsx'
 
 import Answer from './Answer'
 import Prompt from './Prompt'
@@ -29,7 +29,7 @@ export default memo(function Terminal({ className }) {
     scroller.current.scrollTop = scroller.current.scrollHeight
   })
   return (
-    <div className={classnames(classes.scrollback, className)} ref={scroller}>
+    <div className={clsx(classes.scrollback, className)} ref={scroller}>
       {scrollback.map(({ key, ...props }) => (
         <Answer key={key} uid={key} {...props} />
       ))}

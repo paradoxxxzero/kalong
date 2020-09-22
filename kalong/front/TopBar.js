@@ -3,7 +3,7 @@ import AppBar from '@material-ui/core/AppBar'
 import IconButton from '@material-ui/core/IconButton'
 import React from 'react'
 import Toolbar from '@material-ui/core/Toolbar'
-import classnames from 'classnames'
+import clsx from 'clsx'
 import { ChevronLeft, ChevronRight } from '@material-ui/icons'
 import { useSelector } from 'react-redux'
 
@@ -52,7 +52,7 @@ export default function TopBar({
     <MuiThemeProvider theme={muiThemes[theme]}>
       <AppBar
         position="fixed"
-        className={classnames(classes.appBar, {
+        className={clsx(classes.appBar, {
           [classes.appBarShift]: open && !mobile,
         })}
       >

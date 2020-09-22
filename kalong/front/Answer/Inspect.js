@@ -11,7 +11,7 @@ import {
 } from '@material-ui/core'
 import React, { useState, useCallback } from 'react'
 import SwipeableViews from 'react-swipeable-views'
-import classnames from 'classnames'
+import clsx from 'clsx'
 import { OpenInNew } from '@material-ui/icons'
 
 import ClassBases from './ClassBases'
@@ -205,10 +205,10 @@ export default function Inspect({ attributes, doc, source, infos }) {
             </Table>
           </div>
         ))}
-        <div className={classnames(classes.tabContent, classes.doc)}>
+        <div className={clsx(classes.tabContent, classes.doc)}>
           <Snippet value={doc} mode={null} />
         </div>
-        <div className={classnames(classes.tabContent, classes.source)}>
+        <div className={clsx(classes.tabContent, classes.source)}>
           <Snippet value={source} />
         </div>
       </SwipeableViews>

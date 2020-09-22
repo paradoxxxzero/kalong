@@ -3,7 +3,7 @@ import Divider from '@material-ui/core/Divider'
 import Drawer from '@material-ui/core/Drawer'
 import React from 'react'
 import Typography from '@material-ui/core/Typography'
-import classnames from 'classnames'
+import clsx from 'clsx'
 
 import Frames from './Frames'
 
@@ -65,12 +65,12 @@ export default function SideDrawer({ rtl, open, mobile, onDrawerClose }) {
   const classes = useStyles()
   return (
     <Drawer
-      className={classnames(classes.drawer, {
+      className={clsx(classes.drawer, {
         [classes.drawerOpen]: open,
         [classes.drawerClose]: !open,
       })}
       classes={{
-        paper: classnames({
+        paper: clsx({
           [classes.drawerOpen]: open,
           [classes.drawerClose]: !open,
         }),

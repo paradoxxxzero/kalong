@@ -1,7 +1,7 @@
 import { Button, Chip, makeStyles } from '@material-ui/core'
 import { useDispatch } from 'react-redux'
 import React, { useCallback } from 'react'
-import classnames from 'classnames'
+import clsx from 'clsx'
 
 import { requestInspect } from '../actions'
 import { uid } from '../util'
@@ -32,7 +32,7 @@ export default function Inspectable({
   return (
     <Component
       onClick={handleClick}
-      className={classnames(classes[type || 'button'], className)}
+      className={clsx(classes[type || 'button'], className)}
       {...props}
     >
       {children}

@@ -11,7 +11,7 @@ import {
 } from '@material-ui/core'
 import { useDispatch } from 'react-redux'
 import React, { useState, useCallback, memo } from 'react'
-import classnames from 'classnames'
+import clsx from 'clsx'
 import { Close, RemoveRedEye, ExpandMore } from '@material-ui/icons'
 
 import { prettyTime } from '../util'
@@ -75,7 +75,7 @@ export default memo(function Answer({
         avatar={
           <>
             <IconButton
-              className={classnames(classes.expand, {
+              className={clsx(classes.expand, {
                 [classes.expandOpen]: expanded,
               })}
               onClick={handleExpand}

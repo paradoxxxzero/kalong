@@ -1,6 +1,6 @@
 import { makeStyles } from '@material-ui/core'
 import React, { useRef, useEffect } from 'react'
-import classnames from 'classnames'
+import clsx from 'clsx'
 
 import CodeMirror from './codemirror'
 
@@ -37,7 +37,7 @@ export default function Snippet({
   return (
     <code
       ref={code}
-      className={classnames(
+      className={clsx(
         `cm-s-${theme}`,
         classes.snippet,
         className,

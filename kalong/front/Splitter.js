@@ -1,7 +1,7 @@
 import { makeStyles } from '@material-ui/core'
 import ClickAwayListener from '@material-ui/core/ClickAwayListener'
 import React, { useRef, useState, useCallback } from 'react'
-import classnames from 'classnames'
+import clsx from 'clsx'
 
 const useStyles = makeStyles(theme => ({
   wrapper: {
@@ -103,7 +103,7 @@ export default function Splitter({ children, className, vertical }) {
 
   return (
     <div
-      className={classnames(
+      className={clsx(
         className,
         classes.wrapper,
         vertical ? classes.vertical : classes.horizontal
@@ -127,7 +127,7 @@ export default function Splitter({ children, className, vertical }) {
       </div>
       <ClickAwayListener onClickAway={handleTouchEnd}>
         <div
-          className={classnames(
+          className={clsx(
             classes.divider,
             vertical ? classes.verticalDivider : classes.horizontalDivider
           )}

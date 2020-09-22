@@ -1,6 +1,6 @@
 import { makeStyles } from '@material-ui/core'
 import React from 'react'
-import classnames from 'classnames'
+import clsx from 'clsx'
 
 import Inspectable from './Inspectable'
 
@@ -56,12 +56,12 @@ export default function ClassBases({
       {!root && (
         <div className={classes.backLiner}>
           <div
-            className={classnames(classes.backLinerTop, {
+            className={clsx(classes.backLinerTop, {
               [classes.noLeftLiner]: first,
             })}
           />
           <div
-            className={classnames(classes.backLinerBottom, {
+            className={clsx(classes.backLinerBottom, {
               [classes.noLeftLiner]: last,
             })}
           />

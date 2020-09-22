@@ -3,7 +3,7 @@ import { tinycolor } from '@thebespokepixel/es-tinycolor'
 import { useDispatch, useSelector } from 'react-redux'
 import React, { useEffect, memo } from 'react'
 import blueGrey from '@material-ui/core/colors/blueGrey'
-import classnames from 'classnames'
+import clsx from 'clsx'
 
 import { getFile } from './actions'
 import { range } from './util'
@@ -53,7 +53,7 @@ export default memo(function Source({ currentFile, className }) {
   }
   return (
     <Code
-      className={classnames(classes.source, className)}
+      className={clsx(classes.source, className)}
       readOnly
       lineNumbers
       lineWrapping

@@ -1,6 +1,6 @@
 import { makeStyles } from '@material-ui/core'
 import React, { useRef, useLayoutEffect, useState } from 'react'
-import classnames from 'classnames'
+import clsx from 'clsx'
 
 import CodeMirror from './codemirror'
 
@@ -295,7 +295,7 @@ function Code(
   })
 
   return (
-    <div ref={root} className={classnames(className, classes.code)}>
+    <div ref={root} className={clsx(className, classes.code)}>
       {codeMirror && (
         <CodeContext.Provider value={codeMirror}>
           {children}
