@@ -1,12 +1,14 @@
-import { Tooltip, makeStyles, Menu } from '@material-ui/core'
+import { Tooltip, makeStyles, Menu, MuiThemeProvider } from '@material-ui/core'
 import AppBar from '@material-ui/core/AppBar'
 import IconButton from '@material-ui/core/IconButton'
 import React from 'react'
 import Toolbar from '@material-ui/core/Toolbar'
 import classnames from 'classnames'
 import { ChevronLeft, ChevronRight } from '@material-ui/icons'
+import { useSelector } from 'react-redux'
 
 import TopActions from './TopActions'
+import { muiThemes } from './ThemedApp'
 
 const drawerWidth = 240
 
@@ -45,33 +47,36 @@ export default function TopBar({
   onDrawerClose,
 }) {
   const classes = useStyles()
+  const theme = useSelector(state => state.theme)
   return (
-    <AppBar
-      position="fixed"
-      className={classnames(classes.appBar, {
-        [classes.appBarShift]: open && !mobile,
-      })}
-    >
-      <Toolbar>
-        <Tooltip title={`${open ? 'Close' : 'Open'} the call stack`}>
-          <IconButton
-            color="inherit"
-            onClick={open ? onDrawerClose : onDrawerOpen}
-            className={classes.menuButton}
-          >
-            {!mobile && open ? (
-              rtl ? (
-                <ChevronRight />
-              ) : (
-                <ChevronLeft />
-              )
-            ) : (
-              <Menu />
-            )}
-          </IconButton>
-        </Tooltip>
-        <TopActions mobile={mobile} />
-      </Toolbar>
-    </AppBar>
+    <MuiThemeProvider theme={muiThemes[theme]}>
+      <AppBar
+        position="fixed"
+        className={classnames(classes.appBar, {
+          [classes.appBarShift]: open && !mobile,
+        })}
+      >
+        <Toolbar>
+          <Tooltip title={`${open ? 'Close' : 'Open'} the call stack`}>
+            <IconButton
+              color="inherit"
+              onClick={open ? onDrawerClose : onDrawerOpen}
+              className={classes.menuButton}
+            >
+              {!mobile && open ? (
+                rtl ? (
+                  <ChevronRight />
+                  ) : (
+                    <ChevronLeft />
+                    )
+                    ) : (
+                      <Menu />
+                      )}
+            </IconButton>
+          </Tooltip>
+          <TopActions mobile={mobile} />
+        </Toolbar>
+      </AppBar>
+    </MuiThemeProvider>
   )
 }

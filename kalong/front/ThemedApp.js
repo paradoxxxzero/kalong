@@ -1,6 +1,5 @@
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core'
 import React from 'react'
-import { useSelector } from 'react-redux'
 import green from '@material-ui/core/colors/green'
 import grey from '@material-ui/core/colors/grey'
 import brown from '@material-ui/core/colors/brown'
@@ -11,7 +10,7 @@ import App from './App'
 
 const base = {}
 
-const muiThemes = {
+export const muiThemes = {
   init: createMuiTheme({ ...base, palette: { primary: { main: brown[500] } } }),
   line: createMuiTheme({ ...base, palette: { primary: { main: green[600] } } }),
   call: createMuiTheme({ ...base, palette: { primary: { main: green[400] } } }),
@@ -31,9 +30,8 @@ const muiThemes = {
 }
 
 export default function ThemedApp() {
-  const theme = useSelector(state => state.theme)
   return (
-    <MuiThemeProvider theme={muiThemes[theme]}>
+    <MuiThemeProvider theme={muiThemes.line}>
       <App />
     </MuiThemeProvider>
   )

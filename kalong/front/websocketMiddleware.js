@@ -22,6 +22,7 @@ export default store => {
 
   ws.onmessage = ({ data }) => {
     const action = JSON.parse(data)
+    // console.log(action.type, action)
     store.dispatch(action)
   }
 

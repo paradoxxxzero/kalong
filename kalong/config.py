@@ -3,7 +3,7 @@ import os
 from argparse import REMAINDER, ArgumentParser
 
 defaults = {
-    'server': True,
+    'server': False,
     'protocol': 'http',
     'host': 'localhost',
     'port': 59999,
