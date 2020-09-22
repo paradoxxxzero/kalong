@@ -101,8 +101,9 @@ export default memo(function TopActions({ mobile }) {
   )
 
   useEffect(() => {
-    const handleGlobalActions = ({ shiftKey, code }) => {
-      if (shiftKey) {
+    const handleGlobalActions = evt => {
+      let { code } = evt
+      if (evt.shiftKey) {
         code = `Shift+${code}`
       }
       const action = actions.find(({ key }) => code === key)
@@ -110,6 +111,7 @@ export default memo(function TopActions({ mobile }) {
         return
       }
       handleCommand[action.action]()
+      evt.preventDefault()
     }
     addEventListener('keydown', handleGlobalActions)
     return () => removeEventListener('keydown', handleGlobalActions)
