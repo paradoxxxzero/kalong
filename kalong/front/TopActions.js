@@ -85,6 +85,7 @@ const useStyles = makeStyles({
 export default memo(function TopActions({ mobile }) {
   const title = useSelector(state => state.title)
   const frames = useSelector(state => state.frames)
+  const running = useSelector(state => state.running)
   const dispatch = useDispatch()
   const classes = useStyles()
   const [menuEl, setMenuEl] = useState(null)
@@ -144,12 +145,12 @@ export default memo(function TopActions({ mobile }) {
               </IconButton>
               <Menu anchorEl={menuEl} open={!!menuEl} onClose={closeMenu}>
                 {actions.map(({ key, label, action, Icon }) => (
-                  <MenuItem key={action} onClick={handleCommand[action]}>
+                  <MenuItem key={action} onClick={handleCommand[action]} disabled={running}>
                     <ListItemIcon>
                       <Icon />
                     </ListItemIcon>
                     <Typography variant="inherit" noWrap>
-                      {label} [{key}]
+                      {label}
                     </Typography>
                   </MenuItem>
                 ))}
@@ -159,7 +160,7 @@ export default memo(function TopActions({ mobile }) {
             <div className={classes.steps}>
               {actions.map(({ key, label, action, Icon }) => (
                 <Tooltip key={action} title={`${label} [${key}]`}>
-                  <IconButton color="inherit" onClick={handleCommand[action]}>
+                  <IconButton color="inherit" onClick={handleCommand[action]} disabled={running}>
                     <Icon />
                   </IconButton>
                 </Tooltip>
