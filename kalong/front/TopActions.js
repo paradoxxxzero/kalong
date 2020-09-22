@@ -20,6 +20,7 @@ import {
 import React, {
   memo,
   useCallback,
+  useEffect,
   useLayoutEffect,
   useMemo,
   useState,
@@ -34,36 +35,43 @@ const actions = [
     label: 'Step Into function call',
     action: 'stepInto',
     Icon: ArrowDownward,
+    key: 'F11'
   },
   {
     label: 'Step to the next instruction',
     action: 'step',
     Icon: ArrowForward,
+    key: 'F9'
   },
   {
     label: 'Step Out of the current function',
     action: 'stepOut',
     Icon: ArrowUpward,
+    key: 'Shift+F11'
   },
   {
     label: 'Step Until next line (bypass loops)',
     action: 'stepUntil',
     Icon: Redo,
+    key: 'F10'
   },
   {
     label: 'Continue the program and stop at exceptions',
     action: 'continue',
     Icon: SkipNext,
+    key: 'F8'
   },
   {
     label: 'Continue the program',
     action: 'stop',
     Icon: PlayArrow,
+    key: 'F12'
   },
   {
     action: 'kill',
     label: 'Close program',
     Icon: Close,
+    key: 'F13'
   },
 ]
 
@@ -92,6 +100,22 @@ export default memo(function TopActions({ mobile }) {
     [dispatch]
   )
 
+  useEffect(() => {
+    const handleGlobalActions = ({ shiftKey, code }) => {
+      if (shiftKey) {
+        code = `Shift+${code}`
+      }
+      const action = actions.find(({ key }) => code === key)
+      if (!action) {
+        return
+      }
+      handleCommand[action.action]()
+    }
+    addEventListener('keydown', handleGlobalActions)
+    return () => removeEventListener('keydown', handleGlobalActions)
+  }, [handleCommand])
+
+
   const closeMenu = useCallback(() => setMenuEl(null), [])
   const openMenu = useCallback(
     ({ currentTarget }) => setMenuEl(currentTarget),
@@ -117,13 +141,13 @@ export default memo(function TopActions({ mobile }) {
                 <MoreVert />
               </IconButton>
               <Menu anchorEl={menuEl} open={!!menuEl} onClose={closeMenu}>
-                {actions.map(({ label, action, Icon }) => (
+                {actions.map(({ key, label, action, Icon }) => (
                   <MenuItem key={action} onClick={handleCommand[action]}>
                     <ListItemIcon>
                       <Icon />
                     </ListItemIcon>
                     <Typography variant="inherit" noWrap>
-                      {label}
+                      {label} [{key}]
                     </Typography>
                   </MenuItem>
                 ))}
@@ -131,8 +155,8 @@ export default memo(function TopActions({ mobile }) {
             </>
           ) : (
             <div className={classes.steps}>
-              {actions.map(({ label, action, Icon }) => (
-                <Tooltip key={action} title={label}>
+              {actions.map(({ key, label, action, Icon }) => (
+                <Tooltip key={action} title={`${label} [${key}]`}>
                   <IconButton color="inherit" onClick={handleCommand[action]}>
                     <Icon />
                   </IconButton>
