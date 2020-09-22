@@ -1,3 +1,8 @@
+export const PAUSE = 'PAUSE'
+export const pause = () => ({
+  type: PAUSE,
+})
+
 export const SET_TITLE = 'SET_TITLE'
 export const setTitle = title => ({
   type: SET_TITLE,

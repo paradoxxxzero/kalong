@@ -4,6 +4,7 @@ import { useTheme } from '@material-ui/core/styles'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import React, { useState, useEffect, useCallback } from 'react'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
+import clsx from 'clsx'
 
 import FiraCode from './font/FiraCode-Regular.otf'
 import FiraCodeBold from './font/FiraCode-Bold.otf'
@@ -19,6 +20,10 @@ const useStyles = makeStyles({
     height: '100vh',
     justifyContent: 'center',
     fontVariant: 'oldstyle-nums',
+    transition: 'filter 500ms ease-in'
+  },
+  mute: {
+    filter: 'grayscale(100%)'
   },
   content: {
     flexGrow: 1,
@@ -59,6 +64,7 @@ export default function App() {
   const classes = useStyles()
   const theme = useTheme()
   const mobile = useMediaQuery(theme.breakpoints.down('sm'))
+  const running = useSelector(state => state.running)
   const frames = useSelector(state => state.frames)
   const [open, setOpen] = useState(!mobile)
   useEffect(
@@ -70,7 +76,7 @@ export default function App() {
   const openDrawer = useCallback(() => setOpen(true), [])
   const closeDrawer = useCallback(() => setOpen(false), [])
   return (
-    <div className={classes.root}>
+    <div className={clsx(classes.root, { [classes.mute]: running })}>
       <CssBaseline />
       <TopBar
         mobile={mobile}

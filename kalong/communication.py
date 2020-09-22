@@ -40,6 +40,7 @@ def initiate(event, frame, arg):
         title = 'Shell'
     run(
         send_once(
+            {'type': 'PAUSE'},
             {'type': 'SET_THEME', 'theme': event},
             {'type': 'SET_TITLE', 'title': title},
             {

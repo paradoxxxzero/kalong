@@ -1,21 +1,23 @@
 import { combineReducers } from 'redux'
 
 import {
-  CLEAR_SCROLLBACK,
-  CLEAR_SUGGESTION,
-  REMOVE_PROMPT_ANSWER,
-  REQUEST_DIFF_EVAL,
-  REQUEST_INSPECT,
-  REQUEST_INSPECT_EVAL,
-  SET_ACTIVE_FRAME,
-  SET_CONNECTION_STATE,
-  SET_ANSWER,
-  SET_FILE,
-  SET_FRAMES,
-  SET_PROMPT,
-  SET_SUGGESTION,
-  SET_THEME,
-  SET_TITLE,
+    CLEAR_SCROLLBACK,
+    CLEAR_SUGGESTION,
+    REMOVE_PROMPT_ANSWER,
+    REQUEST_DIFF_EVAL,
+    REQUEST_INSPECT,
+    REQUEST_INSPECT_EVAL,
+    SET_ACTIVE_FRAME,
+    SET_CONNECTION_STATE,
+    SET_ANSWER,
+    SET_FILE,
+    SET_FRAMES,
+    SET_PROMPT,
+    SET_SUGGESTION,
+    SET_THEME,
+    SET_TITLE,
+    DO_COMMAND,
+    PAUSE
 } from './actions'
 
 const title = (state = 'Initializing', action) => {
@@ -125,6 +127,18 @@ const loadingLevel = (state = 0, action) => {
   return state
 }
 
+const running = (state = true, action) => {
+  if (action.type === DO_COMMAND) {
+    // Do a stepping command, python will resume
+    return true
+  }
+  if (action.type === PAUSE) {
+    // Start interaction, python is paused
+    return false
+  }
+  return state
+}
+
 const history = (state = [], action) => {
   switch (action.type) {
     case SET_PROMPT:
@@ -188,4 +202,5 @@ export default combineReducers({
   theme,
   connection,
   loadingLevel,
+  running,
 })
