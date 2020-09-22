@@ -28,6 +28,7 @@ class capture_display(object):
     def hook(self, obj):
         if obj is not None:
             self.answer.append(walk_obj(obj, set()))
+        globals()["_"] = obj
 
 
 class capture_std(object):

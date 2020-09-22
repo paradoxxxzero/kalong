@@ -87,7 +87,6 @@ def serialize_frames(current_frame, current_tb):
 
 
 def serialize_answer(prompt, frame):
-    # TODO: Get last id from client and set _ = eval(id)
     prompt = prompt.strip()
     duration = 0
     answer = []
