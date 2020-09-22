@@ -23,6 +23,7 @@ def trace(origin, frame, event, arg):
     if stepping:
         type = stepping.get('type')
         originalFrame = stepping.get('frame')
+        lno = stepping.get('lno')
     else:
         type = None
     filename = frame.f_code.co_filename
@@ -60,10 +61,7 @@ def trace(origin, frame, event, arg):
         # StepUntil: Stepping only if line number is greater than previously
         or (
             type == 'stepUntil'
-            and (
-                frame != originalFrame
-                or frame.f_lineno > originalFrame.f_lineno
-            )
+            and (frame != originalFrame or frame.f_lineno > lno)
         )
         # StepOut: Stepping only if we are returning or in the parent frame
         or (
