@@ -19,6 +19,8 @@ fork_lock = Lock()
 websockets = {}
 sessions = {}
 
+websocket_options = {"max_msg_size": 1024 * 1024 * 1024}
+
 
 async def websocket():
     # Here we get the magic cookie of our current thread in current pid
@@ -36,7 +38,9 @@ async def websocket():
 
     with fork_lock:
         try:
-            ws = await sessions[origin].ws_connect(url('back'))
+            ws = await sessions[origin].ws_connect(
+                url('back'), **websocket_options
+            )
             log.info('Found existing kalong server')
         except ClientConnectorError:
             # If there are no server available, fork one
@@ -45,7 +49,9 @@ async def websocket():
             for delay in [0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2, 5, 10]:
                 await asyncio.sleep(delay, loop=get_loop())
                 try:
-                    ws = await sessions[origin].ws_connect(url('back'))
+                    ws = await sessions[origin].ws_connect(
+                        url('back'), **websocket_options
+                    )
                     break
                 except ClientConnectorError:
                     pass

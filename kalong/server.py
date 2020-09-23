@@ -12,6 +12,7 @@ from aiohttp.web_runner import GracefulExit
 from . import config
 from .errors import NoClientFoundError
 from .utils import basicConfig, USER_SIGNAL
+from .websockets import websocket_options
 
 log = logging.getLogger(__name__)
 basicConfig(level=config.log_level)
@@ -55,7 +56,7 @@ async def websocket(request):
     side = request.match_info['side']
     other_side = 'back' if side == 'front' else 'front'
     origin = request.match_info['origin']
-    ws = web.WebSocketResponse()
+    ws = web.WebSocketResponse(**websocket_options)
 
     state = ws.can_prepare(request)
     if not state.ok:
