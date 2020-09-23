@@ -20,10 +20,10 @@ const useStyles = makeStyles({
     height: '100vh',
     justifyContent: 'center',
     fontVariant: 'oldstyle-nums',
-    transition: 'filter 500ms ease-in'
+    transition: 'filter 500ms ease-in',
   },
   mute: {
-    filter: 'grayscale(100%)'
+    filter: 'grayscale(100%)',
   },
   content: {
     flexGrow: 1,

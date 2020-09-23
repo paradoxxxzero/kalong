@@ -36,9 +36,7 @@ export default function GlobalIndicator({ className }) {
   let indicator
   if (connectionState === 'connecting') {
     indicator = (
-      <CircularProgress
-        className={clsx(classes.loader, classes.connecting)}
-      />
+      <CircularProgress className={clsx(classes.loader, classes.connecting)} />
     )
   } else if (connectionState === 'closed') {
     indicator = (
@@ -51,9 +49,7 @@ export default function GlobalIndicator({ className }) {
   } else if (connectionState === 'open') {
     if (level > 0) {
       indicator = (
-        <CircularProgress
-          className={clsx(classes.loader, classes.loading)}
-        />
+        <CircularProgress className={clsx(classes.loader, classes.loading)} />
       )
     } else {
       indicator = (

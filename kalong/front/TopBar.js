@@ -66,12 +66,12 @@ export default function TopBar({
               {!mobile && open ? (
                 rtl ? (
                   <ChevronRight />
-                  ) : (
-                    <ChevronLeft />
-                    )
-                    ) : (
-                      <Menu />
-                      )}
+                ) : (
+                  <ChevronLeft />
+                )
+              ) : (
+                <Menu />
+              )}
             </IconButton>
           </Tooltip>
           <TopActions mobile={mobile} />

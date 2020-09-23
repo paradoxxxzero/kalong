@@ -21,14 +21,14 @@ import ReactDOM from 'react-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
 import {
-    clearScrollback,
-    clearSuggestion,
-    requestDiffEval,
-    requestInspectEval,
-    requestSuggestion,
-    setPrompt,
-    setSuggestion,
-    doCommand
+  clearScrollback,
+  clearSuggestion,
+  requestDiffEval,
+  requestInspectEval,
+  requestSuggestion,
+  setPrompt,
+  setSuggestion,
+  doCommand,
 } from '../actions'
 import Code from '../Code'
 import Highlight from '../Code/Highlight'
@@ -141,8 +141,8 @@ export default memo(function Prompt({ onScrollUp, onScrollDown }) {
         }
       }
     }
-    addEventListener('click', handleGlobalFocus)
-    return () => removeEventListener('click', handleGlobalFocus)
+    window.addEventListener('click', handleGlobalFocus)
+    return () => window.removeEventListener('click', handleGlobalFocus)
   }, [code])
 
   useEffect(() => {
@@ -156,8 +156,8 @@ export default memo(function Prompt({ onScrollUp, onScrollDown }) {
         dispatch(requestInspectEval(key, selection))
       }
     }
-    addEventListener('keydown', handleGlobalEval)
-    return () => removeEventListener('keydown', handleGlobalEval)
+    window.addEventListener('keydown', handleGlobalEval)
+    return () => window.removeEventListener('keydown', handleGlobalEval)
   }, [dispatch])
 
   const handleChange = useCallback(
