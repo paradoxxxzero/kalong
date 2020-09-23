@@ -13,3 +13,4 @@ lib/
 coverage/
 kalong/assets/
 yarn-error.log
+dist/

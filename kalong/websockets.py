@@ -2,7 +2,6 @@ import asyncio
 import logging
 import os
 import webbrowser
-from itertools import chain
 from threading import Lock
 
 from aiohttp import ClientSession

@@ -49,3 +49,7 @@ exclude = '''
   | dist
 )/
 '''
+
+[tool.flit.sdist]
+include = ["kalong/assets/"]
+exclude = [".*", "test.py", "tools", "kalong/front", "yarn.lock", "package.json", "webpack.config.babel.js", "examples"]
