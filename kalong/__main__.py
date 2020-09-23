@@ -4,6 +4,7 @@ from subprocess import run
 
 from . import config, run_file, shell
 
+os.environ["PYTHONBREAKPOINT"] = "kalong.breakpoint"
 config.from_args()
 
 if config.server:
