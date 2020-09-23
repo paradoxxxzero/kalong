@@ -91,6 +91,7 @@ def serialize_answer(prompt, frame):
     duration = 0
     answer = []
     f_locals = dict(frame.f_locals)
+    f_locals["_current_frame"] = frame
     with capture_exception(answer), capture_display(answer), capture_std(
         answer
     ):
@@ -111,6 +112,7 @@ def serialize_answer(prompt, frame):
             except Exception:
                 # handle ex
                 sys.excepthook(*sys.exc_info())
+            del f_locals["_current_frame"]
             sync_locals(frame, f_locals)
         duration = int((time.time() - start) * 1000 * 1000 * 1000)
 

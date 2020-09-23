@@ -17,7 +17,7 @@ from .debugger import (
 from .loops import run
 from .stepping import add_step, clear_step, stop_trace
 from .utils import basicConfig
-from .websockets import websocket
+from .websockets import websocket, die
 
 log = logging.getLogger(__name__)
 basicConfig(level=config.log_level)
@@ -45,7 +45,11 @@ def initiate(event, frame, arg):
             {'type': 'SET_TITLE', 'title': title},
             {
                 'type': 'SET_FRAMES',
-                'frames': list(serialize_frames(frame, None))
+                'frames': list(
+                    serialize_frames(
+                        frame, arg[2] if event == "exception" else None
+                    )
+                )
                 if event != 'shell'
                 else [],
             },
@@ -130,10 +134,13 @@ async def communication_loop(frame, tb=None):
             elif data['type'] == 'DO_COMMAND':
                 command = data['command']
                 response = {'type': 'ACK', 'command': command}
-                if command == 'continue':
+                if command == 'run':
                     clear_step()
-                elif command == 'stop':
                     stop_trace(frame)
+                elif command == 'stop':
+                    clear_step()
+                    stop_trace(frame)
+                    die()
                 else:
                     add_step(command, frame)
                 stop = True

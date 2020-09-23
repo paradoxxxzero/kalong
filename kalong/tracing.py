@@ -15,18 +15,27 @@ kalong_dir = str(Path(__file__).resolve().parent)
 
 def trace(origin, frame, event, arg):
     stepping = steppings.get(origin)
+    if not stepping:
+        return
 
-    if not stepping and event != 'exception':
-        # Continue tracing in case of exception
+    type = stepping.get('type')
+    originalFrame = stepping.get('frame')
+    lno = stepping.get('lno')
+    filename = frame.f_code.co_filename
+
+    # If we are tracing, we continue tracing if this is not an exception
+    if type == "trace" and event != "exception":
         return sys.gettrace()
 
-    if stepping:
-        type = stepping.get('type')
-        originalFrame = stepping.get('frame')
-        lno = stepping.get('lno')
-    else:
-        type = None
-    filename = frame.f_code.co_filename
+    # If we are continuing, don't trace anything but current frame
+    if type == "continue":
+        if frame == originalFrame:
+            # Continue tracing current frame
+            if event != "exception":
+                return sys.gettrace()
+        else:
+            # Stop tracing if below
+            return
 
     # When we are in _shutdown of thread, program is finished
     if (
@@ -52,8 +61,10 @@ def trace(origin, frame, event, arg):
         return
 
     if (
-        # No stepping: exception
-        not type
+        # Trace: This is an exception: stop
+        type == 'trace'
+        # Continue: This is an exception at current frame: stop
+        or type == 'continue'
         # Step: Normal stepping
         or type == 'step'
         # StepInto: Stepping normally in new frame as well
@@ -76,6 +87,6 @@ def trace(origin, frame, event, arg):
         # Inform clients
         initiate(event, frame, arg)
         # Enter the websocket communication loop that pauses the execution
-        communicate(frame)
+        communicate(frame, arg[2] if event == "exception" else None)
 
     return sys.gettrace()

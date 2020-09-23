@@ -16,68 +16,92 @@ import {
   PlayArrow,
   Pause,
   Redo,
-  SkipNext,
 } from '@material-ui/icons'
 import React, {
   memo,
   useCallback,
   useEffect,
   useLayoutEffect,
-  useMemo,
   useState,
 } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { doCommand } from './actions'
+import { SkipNext } from '@material-ui/icons'
+import { FastForward } from '@material-ui/icons'
+import { Eject } from '@material-ui/icons'
 
-const actions = [
-  {
-    label: 'Step Into function call',
-    action: 'stepInto',
-    Icon: ArrowDownward,
-    key: 'F11'
-  },
+const actions = running => [
+  running
+    ? {
+        label: 'Pause the program',
+        action: 'pause',
+        Icon: Pause,
+        key: 'F8',
+        disabled: false,
+      }
+    : {
+        label: 'Continue the program',
+        action: 'continue',
+        Icon: PlayArrow,
+        key: 'F8',
+        disabled: false,
+      },
   {
     label: 'Step to the next instruction',
     action: 'step',
     Icon: ArrowForward,
-    key: 'F9'
-  },
-  {
-    label: 'Step Out of the current function',
-    action: 'stepOut',
-    Icon: ArrowUpward,
-    key: 'Shift+F11'
+    key: 'F9',
+    disabled: running,
   },
   {
     label: 'Step Until next line (bypass loops)',
     action: 'stepUntil',
     Icon: Redo,
-    key: 'F10'
+    key: 'F10',
+    disabled: running,
   },
   {
-    label: 'Continue the program and stop at exceptions',
-    action: 'continue',
+    label: 'Step Into function call',
+    action: 'stepInto',
+    Icon: ArrowDownward,
+    key: 'F11',
+    disabled: running,
+  },
+  {
+    label: 'Step Out of the current function',
+    action: 'stepOut',
+    Icon: ArrowUpward,
+    key: 'Shift+F11',
+    disabled: running,
+  },
+  {
+    label: 'Trace the program (stop at every exception)',
+    action: 'trace',
     Icon: SkipNext,
-    key: 'F8'
+    key: 'Shift+F12',
+    disabled: running,
   },
   {
-    label: 'Pause the program',
-    action: 'break',
-    Icon: Pause,
-    key: 'Shift+F8'
+    label: 'Run the program',
+    action: 'run',
+    Icon: FastForward,
+    key: 'F12',
+    disabled: running,
   },
   {
-    label: 'Continue the program',
+    label: 'StopDebugging',
     action: 'stop',
-    Icon: PlayArrow,
-    key: 'F12'
+    Icon: Eject,
+    key: 'Esc',
+    disabled: running,
   },
   {
+    label: 'Exit program',
     action: 'kill',
-    label: 'Close program',
     Icon: Close,
-    key: 'F13'
+    key: 'Shift+Esc',
+    disabled: false,
   },
 ]
 
@@ -85,9 +109,37 @@ const useStyles = makeStyles({
   grow: {
     flexGrow: 1,
   },
-  steps: {},
 })
 
+const MobileItem = ({
+  action: { label, action, disabled, Icon },
+  handleCommand,
+}) => (
+  <MenuItem onClick={handleCommand} disabled={disabled} data-action={action}>
+    <ListItemIcon>
+      <Icon />
+    </ListItemIcon>
+    <Typography variant="inherit" noWrap>
+      {label}
+    </Typography>
+  </MenuItem>
+)
+
+const ActionButton = ({
+  action: { key, label, action, disabled, Icon },
+  handleCommand,
+}) => (
+  <Tooltip k title={`${label} [${key}]`}>
+    <IconButton
+      color="inherit"
+      onClick={handleCommand}
+      disabled={disabled}
+      data-action={action}
+    >
+      <Icon />
+    </IconButton>
+  </Tooltip>
+)
 export default memo(function TopActions({ mobile }) {
   const title = useSelector(state => state.title)
   const frames = useSelector(state => state.frames)
@@ -95,12 +147,8 @@ export default memo(function TopActions({ mobile }) {
   const dispatch = useDispatch()
   const classes = useStyles()
   const [menuEl, setMenuEl] = useState(null)
-  const handleCommand = useMemo(
-    () =>
-      actions.reduce((functions, { action }) => {
-        functions[action] = () => dispatch(doCommand(action))
-        return functions
-      }, {}),
+  const handleCommand = useCallback(
+    evt => dispatch(doCommand(evt.currentTarget.getAttribute('data-action'))),
     [dispatch]
   )
 
@@ -110,17 +158,16 @@ export default memo(function TopActions({ mobile }) {
       if (evt.shiftKey) {
         code = `Shift+${code}`
       }
-      const action = actions.find(({ key }) => code === key)
+      const action = actions(running).find(({ key }) => code === key)
       if (!action) {
         return
       }
       handleCommand[action.action]()
       evt.preventDefault()
     }
-    addEventListener('keydown', handleGlobalActions)
-    return () => removeEventListener('keydown', handleGlobalActions)
-  }, [handleCommand])
-
+    window.addEventListener('keydown', handleGlobalActions)
+    return () => window.removeEventListener('keydown', handleGlobalActions)
+  }, [running, handleCommand])
 
   const closeMenu = useCallback(() => setMenuEl(null), [])
   const openMenu = useCallback(
@@ -132,6 +179,11 @@ export default memo(function TopActions({ mobile }) {
       closeMenu()
     }
   })
+
+  const Action = mobile ? MobileItem : ActionButton
+  const actionItems = actions(running).map(action => (
+    <Action key={action.action} action={action} handleCommand={handleCommand} />
+  ))
 
   return (
     <>
@@ -147,28 +199,11 @@ export default memo(function TopActions({ mobile }) {
                 <MoreVert />
               </IconButton>
               <Menu anchorEl={menuEl} open={!!menuEl} onClose={closeMenu}>
-                {actions.map(({ label, action, Icon }) => (
-                  <MenuItem key={action} onClick={handleCommand[action]} disabled={running && action !== 'break'}>
-                    <ListItemIcon>
-                      <Icon />
-                    </ListItemIcon>
-                    <Typography variant="inherit" noWrap>
-                      {label}
-                    </Typography>
-                  </MenuItem>
-                ))}
+                {actionItems}
               </Menu>
             </>
           ) : (
-            <div className={classes.steps}>
-              {actions.map(({ key, label, action, Icon }) => (
-                <Tooltip key={action} title={`${label} [${key}]`}>
-                  <IconButton color="inherit" onClick={handleCommand[action]} disabled={running && action !== 'break'}>
-                    <Icon />
-                  </IconButton>
-                </Tooltip>
-              ))}
-            </div>
+            <div className={classes.steps}>{actionItems}</div>
           )}
         </>
       )}

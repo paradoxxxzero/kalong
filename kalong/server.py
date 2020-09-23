@@ -76,7 +76,7 @@ async def websocket(request):
             pair = await peer(request.app, other_side, origin)
 
             if data["type"] == "DO_COMMAND":
-                if data["command"] in ["break", "kill"]:
+                if data["command"] in ["pause", "kill"]:
                     pid = int(origin.split("__")[1].split("--")[0])
                     os.kill(
                         pid,

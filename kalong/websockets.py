@@ -82,7 +82,10 @@ async def close_websocket():
 def die():
     log.info('Dying, closing socket.')
     loop = get_loop()
-    loop.run_until_complete(close_websocket())
+    if loop.is_running():
+        loop.create_task(close_websocket())
+    else:
+        loop.run_until_complete(close_websocket())
 
 
 def close_all(closeables):

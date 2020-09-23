@@ -31,10 +31,13 @@ def break_above(level):
     start_trace(frame)
 
 
-def start_trace():
-    from .stepping import start_trace
+def start_trace(break_=False, full=False):
+    from .stepping import add_step, start_trace
 
     frame = sys._getframe().f_back
+    add_step(
+        "stepInto" if break_ else ("trace" if full else "continue"), frame
+    )
     start_trace(frame)
 
 
@@ -46,17 +49,21 @@ def stop_trace():
 
 
 class trace:
-    def __enter__(self):
-        start_trace()
+    def __init__(self, break_=False, full=False):
+        self.break_ = break_
+        self.full = full
+
+    def __enter__(self,):
+        start_trace(self.break_, self.full)
 
     def __exit__(self, *args):
         stop_trace()
 
 
 def run_file(filename, *args):
-    # Cleaning __main__ namespace
-    from .stepping import add_step
     from .utils import fake_argv
+
+    # Cleaning __main__ namespace
     import __main__
 
     __main__.__dict__.clear()
@@ -75,8 +82,7 @@ def run_file(filename, *args):
     globals = __main__.__dict__
     locals = globals
     with fake_argv(filename, *args):
-        add_step('stepInto')
-        with trace():
+        with trace(break_=True):
             exec(statement, globals, locals)
 
 

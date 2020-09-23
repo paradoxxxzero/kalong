@@ -17,7 +17,7 @@ steppings = {}
 kalong_dir = str(Path(__file__).resolve().parent)
 
 
-def add_step(type, frame=None):
+def add_step(type, frame):
     origin = current_origin()
     steppings[origin] = {'type': type, 'frame': frame, "lno": frame.f_lineno}
 
@@ -60,7 +60,10 @@ sigusr1_handler = None
 
 def handle_sigusr1(*args, **kwargs):
     log.info("Handling breakpoint on SIGUSR1")
-    start_trace(sys._getframe().f_back)
+    frame = sys._getframe().f_back
+    add_step('step', frame)
+    start_trace(frame)
+
     if sigusr1_handler not in (signal.SIG_IGN, signal.SIG_DFL):
         sigusr1_handler(*args, **kwargs)
 
