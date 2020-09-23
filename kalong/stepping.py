@@ -7,7 +7,7 @@ from functools import partial
 from pathlib import Path
 
 from .loops import clean_loops
-from .utils import current_origin
+from .utils import current_origin, USER_SIGNAL
 from .utils.iterators import iter_frame
 from .websockets import clean_websockets
 
@@ -55,17 +55,17 @@ def cleanup():
     clean_loops()
 
 
-sigusr1_handler = None
+user_signal_handler = None
 
 
-def handle_sigusr1(*args, **kwargs):
-    log.info("Handling breakpoint on SIGUSR1")
+def handle_user_signal(*args, **kwargs):
+    log.info("Handling breakpoint on user signal")
     frame = sys._getframe().f_back
     add_step('step', frame)
     start_trace(frame)
 
-    if sigusr1_handler not in (signal.SIG_IGN, signal.SIG_DFL):
-        sigusr1_handler(*args, **kwargs)
+    if user_signal_handler not in (signal.SIG_IGN, signal.SIG_DFL):
+        user_signal_handler(*args, **kwargs)
 
 
-sigusr1_handler = signal.signal(signal.SIGUSR1, handle_sigusr1)
+user_signal_handler = signal.signal(USER_SIGNAL, handle_user_signal)

@@ -1,4 +1,5 @@
 import os
+import signal
 import socket
 import sys
 import threading
@@ -23,3 +24,6 @@ class fake_argv:
 
     def __exit__(self, *err):
         sys.argv = self._old_args
+
+
+USER_SIGNAL = signal.SIGILL if sys.platform == "win32" else signal.SIGUSR1

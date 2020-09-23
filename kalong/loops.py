@@ -52,4 +52,5 @@ def run(coro):
         die()
         sys.exit(0)
 
-    loop.add_signal_handler(signal.SIGTERM, stop)
+    if sys.platform != "win32":
+        loop.add_signal_handler(signal.SIGTERM, stop)

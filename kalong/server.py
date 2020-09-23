@@ -11,7 +11,7 @@ from aiohttp.web_runner import GracefulExit
 
 from . import config
 from .errors import NoClientFoundError
-from .utils import basicConfig
+from .utils import basicConfig, USER_SIGNAL
 
 log = logging.getLogger(__name__)
 basicConfig(level=config.log_level)
@@ -82,7 +82,7 @@ async def websocket(request):
                         pid,
                         signal.SIGTERM
                         if data["command"] == "kill"
-                        else signal.SIGUSR1,
+                        else USER_SIGNAL,
                     )
                     continue
 
