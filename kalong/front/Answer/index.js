@@ -20,13 +20,17 @@ import AnswerDispatch from './AnswerDispatch'
 import Snippet from '../Code/Snippet'
 
 const useStyles = makeStyles(theme => ({
+  header: {
+    '& .MuiCardHeader-content': {
+      minWidth: 0,
+    },
+  },
   answer: {
     minWidth: 0,
     padding: '0 16px',
     flex: 1,
   },
   prompt: {
-    display: 'block',
     padding: '4px', // .CodeMirror pre padding and .CodeMirror-lines
   },
   element: {
@@ -72,6 +76,7 @@ export default memo(function Answer({
   return (
     <Card className={classes.element}>
       <CardHeader
+        className={classes.header}
         avatar={
           <>
             <IconButton
@@ -85,8 +90,8 @@ export default memo(function Answer({
             {command && <Chip label={command} />}
           </>
         }
-        title={<Snippet className={classes.prompt} value={prompt} />}
-        titleTypographyProps={{ variant: 'h5' }}
+        title={<Snippet className={classes.prompt} value={prompt} noBreak />}
+        titleTypographyProps={{ variant: 'h5', noWrap: true }}
         action={
           <>
             <IconButton onClick={handleView}>

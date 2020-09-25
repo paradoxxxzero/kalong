@@ -133,17 +133,6 @@ export default memo(function Prompt({ onScrollUp, onScrollDown }) {
 
   const [prompt, valueDispatch] = useReducer(valueReducer, initialValue)
   const [search, searchDispatch] = useReducer(searchReducer, initialSearch)
-  useEffect(() => {
-    const handleGlobalFocus = ({ target }) => {
-      if (code.current) {
-        if (!target.closest('[tabindex]')) {
-          code.current.focus()
-        }
-      }
-    }
-    window.addEventListener('click', handleGlobalFocus)
-    return () => window.removeEventListener('click', handleGlobalFocus)
-  }, [code])
 
   useEffect(() => {
     const handleGlobalEval = ({ keyCode }) => {
@@ -156,8 +145,21 @@ export default memo(function Prompt({ onScrollUp, onScrollDown }) {
         dispatch(requestInspectEval(key, selection))
       }
     }
+    const handleGlobalFocus = ({ keyCode }) => {
+      if (keyCode !== 13) {
+        return
+      }
+
+      if (code.current) {
+        code.current.focus()
+      }
+    }
     window.addEventListener('keydown', handleGlobalEval)
-    return () => window.removeEventListener('keydown', handleGlobalEval)
+    window.addEventListener('keyup', handleGlobalFocus)
+    return () => {
+      window.removeEventListener('keydown', handleGlobalEval)
+      window.removeEventListener('keyup', handleGlobalFocus)
+    }
   }, [dispatch])
 
   const handleChange = useCallback(

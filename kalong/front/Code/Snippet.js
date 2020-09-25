@@ -25,6 +25,7 @@ export default memo(function Snippet({
   mode,
   onClick,
   noBreakAll,
+  noBreak,
 }) {
   theme = theme || 'default'
   mode = mode === void 0 ? 'python' : mode
@@ -41,7 +42,8 @@ export default memo(function Snippet({
         `cm-s-${theme}`,
         classes.snippet,
         className,
-        noBreakAll ? classes.breakingSnippet : classes.nonBreakingSnippet
+        !noBreak &&
+          (noBreakAll ? classes.breakingSnippet : classes.nonBreakingSnippet)
       )}
       onClick={onClick}
     />

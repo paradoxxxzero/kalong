@@ -12,6 +12,7 @@ const useStyles = makeStyles(() => ({
     textTransform: 'none',
     padding: 0,
     backgroundColor: 'rgba(0, 0, 0, 0.02)',
+    display: 'inline',
   },
 }))
 
@@ -33,6 +34,7 @@ export default function Inspectable({
     <Component
       onClick={handleClick}
       className={clsx(classes[type || 'button'], className)}
+      component="a"
       {...props}
     >
       {children}

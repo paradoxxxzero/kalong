@@ -25,9 +25,9 @@ export default memo(function Terminal({ className }) {
     scroller.current.scrollTop += 300
   }, [scroller])
 
-  useEffect(() => {
-    scroller.current.scrollTop = scroller.current.scrollHeight
-  })
+  // useEffect(() => {
+  //   scroller.current.scrollTop = scroller.current.scrollHeight
+  // }, [scrollback])
   return (
     <div className={clsx(classes.scrollback, className)} ref={scroller}>
       {scrollback.map(({ key, ...props }) => (

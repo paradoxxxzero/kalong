@@ -16,6 +16,11 @@ import { MoreHoriz } from '@material-ui/icons'
 import { Typography } from '@material-ui/core'
 
 const useStyles = makeStyles(theme => ({
+  root: {
+    '&:hover': {
+      backgroundColor: 'rgba(0, 0, 0, .01)',
+    },
+  },
   noWrap: {
     whiteSpace: 'pre',
   },
@@ -41,7 +46,7 @@ const useStyles = makeStyles(theme => ({
   ellipsis: {
     fontSize: '0.75em',
   },
-  withComma: {
+  unbreakable: {
     whiteSpace: 'pre',
   },
   moreCount: {
@@ -49,11 +54,11 @@ const useStyles = makeStyles(theme => ({
   },
 }))
 
-export default function Iterable({ subtype, values, id }) {
+export default function Iterable({ subtype, values, id, mapping }) {
   const sliceStep = Math.max(Math.min(50, values.length / 5), 20)
   const initialSlice = Math.min(values.length, sliceStep)
   const classes = useStyles()
-  const [expanded, setExpanded] = useState(false)
+  const [expanded, setExpanded] = useState(true)
   const [slice, setSlice] = useState(initialSlice)
 
   const handleSliceMore = useCallback(
@@ -69,12 +74,16 @@ export default function Iterable({ subtype, values, id }) {
   ])
   const handleExpand = useCallback(() => setExpanded(x => !x), [])
 
-  const open = { list: '[', set: '{', tuple: '(' }[subtype]
-  const close = { list: ']', set: '}', tuple: ')' }[subtype]
+  const open =
+    { list: '[', set: '{', tuple: '(', dict: '{' }[subtype] ||
+    `${subtype}(${mapping ? '{' : '['}`
+  const close =
+    { list: ']', set: '}', tuple: ')', dict: '}' }[subtype] ||
+    `${mapping ? '}' : ']'})`
   const sliced = values.slice(0, slice)
 
   return (
-    <>
+    <div className={classes.root}>
       {!!values.length && (
         <Typography
           className={classes.count}
@@ -85,7 +94,7 @@ export default function Iterable({ subtype, values, id }) {
         </Typography>
       )}
       <Inspectable id={id}>
-        <Snippet mode={null} value={open || `${subtype}(`} />
+        <Snippet mode={null} value={open} />
       </Inspectable>
       {!!values.length && (
         <IconButton onClick={handleSliceFold} className={classes.button}>
@@ -96,16 +105,28 @@ export default function Iterable({ subtype, values, id }) {
           )}
         </IconButton>
       )}
-      <section className={expanded ? classes.indented : classes.inline}>
+      <section
+        className={
+          expanded && sliced.length > 1 ? classes.indented : classes.inline
+        }
+      >
         {sliced.map((props, i) => (
-          <span key={`member-${id}-${i}`} className={classes.withComma}>
-            <AnswerDispatch {...props} />
+          <span key={`member-${id}-${i}`} className={classes.unbreakable}>
+            {mapping ? (
+              <>
+                <AnswerDispatch {...props.key} />
+                <Snippet mode={null} value=": " />
+                <AnswerDispatch {...props.value} />
+              </>
+            ) : (
+              <AnswerDispatch {...props} />
+            )}
             {i + 1 !== values.length && <Snippet mode={null} value=", " />}
-            {expanded && <br />}
+            {expanded && sliced.length > 1 && <br />}
           </span>
         ))}
         {values.length > sliced.length && (
-          <>
+          <span className={classes.unbreakable}>
             <IconButton onClick={handleSliceMore} className={classes.button}>
               <MoreHoriz className={classes.icon} />
             </IconButton>
@@ -117,17 +138,19 @@ export default function Iterable({ subtype, values, id }) {
             >
               {values.length - sliced.length} more
             </Button>
-            <IconButton onClick={handleUnSlice} className={classes.button}>
-              <MoreVert className={classes.icon} />
-            </IconButton>
-          </>
+            {values.length > sliced.length + sliceStep && (
+              <IconButton onClick={handleUnSlice} className={classes.button}>
+                <MoreVert className={classes.icon} />
+              </IconButton>
+            )}
+          </span>
         )}
       </section>
       <Inspectable id={id}>
         {values.length === 1 && open === '(' && (
           <Snippet mode={null} value="," />
         )}
-        <Snippet mode={null} value={close || ')'} />
+        <Snippet mode={null} value={close} />
       </Inspectable>
       {sliced.length > 1 && (
         <IconButton onClick={handleExpand} className={classes.button}>
@@ -138,6 +161,6 @@ export default function Iterable({ subtype, values, id }) {
           )}
         </IconButton>
       )}
-    </>
+    </div>
   )
 }
