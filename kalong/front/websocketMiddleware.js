@@ -30,6 +30,14 @@ export default store => {
     store.dispatch(setConnectionState('closed'))
     setTimeout(() => window.close(), 10)
   }
+  window.addEventListener('beforeunload', function (e) {
+    delete e.returnValue
+    if (ws.readyState === WebSocket.OPEN) {
+      try {
+        ws.close()
+      } catch (e) {}
+    }
+  })
 
   return next => action => {
     if (action.remote) {
