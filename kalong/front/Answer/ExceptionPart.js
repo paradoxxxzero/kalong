@@ -1,8 +1,8 @@
 import {
   Divider,
-  ExpansionPanel,
-  ExpansionPanelDetails,
-  ExpansionPanelSummary,
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Grid,
   List,
   ListItem,
@@ -54,8 +54,8 @@ export default function Exception({
   const classes = useStyles()
 
   return (
-    <ExpansionPanel expanded={expanded} onChange={handleExpand}>
-      <ExpansionPanelSummary
+    <Accordion expanded={expanded} onChange={handleExpand}>
+      <AccordionSummary
         expandIcon={<ExpandMore />}
         className={classes.centered}
       >
@@ -80,9 +80,9 @@ export default function Exception({
             </Typography>
           </Inspectable>
         </Grid>
-      </ExpansionPanelSummary>
+      </AccordionSummary>
       <Divider />
-      <ExpansionPanelDetails>
+      <AccordionDetails>
         <List>
           {traceback.map((frame, n) => (
             <ListItem key={frame.key} divider={n !== traceback.length - 1}>
@@ -113,7 +113,7 @@ export default function Exception({
             </ListItem>
           ))}
         </List>
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
+      </AccordionDetails>
+    </Accordion>
   )
 }
