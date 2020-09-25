@@ -137,7 +137,7 @@ const loadingLevel = (state = 0, action) => {
   return state
 }
 
-const running = (state = true, action) => {
+const running = (state = false, action) => {
   if (action.type === DO_COMMAND) {
     // Do a stepping command, python will resume
     return true
