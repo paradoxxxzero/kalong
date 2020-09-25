@@ -10,6 +10,9 @@ import {
 import Snippet from '../Code/Snippet'
 import Inspectable from './Inspectable'
 import AnswerDispatch from './AnswerDispatch'
+import { Button } from '@material-ui/core'
+import { MoreVert } from '@material-ui/icons'
+import { MoreHoriz } from '@material-ui/icons'
 import { Typography } from '@material-ui/core'
 
 const useStyles = makeStyles(theme => ({
@@ -25,10 +28,10 @@ const useStyles = makeStyles(theme => ({
   inline: {
     display: 'inline',
   },
-  expandIcon: {
+  icon: {
     fontSize: '16px',
   },
-  expandButton: {
+  button: {
     padding: '4px',
   },
   count: {
@@ -38,22 +41,37 @@ const useStyles = makeStyles(theme => ({
   ellipsis: {
     fontSize: '0.75em',
   },
+  withComma: {
+    whiteSpace: 'pre',
+  },
+  moreCount: {
+    color: theme.palette.text.secondary,
+  },
 }))
 
 export default function Iterable({ subtype, values, id }) {
+  const sliceStep = Math.max(Math.min(50, values.length / 5), 20)
+  const initialSlice = Math.min(values.length, sliceStep)
   const classes = useStyles()
-  const [expanded, setExpanded] = useState(values.length > 5)
-  const [folded, setFolded] = useState(values.length > 10)
+  const [expanded, setExpanded] = useState(false)
+  const [slice, setSlice] = useState(initialSlice)
 
+  const handleSliceMore = useCallback(
+    () => setSlice(slice => Math.min(values.length, slice + sliceStep)),
+    [sliceStep, values.length]
+  )
+  const handleSliceFold = useCallback(
+    () => setSlice(slice => (slice === 0 ? initialSlice : 0)),
+    [initialSlice]
+  )
+  const handleUnSlice = useCallback(() => setSlice(values.length), [
+    values.length,
+  ])
   const handleExpand = useCallback(() => setExpanded(x => !x), [])
-  const handleFold = useCallback(() => setFolded(x => !x), [])
-  useEffect(() => {
-    setExpanded(values.length > 5)
-    setFolded(values.length > 10)
-  }, [values])
 
   const open = { list: '[', set: '{', tuple: '(' }[subtype]
   const close = { list: ']', set: '}', tuple: ')' }[subtype]
+  const sliced = values.slice(0, slice)
 
   return (
     <>
@@ -70,48 +88,53 @@ export default function Iterable({ subtype, values, id }) {
         <Snippet mode={null} value={open || `${subtype}(`} />
       </Inspectable>
       {!!values.length && (
-        <IconButton onClick={handleFold} className={classes.expandButton}>
-          {folded ? (
-            <UnfoldMore className={classes.expandIcon} />
+        <IconButton onClick={handleSliceFold} className={classes.button}>
+          {slice === 0 ? (
+            <UnfoldMore className={classes.icon} />
           ) : (
-            <UnfoldLess className={classes.expandIcon} />
+            <UnfoldLess className={classes.icon} />
           )}
         </IconButton>
       )}
-      {folded ? (
-        <Typography className={classes.ellipsis} component="span">
-          … {values.length} items
-        </Typography>
-      ) : (
-        <section className={expanded ? classes.indented : classes.inline}>
-          {values.map((props, i) => (
-            <React.Fragment
-              // eslint-disable-next-line react/no-array-index-key
-              key={i}
+      <section className={expanded ? classes.indented : classes.inline}>
+        {sliced.map((props, i) => (
+          <span key={`member-${id}-${i}`} className={classes.withComma}>
+            <AnswerDispatch {...props} />
+            {i + 1 !== values.length && <Snippet mode={null} value=", " />}
+            {expanded && <br />}
+          </span>
+        ))}
+        {values.length > sliced.length && (
+          <>
+            <IconButton onClick={handleSliceMore} className={classes.button}>
+              <MoreHoriz className={classes.icon} />
+            </IconButton>
+            <Button
+              className={classes.moreCount}
+              size="small"
+              component="span"
+              onClick={handleSliceMore}
             >
-              <AnswerDispatch {...props} />
-              {i + 1 !== values.length && (
-                <Typography className={classes.comma} component="span">
-                  ,{' '}
-                </Typography>
-              )}
-              {expanded && <br />}
-            </React.Fragment>
-          ))}
-        </section>
-      )}
+              {values.length - sliced.length} more
+            </Button>
+            <IconButton onClick={handleUnSlice} className={classes.button}>
+              <MoreVert className={classes.icon} />
+            </IconButton>
+          </>
+        )}
+      </section>
       <Inspectable id={id}>
         {values.length === 1 && open === '(' && (
           <Snippet mode={null} value="," />
         )}
         <Snippet mode={null} value={close || ')'} />
       </Inspectable>
-      {!folded && (
-        <IconButton onClick={handleExpand} className={classes.expandButton}>
+      {sliced.length > 1 && (
+        <IconButton onClick={handleExpand} className={classes.button}>
           {expanded ? (
-            <ExpandLess className={classes.expandIcon} />
+            <ExpandLess className={classes.icon} />
           ) : (
-            <ExpandMore className={classes.expandIcon} />
+            <ExpandMore className={classes.icon} />
           )}
         </IconButton>
       )}
