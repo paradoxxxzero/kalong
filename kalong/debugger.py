@@ -196,7 +196,7 @@ def serialize_inspect_eval(prompt, frame):
             "prompt": prompt,
             "answer": [serialize_exception(*sys.exc_info())],
         }
-    return serialize_inspect(key, frame)
+    return serialize_inspect(key)
 
 
 def serialize_inspect(key):
