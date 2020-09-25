@@ -7,8 +7,8 @@ def iter_linked_list(attr, ll):
         ll = getattr(ll, attr, None)
 
 
-iter_frame = partial(iter_linked_list, 'f_back')
-iter_traceback = partial(iter_linked_list, 'tb_next')
+iter_frame = partial(iter_linked_list, "f_back")
+iter_traceback = partial(iter_linked_list, "tb_next")
 
 
 def iter_stack(frame, tb):

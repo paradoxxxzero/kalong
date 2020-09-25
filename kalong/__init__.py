@@ -14,7 +14,7 @@ def breakpoint():
 
     frame = sys._getframe().f_back
     stop_trace(frame)
-    add_step('step', frame)
+    add_step("step", frame)
     start_trace(frame)
 
 
@@ -27,7 +27,7 @@ def break_above(level):
         frame = frame.f_back
 
     stop_trace(frame)
-    add_step('step', frame)
+    add_step("step", frame)
     start_trace(frame)
 
 
@@ -53,7 +53,9 @@ class trace:
         self.break_ = break_
         self.full = full
 
-    def __enter__(self,):
+    def __enter__(
+        self,
+    ):
         start_trace(self.break_, self.full)
 
     def __exit__(self, *args):
@@ -76,7 +78,7 @@ def run_file(filename, *args):
     )
     with open(filename, "rb") as fp:
         statement = compile(
-            fp.read(), os.path.abspath(os.path.normcase(filename)), 'exec'
+            fp.read(), os.path.abspath(os.path.normcase(filename)), "exec"
         )
 
     globals = __main__.__dict__
@@ -92,4 +94,4 @@ def shell():
 
     frame = sys._getframe()
     # Enter the websocket communication loop that pauses the execution
-    communicate(frame, 'shell', [])
+    communicate(frame, "shell", [])

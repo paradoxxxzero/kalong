@@ -30,7 +30,7 @@ def close_loop():
 
 
 def clean_loops():
-    log.info(f'Cleaning at exit {len(loops)} event loops')
+    log.info(f"Cleaning at exit {len(loops)} event loops")
     if not loops:
         return
     for loop in loops.values():

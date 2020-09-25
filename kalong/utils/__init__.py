@@ -11,7 +11,7 @@ except ImportError:
 
 
 def current_origin():
-    return f'{socket.getfqdn()}__{os.getpid()}--{threading.get_ident()}'
+    return f"{socket.getfqdn()}__{os.getpid()}--{threading.get_ident()}"
 
 
 class fake_argv:

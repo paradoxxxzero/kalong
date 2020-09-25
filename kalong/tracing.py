@@ -18,9 +18,9 @@ def trace(origin, frame, event, arg):
     if not stepping:
         return
 
-    type = stepping.get('type')
-    originalFrame = stepping.get('frame')
-    lno = stepping.get('lno')
+    type = stepping.get("type")
+    originalFrame = stepping.get("frame")
+    lno = stepping.get("lno")
     filename = frame.f_code.co_filename
 
     # If we are tracing, we continue tracing if this is not an exception
@@ -40,16 +40,16 @@ def trace(origin, frame, event, arg):
     # When we are in _shutdown of thread, program is finished
     if (
         filename == threading.__file__
-        and frame.f_code.co_name in ['_shutdown', '_bootstrap_inner']
+        and frame.f_code.co_name in ["_shutdown", "_bootstrap_inner"]
         or filename == process.__file__
-        and frame.f_code.co_name == '_bootstrap'
+        and frame.f_code.co_name == "_bootstrap"
     ):
         stop_trace(frame)
         die()
         return
 
     # Don't trace importlib bootstrapping
-    if filename == '<frozen importlib._bootstrap>':
+    if filename == "<frozen importlib._bootstrap>":
         return
 
     # Don't trace self
@@ -57,29 +57,29 @@ def trace(origin, frame, event, arg):
         return
 
     # Don't trace under frames if we are not stepping 'into'
-    if event == 'call' and type != 'stepInto':
+    if event == "call" and type != "stepInto":
         return
 
     if (
         # Trace: This is an exception: stop
-        type == 'trace'
+        type == "trace"
         # Continue: This is an exception at current frame: stop
-        or type == 'continue'
+        or type == "continue"
         # Step: Normal stepping
-        or type == 'step'
+        or type == "step"
         # StepInto: Stepping normally in new frame as well
-        or type == 'stepInto'
+        or type == "stepInto"
         # StepUntil: Stepping only if line number is greater than previously
         or (
-            type == 'stepUntil'
+            type == "stepUntil"
             and (frame != originalFrame or frame.f_lineno > lno)
         )
         # StepOut: Stepping only if we are returning or in the parent frame
         or (
-            type == 'stepOut'
+            type == "stepOut"
             and (
-                (event == 'return' and frame == originalFrame)
-                or event == 'line'
+                (event == "return" and frame == originalFrame)
+                or event == "line"
                 and frame == originalFrame.f_back
             )
         )

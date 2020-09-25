@@ -46,16 +46,16 @@ log = logging.getLogger(__name__)
 
 
 def get_title(frame, event, arg):
-    if event == 'line':
-        return 'Tracing'
-    elif event == 'call':
-        return f'Calling {frame.f_code.co_name}'
-    elif event == 'return':
-        return f'Returning from {frame.f_code.co_name}'
-    elif event == 'exception':
-        return f'{arg[0].__name__}: {arg[1]}'
-    elif event == 'shell':
-        return 'Shell'
+    if event == "line":
+        return "Tracing"
+    elif event == "call":
+        return f"Calling {frame.f_code.co_name}"
+    elif event == "return":
+        return f"Returning from {frame.f_code.co_name}"
+    elif event == "exception":
+        return f"{arg[0].__name__}: {arg[1]}"
+    elif event == "shell":
+        return "Shell"
     return "???"
 
 
@@ -73,12 +73,12 @@ def get_frame(frame, key):
 def serialize_frames(current_frame, current_tb):
     for frame, lno in iter_stack(current_frame, current_tb):
         code = frame.f_code
-        filename = code.co_filename or '<unspecified>'
-        if filename == '<frozen importlib._bootstrap>':
+        filename = code.co_filename or "<unspecified>"
+        if filename == "<frozen importlib._bootstrap>":
             filename = os.path.join(
                 os.path.dirname(linecache.__file__),
-                'importlib',
-                '_bootstrap.py',
+                "importlib",
+                "_bootstrap.py",
             )
         line = None
         linecache.checkcache(filename)
@@ -88,15 +88,15 @@ def serialize_frames(current_frame, current_tb):
         lastlineno = list(startlnos)[-1][1]
         fn = Path(filename).resolve()
         yield {
-            'key': id(code),
-            'absoluteFilename': str(fn),
-            'filename': fn.name,
-            'function': code.co_name,
-            'firstFunctionLineNumber': code.co_firstlineno,
-            'lastFunctionLineNumber': lastlineno,
-            'lineNumber': lno,
-            'lineSource': line,
-            'active': frame == current_frame,
+            "key": id(code),
+            "absoluteFilename": str(fn),
+            "filename": fn.name,
+            "function": code.co_name,
+            "firstFunctionLineNumber": code.co_firstlineno,
+            "lastFunctionLineNumber": lastlineno,
+            "lineNumber": lno,
+            "lineSource": line,
+            "active": frame == current_frame,
         }
 
 
@@ -111,10 +111,10 @@ def serialize_answer(prompt, frame):
     ):
         compiled_code = None
         try:
-            compiled_code = compile(prompt, '<stdin>', 'single')
+            compiled_code = compile(prompt, "<stdin>", "single")
         except Exception:
             try:
-                compiled_code = compile(prompt, '<stdin>', 'exec')
+                compiled_code = compile(prompt, "<stdin>", "exec")
             except Exception:
                 # handle ex
                 sys.excepthook(*sys.exc_info())
@@ -130,24 +130,24 @@ def serialize_answer(prompt, frame):
             sync_locals(frame, f_locals)
         duration = int((time.time() - start) * 1000 * 1000 * 1000)
 
-    return {'prompt': prompt, 'answer': answer, 'duration': duration}
+    return {"prompt": prompt, "answer": answer, "duration": duration}
 
 
 def serialize_exception(type_, value, tb):
     return {
-        'type': 'exception',
-        'id': obj_cache.register(value),
-        'subtype': 'root',
-        'name': type_.__name__,
-        'description': str(value),
-        'traceback': list(serialize_frames(None, tb)),
-        'causes': [
+        "type": "exception",
+        "id": obj_cache.register(value),
+        "subtype": "root",
+        "name": type_.__name__,
+        "description": str(value),
+        "traceback": list(serialize_frames(None, tb)),
+        "causes": [
             {
-                'id': obj_cache.register(cause),
-                'subtype': 'cause' if explicit else 'context',
-                'name': type(cause).__name__,
-                'description': str(cause),
-                'traceback': list(serialize_frames(None, cause.__traceback__)),
+                "id": obj_cache.register(cause),
+                "subtype": "cause" if explicit else "context",
+                "name": type(cause).__name__,
+                "description": str(cause),
+                "traceback": list(serialize_frames(None, cause.__traceback__)),
             }
             for cause, explicit in iter_cause(value)
         ],
@@ -155,32 +155,32 @@ def serialize_exception(type_, value, tb):
 
 
 def attribute_classifier(attr):
-    key = attr['key']
-    value = attr['value']
-    if key.startswith('__') and key.endswith('__'):
-        return '__core__'
+    key = attr["key"]
+    value = attr["value"]
+    if key.startswith("__") and key.endswith("__"):
+        return "__core__"
     if ismodule(value):
-        return 'module'
+        return "module"
     if isclass(value):
-        return 'class'
+        return "class"
     if isroutine(value):
-        return 'method'
+        return "method"
     # if isfunction(value):
     #     return 'function'
     if isgenerator(value):
-        return 'generator'
+        return "generator"
     if iscoroutine(value):
-        return 'coroutine'
-    return 'attribute'
+        return "coroutine"
+    return "attribute"
 
 
 def serialize_attribute(attr, group):
-    if group in ['function', 'method', 'coroutine']:
+    if group in ["function", "method", "coroutine"]:
         try:
-            attr['signature'] = str(signature(attr['value']))
+            attr["signature"] = str(signature(attr["value"]))
         except Exception:
             pass
-    attr['value'] = repr(attr['value'])
+    attr["value"] = repr(attr["value"])
     return attr
 
 
@@ -193,8 +193,8 @@ def serialize_inspect_eval(prompt, frame):
         key = get_id_from_expression(prompt, frame)
     except Exception:
         return {
-            'prompt': prompt,
-            'answer': [serialize_exception(*sys.exc_info())],
+            "prompt": prompt,
+            "answer": [serialize_exception(*sys.exc_info())],
         }
     return serialize_inspect(key, frame)
 
@@ -202,15 +202,15 @@ def serialize_inspect_eval(prompt, frame):
 def serialize_inspect(key):
     obj = obj_cache.get(key)
     attributes = [
-        {'key': key, 'value': value, 'id': obj_cache.register(value)}
+        {"key": key, "value": value, "id": obj_cache.register(value)}
         for key, value in [
             (
                 key,
                 safe_getattr(
                     obj,
                     key,
-                    f'?! Broken obj: key {key!r} is listed in dir() but '
-                    + f'getattr(obj, {key!r}) raises.',
+                    f"?! Broken obj: key {key!r} is listed in dir() but "
+                    + f"getattr(obj, {key!r}) raises.",
                 ),
             )
             for key in dir(obj)
@@ -235,21 +235,21 @@ def serialize_inspect(key):
                 code = get_code(obj)
                 if code:
                     uncompiled = code_deparse(code).text
-                    source = f'# Decompiled from {obj!r}\n\n{uncompiled}'
+                    source = f"# Decompiled from {obj!r}\n\n{uncompiled}"
             except Exception:
                 raise  # TODO REMOVE
 
     answer = [
         {
-            'type': 'inspect',
-            'infos': infos,
-            'attributes': grouped_attributes,
-            'doc': doc,
-            'source': source,
+            "type": "inspect",
+            "infos": infos,
+            "attributes": grouped_attributes,
+            "doc": doc,
+            "source": source,
         }
     ]
 
-    return {'prompt': repr(obj), 'answer': answer}
+    return {"prompt": repr(obj), "answer": answer}
 
 
 def serialize_diff_eval(leftStr, rightStr, frame):
@@ -257,16 +257,16 @@ def serialize_diff_eval(leftStr, rightStr, frame):
         leftKey = get_id_from_expression(leftStr, frame)
     except Exception:
         return {
-            'prompt': leftStr,
-            'answer': [serialize_exception(*sys.exc_info())],
+            "prompt": leftStr,
+            "answer": [serialize_exception(*sys.exc_info())],
         }
 
     try:
         rightKey = get_id_from_expression(rightStr, frame)
     except Exception:
         return {
-            'prompt': rightStr,
-            'answer': [serialize_exception(*sys.exc_info())],
+            "prompt": rightStr,
+            "answer": [serialize_exception(*sys.exc_info())],
         }
 
     left = obj_cache.get(leftKey)
@@ -274,13 +274,13 @@ def serialize_diff_eval(leftStr, rightStr, frame):
 
     answer = [
         {
-            'type': 'diff',
-            'diff': ''.join(
+            "type": "diff",
+            "diff": "".join(
                 difflib.unified_diff(
-                    (pformat(left, indent=2, width=5) + '\n').splitlines(
+                    (pformat(left, indent=2, width=5) + "\n").splitlines(
                         keepends=True
                     ),
-                    (pformat(right, indent=2, width=5) + '\n').splitlines(
+                    (pformat(right, indent=2, width=5) + "\n").splitlines(
                         keepends=True
                     ),
                     fromfile=leftStr,
@@ -290,21 +290,21 @@ def serialize_diff_eval(leftStr, rightStr, frame):
         }
     ]
 
-    return {'prompt': f'{leftStr} ? {rightStr}', 'answer': answer}
+    return {"prompt": f"{leftStr} ? {rightStr}", "answer": answer}
 
 
 def serialize_suggestion(prompt, from_, to, cursor, frame):
-    answer = {'prompt': prompt, 'from': from_, 'to': to, 'suggestion': {}}
+    answer = {"prompt": prompt, "from": from_, "to": to, "suggestion": {}}
     try:
         script = Interpreter(
             prompt,
             [frame.f_locals, frame.f_globals],
-            line=cursor['line'] + 1,
-            column=cursor['ch'],
+            line=cursor["line"] + 1,
+            column=cursor["ch"],
         )
         completions = script.completions()
     except Exception:
-        log.exception('Completion failed')
+        log.exception("Completion failed")
         return answer
 
     params_first_completions = [
@@ -313,16 +313,16 @@ def serialize_suggestion(prompt, from_, to, cursor, frame):
 
     completions = [
         {
-            'text': comp.name_with_symbols,
-            'description': comp.description,
-            'base': comp.name_with_symbols[
+            "text": comp.name_with_symbols,
+            "description": comp.description,
+            "base": comp.name_with_symbols[
                 : len(comp.name_with_symbols) - len(comp.complete)
             ],
-            'complete': comp.complete,
+            "complete": comp.complete,
         }
         for comp in params_first_completions
     ]
 
-    suggestion = {'from': from_, 'to': to, 'list': completions}
-    answer['suggestion'] = suggestion
+    suggestion = {"from": from_, "to": to, "list": completions}
+    answer["suggestion"] = suggestion
     return answer

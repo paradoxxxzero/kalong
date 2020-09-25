@@ -9,7 +9,7 @@ class FakeSTD(object):
         self.type = type
 
     def write(self, s):
-        self.answer.append({'type': self.type, 'text': s})
+        self.answer.append({"type": self.type, "text": s})
 
     def flush(self):
         pass
@@ -36,8 +36,8 @@ class capture_std(object):
         self.answer = answer
 
     def __enter__(self):
-        sys.stdout = FakeSTD(self.answer, 'out')
-        sys.stderr = FakeSTD(self.answer, 'err')
+        sys.stdout = FakeSTD(self.answer, "out")
+        sys.stderr = FakeSTD(self.answer, "err")
 
     def __exit__(self, exctype, excinst, exctb):
         sys.stdout = sys.__stdout__

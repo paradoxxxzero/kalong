@@ -34,28 +34,28 @@ async def websocket_state():
         return websockets[origin], True
 
     def url(side):
-        overriden_port = config.front_port if side == 'front' else config.port
+        overriden_port = config.front_port if side == "front" else config.port
         protocol = config.protocol
         host = config.host
-        return f'{protocol}://{host}:{overriden_port}/{side}/{origin}'
+        return f"{protocol}://{host}:{overriden_port}/{side}/{origin}"
 
     sessions[origin] = sessions.get(origin, ClientSession())
 
     with fork_lock:
         try:
             ws = await sessions[origin].ws_connect(
-                url('back'), **websocket_options
+                url("back"), **websocket_options
             )
-            log.info('Found existing kalong server')
+            log.info("Found existing kalong server")
         except ClientConnectorError:
             # If there are no server available, fork one
-            log.info('No kalong server, starting one')
+            log.info("No kalong server, starting one")
             forkserver()
             for delay in [0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2, 5, 10]:
                 await asyncio.sleep(delay, loop=get_loop())
                 try:
                     ws = await sessions[origin].ws_connect(
-                        url('back'), **websocket_options
+                        url("back"), **websocket_options
                     )
                     break
                 except ClientConnectorError:
@@ -64,9 +64,9 @@ async def websocket_state():
                 raise NoServerFoundError()
 
         # webbrowser.open should be in the mutex too, it's not thread safe
-        if os.getenv('KALONG_NO_BROWSER') or not webbrowser.open(url('front')):
+        if os.getenv("KALONG_NO_BROWSER") or not webbrowser.open(url("front")):
             log.warn(
-                'Please open your browser to the following url: '
+                "Please open your browser to the following url: "
                 f'{url("front")}'
             )
 
@@ -90,7 +90,7 @@ async def close_websocket():
 
 
 def die():
-    log.info('Dying, closing socket.')
+    log.info("Dying, closing socket.")
     loop = get_loop()
     if loop.is_running():
         loop.create_task(close_websocket())
@@ -113,7 +113,7 @@ def close_all(closeables):
 
 def clean_websockets():
     log.info(
-        f'Cleaning at exit {len(websockets)} ws and {len(sessions)} sessions'
+        f"Cleaning at exit {len(websockets)} ws and {len(sessions)} sessions"
     )
     close_all(websockets)
     close_all(sessions)

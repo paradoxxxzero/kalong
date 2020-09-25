@@ -19,7 +19,7 @@ kalong_dir = str(Path(__file__).resolve().parent)
 
 def add_step(type, frame):
     origin = current_origin()
-    steppings[origin] = {'type': type, 'frame': frame, "lno": frame.f_lineno}
+    steppings[origin] = {"type": type, "frame": frame, "lno": frame.f_lineno}
 
 
 def clear_step():
@@ -32,7 +32,7 @@ def start_trace(frame):
     from .tracing import trace
 
     origin = current_origin()
-    log.debug(f'Starting trace for {origin}')
+    log.debug(f"Starting trace for {origin}")
 
     linecache.checkcache()
     current_trace = partial(trace, origin)
@@ -42,7 +42,7 @@ def start_trace(frame):
 
 
 def stop_trace(frame):
-    log.debug('Stopping trace')
+    log.debug("Stopping trace")
     sys.settrace(None)
     for f in iter_frame(frame):
         f.f_trace = None
@@ -62,7 +62,7 @@ user_signal_handler = None
 def handle_user_signal(*args, **kwargs):
     log.info("Handling breakpoint on user signal")
     frame = sys._getframe().f_back
-    add_step('step', frame)
+    add_step("step", frame)
     start_trace(frame)
 
     if user_signal_handler not in (signal.SIG_IGN, signal.SIG_DFL):

@@ -31,15 +31,15 @@ def communicate(frame, event, arg):
 async def init(ws, frame, event, arg):
     tb = arg[2] if event == "exception" else None
 
-    await ws.send_json({'type': 'SET_THEME', 'theme': event})
+    await ws.send_json({"type": "SET_THEME", "theme": event})
     await ws.send_json(
-        {'type': 'SET_TITLE', 'title': get_title(frame, event, arg)}
+        {"type": "SET_TITLE", "title": get_title(frame, event, arg)}
     )
     await ws.send_json(
         {
-            'type': 'SET_FRAMES',
-            'frames': list(serialize_frames(frame, tb))
-            if event != 'shell'
+            "type": "SET_FRAMES",
+            "frames": list(serialize_frames(frame, tb))
+            if event != "shell"
             else [],
         }
     )
@@ -47,7 +47,7 @@ async def init(ws, frame, event, arg):
 
 async def communication_loop(frame, event, arg):
     ws, existing = await websocket_state()
-    await ws.send_json({'type': 'PAUSE'})
+    await ws.send_json({"type": "PAUSE"})
 
     if existing:
         # If the socket is already opened we need to update client state
@@ -58,80 +58,80 @@ async def communication_loop(frame, event, arg):
     async for msg in ws:
         if msg.type == WSMsgType.TEXT:
             data = json.loads(msg.data)
-            if data['type'] == 'HELLO':
+            if data["type"] == "HELLO":
                 await init(ws, frame, event, arg)
-                response = {'type': 'SET_CONFIG', 'config': config.__dict__}
+                response = {"type": "SET_CONFIG", "config": config.__dict__}
 
-            elif data['type'] == 'GET_FILE':
-                filename = data['filename']
-                file = ''.join(linecache.getlines(filename))
+            elif data["type"] == "GET_FILE":
+                filename = data["filename"]
+                file = "".join(linecache.getlines(filename))
 
                 response = {
-                    'type': 'SET_FILE',
-                    'filename': filename,
-                    'source': file,
+                    "type": "SET_FILE",
+                    "filename": filename,
+                    "source": file,
                 }
 
-            elif data['type'] == 'SET_PROMPT':
+            elif data["type"] == "SET_PROMPT":
                 response = {
-                    'type': 'SET_ANSWER',
-                    'key': data['key'],
-                    'command': data.get('command'),
-                    'frame': data.get('frame'),
+                    "type": "SET_ANSWER",
+                    "key": data["key"],
+                    "command": data.get("command"),
+                    "frame": data.get("frame"),
                     **serialize_answer(
-                        data['prompt'], get_frame(frame, data.get("frame"))
+                        data["prompt"], get_frame(frame, data.get("frame"))
                     ),
                 }
 
-            elif data['type'] == 'REQUEST_INSPECT':
+            elif data["type"] == "REQUEST_INSPECT":
                 response = {
-                    'type': 'SET_ANSWER',
-                    'key': data['key'],
-                    'command': data.get('command'),
-                    **serialize_inspect(data['id']),
+                    "type": "SET_ANSWER",
+                    "key": data["key"],
+                    "command": data.get("command"),
+                    **serialize_inspect(data["id"]),
                 }
 
-            elif data['type'] == 'REQUEST_INSPECT_EVAL':
+            elif data["type"] == "REQUEST_INSPECT_EVAL":
                 response = {
-                    'type': 'SET_ANSWER',
-                    'key': data['key'],
-                    'command': data.get('command'),
+                    "type": "SET_ANSWER",
+                    "key": data["key"],
+                    "command": data.get("command"),
                     **serialize_inspect_eval(
-                        data['prompt'], get_frame(frame, data.get("frame"))
+                        data["prompt"], get_frame(frame, data.get("frame"))
                     ),
                 }
 
-            elif data['type'] == 'REQUEST_DIFF_EVAL':
+            elif data["type"] == "REQUEST_DIFF_EVAL":
                 response = {
-                    'type': 'SET_ANSWER',
-                    'key': data['key'],
-                    'command': data.get('command'),
+                    "type": "SET_ANSWER",
+                    "key": data["key"],
+                    "command": data.get("command"),
                     **serialize_diff_eval(
-                        data['left'],
-                        data['right'],
+                        data["left"],
+                        data["right"],
                         get_frame(frame, data.get("frame")),
                     ),
                 }
 
-            elif data['type'] == 'REQUEST_SUGGESTION':
+            elif data["type"] == "REQUEST_SUGGESTION":
                 response = {
-                    'type': 'SET_SUGGESTION',
+                    "type": "SET_SUGGESTION",
                     **serialize_suggestion(
-                        data['prompt'],
-                        data['from'],
-                        data['to'],
-                        data['cursor'],
+                        data["prompt"],
+                        data["from"],
+                        data["to"],
+                        data["cursor"],
                         get_frame(frame, data.get("frame")),
                     ),
                 }
 
-            elif data['type'] == 'DO_COMMAND':
-                command = data['command']
-                response = {'type': 'ACK', 'command': command}
-                if command == 'run':
+            elif data["type"] == "DO_COMMAND":
+                command = data["command"]
+                response = {"type": "ACK", "command": command}
+                if command == "run":
                     clear_step()
                     stop_trace(frame)
-                elif command == 'stop':
+                elif command == "stop":
                     clear_step()
                     stop_trace(frame)
                     die()
@@ -140,18 +140,18 @@ async def communication_loop(frame, event, arg):
                 stop = True
             else:
                 response = {
-                    'type': 'error',
-                    'message': f"Unknown type {data['type']}",
+                    "type": "error",
+                    "message": f"Unknown type {data['type']}",
                 }
-            log.debug(f'Got {data} answering with {response}')
-            response['local'] = True
+            log.debug(f"Got {data} answering with {response}")
+            response["local"] = True
             await ws.send_json(response)
 
             if stop:
                 break
 
         elif msg.type == WSMsgType.ERROR:
-            log.error(f'WebSocket closed', exc_info=ws.exception())
+            log.error(f"WebSocket closed", exc_info=ws.exception())
             break
 
     # Browser exited, stopping debug if we are not stepping

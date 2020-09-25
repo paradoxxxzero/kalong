@@ -19,8 +19,8 @@ basicConfig(level=config.log_level)
 
 
 def maybe_bail(app):
-    if not app['front'] and not app['back']:
-        log.info('No remaining clients, gracefully bailing.')
+    if not app["front"] and not app["back"]:
+        log.info("No remaining clients, gracefully bailing.")
         raise GracefulExit()
     else:
         log.info(
@@ -30,15 +30,15 @@ def maybe_bail(app):
 
 
 async def shutdown(app):
-    log.info('App shutdown, closing remaining websockets.')
+    log.info("App shutdown, closing remaining websockets.")
     await asyncio.gather(
         *[
             ws.close()
-            for ws in chain(app['front'].values(), app['back'].values())
+            for ws in chain(app["front"].values(), app["back"].values())
         ]
     )
-    app['front'].clear()
-    app['back'].clear()
+    app["front"].clear()
+    app["back"].clear()
 
 
 async def peer(app, side, origin):
@@ -53,27 +53,27 @@ async def peer(app, side, origin):
 
 
 async def websocket(request):
-    side = request.match_info['side']
-    other_side = 'back' if side == 'front' else 'front'
-    origin = request.match_info['origin']
+    side = request.match_info["side"]
+    other_side = "back" if side == "front" else "front"
+    origin = request.match_info["origin"]
     ws = web.WebSocketResponse(**websocket_options)
 
     state = ws.can_prepare(request)
     if not state.ok:
-        log.debug(f'Sending {side} app for {origin}')
+        log.debug(f"Sending {side} app for {origin}")
         return web.FileResponse(
-            Path(__file__).parent / 'assets' / 'index.html'
+            Path(__file__).parent / "assets" / "index.html"
         )
 
     await ws.prepare(request)
 
-    log.debug(f'{side.title()} app connected for {origin}')
+    log.debug(f"{side.title()} app connected for {origin}")
     request.app[side][origin] = ws
 
     async for msg in ws:
         if msg.type == WSMsgType.TEXT:
             data = json.loads(msg.data)
-            log.debug(f'{side} -> {other_side}: {data}')
+            log.debug(f"{side} -> {other_side}: {data}")
             pair = await peer(request.app, other_side, origin)
 
             if data["type"] == "DO_COMMAND":
@@ -89,14 +89,14 @@ async def websocket(request):
 
             await pair.send_json(data)
         elif msg.type == WSMsgType.ERROR:
-            log.error(f'{side.title()} closed', exc_info=ws.exception())
+            log.error(f"{side.title()} closed", exc_info=ws.exception())
 
-    log.debug(f'Closing {side}')
+    log.debug(f"Closing {side}")
     await ws.close()
     del request.app[side][origin]
 
     if not config.detached and origin in request.app[other_side]:
-        log.debug(f'Closing {other_side} due to {side} closing.')
+        log.debug(f"Closing {other_side} due to {side} closing.")
         await request.app[other_side][origin].close()
         del request.app[other_side][origin]
 
@@ -106,9 +106,9 @@ async def websocket(request):
 
 def serve():
     app = web.Application()
-    app['front'] = {}
-    app['back'] = {}
+    app["front"] = {}
+    app["back"] = {}
     app.on_shutdown.append(shutdown)
-    app.router.add_get(r'/{side:(front|back)}/{origin}', websocket)
-    app.router.add_static('/assets/', Path(__file__).parent / 'assets')
+    app.router.add_get(r"/{side:(front|back)}/{origin}", websocket)
+    app.router.add_static("/assets/", Path(__file__).parent / "assets")
     web.run_app(app, host=config.host, port=config.port, print=False)
