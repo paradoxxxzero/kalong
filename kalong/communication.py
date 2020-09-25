@@ -138,11 +138,13 @@ async def communication_loop(frame, event, arg):
                 else:
                     add_step(command, frame)
                 stop = True
+
             else:
                 response = {
                     "type": "error",
                     "message": f"Unknown type {data['type']}",
                 }
+
             log.debug(f"Got {data} answering with {response}")
             response["local"] = True
             await ws.send_json(response)

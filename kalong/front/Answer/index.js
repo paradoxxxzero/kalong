@@ -103,7 +103,11 @@ export default memo(function Answer({
           <Divider />
           <Collapse in={expanded} timeout="auto" unmountOnExit>
             <CardContent className={classes.content}>
-              <Typography variant="h6" className={classes.answer}>
+              <Typography
+                variant="body1"
+                className={classes.answer}
+                component="div"
+              >
                 {answer.map((props, i) => (
                   // eslint-disable-next-line react/no-array-index-key
                   <AnswerDispatch key={i} {...props} />

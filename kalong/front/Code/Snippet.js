@@ -1,5 +1,5 @@
 import { makeStyles } from '@material-ui/core'
-import React, { useRef, useEffect } from 'react'
+import React, { useRef, useEffect, memo } from 'react'
 import clsx from 'clsx'
 
 import CodeMirror from './codemirror'
@@ -18,7 +18,7 @@ const useStyles = makeStyles(() => ({
   },
 }))
 
-export default function Snippet({
+export default memo(function Snippet({
   className,
   value,
   theme,
@@ -46,4 +46,4 @@ export default function Snippet({
       onClick={onClick}
     />
   )
-}
+})
