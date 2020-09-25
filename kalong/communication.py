@@ -152,8 +152,14 @@ async def communication_loop(frame, tb=None):
             log.debug(f'Got {data} answering with {response}')
             response['local'] = True
             await ws.send_json(response)
+
             if stop:
                 break
+
         elif msg.type == WSMsgType.ERROR:
             log.error(f'WebSocket closed', exc_info=ws.exception())
-            stop_trace(frame)
+            break
+
+    # Browser exited, stopping debug if we are not stepping
+    if not stop:
+        stop_trace(frame)
