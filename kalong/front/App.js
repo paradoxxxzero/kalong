@@ -1,5 +1,5 @@
 import { makeStyles } from '@material-ui/core'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { useTheme } from '@material-ui/core/styles'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import React, { useState, useEffect, useCallback } from 'react'
@@ -12,6 +12,7 @@ import GlobalIndicator from './GlobalIndicator'
 import Main from './Main'
 import SideDrawer from './SideDrawer'
 import TopBar from './TopBar'
+import { hello } from './actions'
 
 const useStyles = makeStyles({
   root: {
@@ -64,9 +65,15 @@ export default function App() {
   const classes = useStyles()
   const theme = useTheme()
   const mobile = useMediaQuery(theme.breakpoints.down('sm'))
+  const dispatch = useDispatch()
   const running = useSelector(state => state.running)
   const frames = useSelector(state => state.frames)
   const [open, setOpen] = useState(!mobile)
+
+  useEffect(() => {
+    dispatch(hello())
+  }, [dispatch])
+
   useEffect(
     () => {
       setOpen(!mobile && !!frames.length)

@@ -1,3 +1,9 @@
+export const HELLO = 'HELLO'
+export const hello = () => ({
+  type: HELLO,
+  remote: true,
+})
+
 export const PAUSE = 'PAUSE'
 export const pause = () => ({
   type: PAUSE,

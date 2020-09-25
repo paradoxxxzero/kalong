@@ -45,6 +45,20 @@ except Exception:
 log = logging.getLogger(__name__)
 
 
+def get_title(frame, event, arg):
+    if event == 'line':
+        return 'Tracing'
+    elif event == 'call':
+        return f'Calling {frame.f_code.co_name}'
+    elif event == 'return':
+        return f'Returning from {frame.f_code.co_name}'
+    elif event == 'exception':
+        return f'{arg[0].__name__}: {arg[1]}'
+    elif event == 'shell':
+        return 'Shell'
+    return "???"
+
+
 def get_frame(frame, key):
     if not key:
         return frame

@@ -4,7 +4,7 @@ import threading
 from multiprocessing import process
 from pathlib import Path
 
-from .communication import communicate, initiate
+from .communication import communicate
 from .stepping import steppings, stop_trace
 from .websockets import die
 
@@ -84,9 +84,7 @@ def trace(origin, frame, event, arg):
             )
         )
     ):
-        # Inform clients
-        initiate(event, frame, arg)
         # Enter the websocket communication loop that pauses the execution
-        communicate(frame, arg[2] if event == "exception" else None)
+        communicate(frame, event, arg)
 
     return sys.gettrace()

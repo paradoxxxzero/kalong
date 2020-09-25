@@ -88,10 +88,8 @@ def run_file(filename, *args):
 
 def shell():
     # Launch a shell
-    from .communication import initiate, communicate
+    from .communication import communicate
 
     frame = sys._getframe()
-    # Inform clients
-    initiate('shell', frame, None)
     # Enter the websocket communication loop that pauses the execution
-    communicate(frame)
+    communicate(frame, 'shell', [])

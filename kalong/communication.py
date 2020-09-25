@@ -13,63 +13,65 @@ from .debugger import (
     serialize_inspect_eval,
     serialize_suggestion,
     get_frame,
+    get_title,
 )
 from .loops import run
 from .stepping import add_step, clear_step, stop_trace
 from .utils import basicConfig
-from .websockets import websocket, die
+from .websockets import die, websocket_state
 
 log = logging.getLogger(__name__)
 basicConfig(level=config.log_level)
 
 
-def communicate(frame, tb=None):
-    run(communication_loop(frame, tb))
+def communicate(frame, event, arg):
+    run(communication_loop(frame, event, arg))
 
 
-def initiate(event, frame, arg):
-    if event == 'line':
-        title = 'Tracing'
-    elif event == 'call':
-        title = f'Calling {frame.f_code.co_name}'
-    elif event == 'return':
-        title = f'Returning from {frame.f_code.co_name}'
-    elif event == 'exception':
-        title = f'{arg[0].__name__}: {arg[1]}'
-    elif event == 'shell':
-        title = 'Shell'
-    run(
-        send_once(
-            {'type': 'PAUSE'},
-            {'type': 'SET_THEME', 'theme': event},
-            {'type': 'SET_TITLE', 'title': title},
+async def communication_loop(frame, event, arg):
+    tb = arg[2] if event == "exception" else None
+
+    ws, existing = await websocket_state()
+    if existing:
+        # If the socket is already opened we need to update client state
+        await ws.send_json({'type': 'PAUSE'})
+        await ws.send_json({'type': 'SET_THEME', 'theme': event})
+        await ws.send_json(
+            {'type': 'SET_TITLE', 'title': get_title(frame, event, arg)}
+        )
+        await ws.send_json(
             {
                 'type': 'SET_FRAMES',
-                'frames': list(
-                    serialize_frames(
-                        frame, arg[2] if event == "exception" else None
-                    )
-                )
+                'frames': list(serialize_frames(frame, tb))
                 if event != 'shell'
                 else [],
-            },
+            }
         )
-    )
+        # Otherwise if it's new, just wait for HELLO to answer current state
 
-
-async def send_once(*msgs):
-    ws = await websocket()
-    for msg in msgs:
-        await ws.send_json(msg)
-
-
-async def communication_loop(frame, tb=None):
-    ws = await websocket()
     stop = False
     async for msg in ws:
         if msg.type == WSMsgType.TEXT:
             data = json.loads(msg.data)
-            if data['type'] == 'GET_FRAMES':
+            if data['type'] == 'HELLO':
+                response = {'type': 'ACK', 'command': "HELLO"}
+                await ws.send_json({'type': 'PAUSE'})
+                await ws.send_json({'type': 'SET_THEME', 'theme': event})
+                await ws.send_json(
+                    {
+                        'type': 'SET_TITLE',
+                        'title': get_title(frame, event, arg),
+                    }
+                )
+                await ws.send_json(
+                    {
+                        'type': 'SET_FRAMES',
+                        'frames': list(serialize_frames(frame, tb))
+                        if event != 'shell'
+                        else [],
+                    }
+                )
+            elif data['type'] == 'GET_FRAMES':
                 response = {
                     'type': 'SET_FRAMES',
                     'frames': list(serialize_frames(frame, tb)),

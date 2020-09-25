@@ -23,10 +23,15 @@ websocket_options = {"max_msg_size": 1024 * 1024 * 1024}
 
 
 async def websocket():
+    ws, _ = await websocket_state()
+    return ws
+
+
+async def websocket_state():
     # Here we get the magic cookie of our current thread in current pid
     origin = current_origin()
     if origin in websockets:
-        return websockets[origin]
+        return websockets[origin], True
 
     def url(side):
         overriden_port = config.front_port if side == 'front' else config.port
@@ -66,7 +71,7 @@ async def websocket():
             )
 
     websockets[origin] = ws
-    return ws
+    return ws, False
 
 
 async def close_websocket():
