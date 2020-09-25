@@ -17,8 +17,11 @@ import { Typography } from '@material-ui/core'
 
 const useStyles = makeStyles(theme => ({
   root: {
+    margin: theme.spacing(1),
+    padding: theme.spacing(1),
+    transition: '250ms ease-in-out box-shadow',
     '&:hover': {
-      backgroundColor: 'rgba(0, 0, 0, .01)',
+      boxShadow: '0 0 5px rgba(0, 0, 0, .125)',
     },
   },
   noWrap: {
