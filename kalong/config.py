@@ -8,7 +8,7 @@ defaults = {
     'host': 'localhost',
     'port': 59999,
     'front_port': 59999,
-    'log': 'INFO',
+    'log': 'warn',
     'detached': False,
     'command': [],
     'inject': None,

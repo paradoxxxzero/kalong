@@ -28,25 +28,30 @@ def communicate(frame, event, arg):
     run(communication_loop(frame, event, arg))
 
 
-async def communication_loop(frame, event, arg):
+async def init(ws, frame, event, arg):
     tb = arg[2] if event == "exception" else None
 
+    await ws.send_json({'type': 'SET_THEME', 'theme': event})
+    await ws.send_json(
+        {'type': 'SET_TITLE', 'title': get_title(frame, event, arg)}
+    )
+    await ws.send_json(
+        {
+            'type': 'SET_FRAMES',
+            'frames': list(serialize_frames(frame, tb))
+            if event != 'shell'
+            else [],
+        }
+    )
+
+
+async def communication_loop(frame, event, arg):
     ws, existing = await websocket_state()
+    await ws.send_json({'type': 'PAUSE'})
+
     if existing:
         # If the socket is already opened we need to update client state
-        await ws.send_json({'type': 'PAUSE'})
-        await ws.send_json({'type': 'SET_THEME', 'theme': event})
-        await ws.send_json(
-            {'type': 'SET_TITLE', 'title': get_title(frame, event, arg)}
-        )
-        await ws.send_json(
-            {
-                'type': 'SET_FRAMES',
-                'frames': list(serialize_frames(frame, tb))
-                if event != 'shell'
-                else [],
-            }
-        )
+        await init(ws, frame, event, arg)
         # Otherwise if it's new, just wait for HELLO to answer current state
 
     stop = False
@@ -54,28 +59,9 @@ async def communication_loop(frame, event, arg):
         if msg.type == WSMsgType.TEXT:
             data = json.loads(msg.data)
             if data['type'] == 'HELLO':
-                response = {'type': 'ACK', 'command': "HELLO"}
-                await ws.send_json({'type': 'PAUSE'})
-                await ws.send_json({'type': 'SET_THEME', 'theme': event})
-                await ws.send_json(
-                    {
-                        'type': 'SET_TITLE',
-                        'title': get_title(frame, event, arg),
-                    }
-                )
-                await ws.send_json(
-                    {
-                        'type': 'SET_FRAMES',
-                        'frames': list(serialize_frames(frame, tb))
-                        if event != 'shell'
-                        else [],
-                    }
-                )
-            elif data['type'] == 'GET_FRAMES':
-                response = {
-                    'type': 'SET_FRAMES',
-                    'frames': list(serialize_frames(frame, tb)),
-                }
+                await init(ws, frame, event, arg)
+                response = {'type': 'SET_CONFIG', 'config': config.__dict__}
+
             elif data['type'] == 'GET_FILE':
                 filename = data['filename']
                 file = ''.join(linecache.getlines(filename))
@@ -85,6 +71,7 @@ async def communication_loop(frame, event, arg):
                     'filename': filename,
                     'source': file,
                 }
+
             elif data['type'] == 'SET_PROMPT':
                 response = {
                     'type': 'SET_ANSWER',
@@ -95,6 +82,7 @@ async def communication_loop(frame, event, arg):
                         data['prompt'], get_frame(frame, data.get("frame"))
                     ),
                 }
+
             elif data['type'] == 'REQUEST_INSPECT':
                 response = {
                     'type': 'SET_ANSWER',
@@ -102,6 +90,7 @@ async def communication_loop(frame, event, arg):
                     'command': data.get('command'),
                     **serialize_inspect(data['id']),
                 }
+
             elif data['type'] == 'REQUEST_INSPECT_EVAL':
                 response = {
                     'type': 'SET_ANSWER',
@@ -111,6 +100,7 @@ async def communication_loop(frame, event, arg):
                         data['prompt'], get_frame(frame, data.get("frame"))
                     ),
                 }
+
             elif data['type'] == 'REQUEST_DIFF_EVAL':
                 response = {
                     'type': 'SET_ANSWER',
@@ -122,6 +112,7 @@ async def communication_loop(frame, event, arg):
                         get_frame(frame, data.get("frame")),
                     ),
                 }
+
             elif data['type'] == 'REQUEST_SUGGESTION':
                 response = {
                     'type': 'SET_SUGGESTION',
@@ -133,6 +124,7 @@ async def communication_loop(frame, event, arg):
                         get_frame(frame, data.get("frame")),
                     ),
                 }
+
             elif data['type'] == 'DO_COMMAND':
                 command = data['command']
                 response = {'type': 'ACK', 'command': command}

@@ -2,6 +2,7 @@ import { setConnectionState } from './actions'
 
 export default store => {
   let closing = false
+  const verbose = ['debug', 'info'].includes(store.getState().config.log)
   const queue = []
   const connect = () =>
     new WebSocket(
@@ -23,7 +24,10 @@ export default store => {
 
   ws.onmessage = ({ data }) => {
     const action = JSON.parse(data)
-    // console.log(action.type, action)
+    if (verbose) {
+      const { type, ...data } = action
+      console && console.log('->', type, data)
+    }
     store.dispatch(action)
   }
 
@@ -45,8 +49,16 @@ export default store => {
     if (action.remote) {
       const packet = JSON.stringify(action)
       if (ws.readyState === 1) {
+        if (verbose) {
+          const { type, ...data } = action
+          console && console.log('<-', type, data)
+        }
         ws.send(packet)
       } else {
+        if (verbose) {
+          const { type, ...data } = action
+          console && console.log('><', type, data)
+        }
         queue.push(packet)
         if (ws.readyState === 3) {
           ws = window.ws = connect()
