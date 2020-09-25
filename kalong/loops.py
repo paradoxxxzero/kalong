@@ -16,7 +16,8 @@ def get_loop():
     origin = current_origin()
     if origin not in loops:
         loops[origin] = asyncio.new_event_loop()
-        # asyncio.set_event_loop(loops[origin])
+        if sys.platform != "win32":
+            loops[origin].add_signal_handler(signal.SIGTERM, stop)
     return loops[origin]
 
 
@@ -51,6 +52,3 @@ def run(coro):
         log.info("Loop got cancelled")
         die()
         sys.exit(0)
-
-    if sys.platform != "win32":
-        loop.add_signal_handler(signal.SIGTERM, stop)
