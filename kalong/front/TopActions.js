@@ -129,7 +129,7 @@ const ActionButton = ({
   action: { key, label, action, disabled, Icon },
   handleCommand,
 }) => (
-  <Tooltip k title={`${label} [${key}]`}>
+  <Tooltip title={`${label} [${key}]`}>
     <IconButton
       color="inherit"
       onClick={handleCommand}

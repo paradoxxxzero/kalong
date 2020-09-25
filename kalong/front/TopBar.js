@@ -14,7 +14,7 @@ const drawerWidth = 240
 
 const useStyles = makeStyles(theme => ({
   appBar: {
-    zIndex: theme.zIndex.drawer + 1,
+    zIndex: theme.zIndex.drawer + 2,
     transition: `${theme.transitions.create(['margin', 'width'], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
@@ -26,7 +26,7 @@ const useStyles = makeStyles(theme => ({
   appBarShift: {
     width: `calc(100% - ${drawerWidth}px)`,
     transition: `${theme.transitions.create(['margin', 'width'], {
-      easing: theme.transitions.easing.easeOut,
+      easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
     })},${theme.transitions.create(['background-color', 'color'], {
       easing: theme.transitions.easing.easeInOut,
@@ -69,8 +69,10 @@ export default function TopBar({
                 ) : (
                   <ChevronLeft />
                 )
+              ) : rtl ? (
+                <ChevronLeft />
               ) : (
-                <Menu />
+                <ChevronRight />
               )}
             </IconButton>
           </Tooltip>

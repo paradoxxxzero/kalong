@@ -11,6 +11,7 @@ const useStyles = makeStyles(theme => ({
     flexGrow: 1,
     display: 'flex',
     flexDirection: 'column',
+    zIndex: theme.zIndex.drawer + 1,
     minWidth: 0, // Fix codemirror wrapping
   },
   toolbar: {
