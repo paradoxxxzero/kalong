@@ -1,16 +1,24 @@
+import linecache
 import os
 import re
 import signal
 import socket
 import sys
 import threading
+from pathlib import Path
 
 from .. import config
+from .iterators import iter_frame
 
 try:
     from log_colorizer import basicConfig
 except ImportError:
     from logging import basicConfig  # noqa
+
+try:
+    import uncompyle6
+except ImportError:
+    uncompyle6 = None
 
 ORIGIN_RE = re.compile(r"(.+)__(.+)--(.+)")
 
@@ -55,3 +63,29 @@ def url(side):
 
 def human_readable_side(side):
     return "browser" if side == "front" else "program"
+
+
+def discompile(code):
+    if not uncompyle6:
+        return ""
+    try:
+        uncompyle6.deparse_code2str(code)
+    except Exception:
+        return ""
+
+
+def get_file_from_code(frame, filename):
+    for frame in iter_frame(frame):
+        co_filename = frame.f_code.co_filename or "<unspecified>"
+        if co_filename == "<frozen importlib._bootstrap>":
+            co_filename = os.path.join(
+                os.path.dirname(linecache.__file__),
+                "importlib",
+                "_bootstrap.py",
+            )
+        fn = Path(co_filename)
+        if not co_filename.startswith("<"):
+            fn = fn.resolve()
+
+        if filename == str(fn):
+            return discompile(frame.f_code)

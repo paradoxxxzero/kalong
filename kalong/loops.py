@@ -44,15 +44,3 @@ def clean_loops():
 def stop():
     for task in asyncio.Task.all_tasks():
         task.cancel()
-
-
-def run(coro):
-    loop = get_loop()
-    try:
-        loop.run_until_complete(coro)
-    except asyncio.exceptions.CancelledError:
-        from .websockets import die
-
-        log.info("Loop got cancelled")
-        die()
-        sys.exit(0)

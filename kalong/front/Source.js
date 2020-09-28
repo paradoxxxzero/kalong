@@ -44,7 +44,7 @@ export default memo(function Source({ currentFile, className }) {
     lastFunctionLineNumber,
   } = currentFile
   useEffect(() => {
-    if (absoluteFilename && !files[absoluteFilename]) {
+    if (absoluteFilename && typeof files[absoluteFilename] === 'undefined') {
       dispatch(getFile(absoluteFilename))
     }
   }, [dispatch, files, absoluteFilename])

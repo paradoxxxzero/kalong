@@ -53,9 +53,7 @@ class trace:
         self.break_ = break_
         self.full = full
 
-    def __enter__(
-        self,
-    ):
+    def __enter__(self):
         start_trace(self.break_, self.full)
 
     def __exit__(self, *args):

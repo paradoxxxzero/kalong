@@ -1,3 +1,4 @@
+import asyncio
 import json
 import linecache
 import logging
@@ -7,18 +8,18 @@ from aiohttp import WSMsgType
 
 from . import config
 from .debugger import (
+    get_frame,
+    get_title,
     serialize_answer,
     serialize_diff_eval,
     serialize_frames,
     serialize_inspect,
     serialize_inspect_eval,
     serialize_suggestion,
-    get_frame,
-    get_title,
 )
-from .loops import run
+from .loops import get_loop
 from .stepping import add_step, clear_step, stop_trace
-from .utils import basicConfig
+from .utils import basicConfig, get_file_from_code
 from .websockets import die, websocket_state
 
 log = logging.getLogger(__name__)
@@ -26,7 +27,15 @@ basicConfig(level=config.log_level)
 
 
 def communicate(frame, event, arg):
-    run(communication_loop(frame, event, arg))
+    loop = get_loop()
+    if loop.is_running():
+        return
+
+    try:
+        loop.run_until_complete(communication_loop(frame, event, arg))
+    except asyncio.exceptions.CancelledError:
+        log.info("Loop got cancelled")
+        die()
 
 
 async def init(ws, frame, event, arg):
@@ -71,7 +80,8 @@ async def communication_loop(frame, event, arg):
             elif data["type"] == "GET_FILE":
                 filename = data["filename"]
                 file = "".join(linecache.getlines(filename))
-
+                if not file:
+                    file = get_file_from_code(frame, filename)
                 response = {
                     "type": "SET_FILE",
                     "filename": filename,

@@ -21,6 +21,7 @@ from pprint import pformat
 
 from jedi import Interpreter
 
+from .utils import discompile
 from .utils.io import capture_display, capture_exception, capture_std
 from .utils.iterators import iter_cause, iter_stack, iter_frame
 from .utils.obj import (
@@ -36,11 +37,6 @@ try:
     from cutter.utils import bang_compile as compile
 except ImportError:
     cut = None
-
-try:
-    from uncompyle6 import code_deparse
-except Exception:
-    code_deparse = None
 
 log = logging.getLogger(__name__)
 
@@ -80,13 +76,16 @@ def serialize_frames(current_frame, current_tb):
                 "importlib",
                 "_bootstrap.py",
             )
+        fn = Path(filename)
+        if not filename.startswith("<"):
+            fn = fn.resolve()
+
         line = None
         linecache.checkcache(filename)
         line = linecache.getline(filename, lno, frame.f_globals)
         line = line and line.strip()
         startlnos = dis.findlinestarts(code)
         lastlineno = list(startlnos)[-1][1]
-        fn = Path(filename).resolve()
         yield {
             "key": id(code),
             "absoluteFilename": str(fn),
@@ -230,14 +229,13 @@ def serialize_inspect(key):
     try:
         source = getsource(obj)
     except Exception:
-        if code_deparse:
-            try:
-                code = get_code(obj)
-                if code:
-                    uncompiled = code_deparse(code).text
-                    source = f"# Decompiled from {obj!r}\n\n{uncompiled}"
-            except Exception:
-                raise  # TODO REMOVE
+        try:
+            code = get_code(obj)
+            if code:
+                uncompiled = discompile(code)
+                source = f"# Decompiled from {obj!r}\n\n{uncompiled}"
+        except Exception:
+            raise  # TODO REMOVE
 
     answer = [
         {
