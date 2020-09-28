@@ -4,10 +4,11 @@ export const hello = () => ({
   remote: true,
 })
 
-export const SET_CONFIG = 'SET_CONFIG'
-export const setConfig = config => ({
-  type: SET_CONFIG,
+export const SET_INFO = 'SET_INFO'
+export const setInfo = (config, main) => ({
+  type: SET_INFO,
   config,
+  main,
 })
 
 export const PAUSE = 'PAUSE'

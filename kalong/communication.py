@@ -1,6 +1,7 @@
 import json
 import linecache
 import logging
+import threading
 
 from aiohttp import WSMsgType
 
@@ -60,7 +61,12 @@ async def communication_loop(frame, event, arg):
             data = json.loads(msg.data)
             if data["type"] == "HELLO":
                 await init(ws, frame, event, arg)
-                response = {"type": "SET_CONFIG", "config": config.__dict__}
+                response = {
+                    "type": "SET_INFO",
+                    "config": config.__dict__,
+                    "main": threading.current_thread()
+                    is threading.main_thread(),
+                }
 
             elif data["type"] == "GET_FILE":
                 filename = data["filename"]

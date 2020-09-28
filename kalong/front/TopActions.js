@@ -31,79 +31,82 @@ import { SkipNext } from '@material-ui/icons'
 import { FastForward } from '@material-ui/icons'
 import { Eject } from '@material-ui/icons'
 
-const actions = running => [
-  running
-    ? {
-        label: 'Pause the program',
-        action: 'pause',
-        Icon: Pause,
-        key: 'F8',
-        disabled: false,
-      }
-    : {
-        label: 'Continue the program',
-        action: 'continue',
-        Icon: PlayArrow,
-        key: 'F8',
-        disabled: false,
-      },
-  {
-    label: 'Step to the next instruction',
-    action: 'step',
-    Icon: ArrowForward,
-    key: 'F9',
-    disabled: running,
-  },
-  {
-    label: 'Step Until next line (bypass loops)',
-    action: 'stepUntil',
-    Icon: Redo,
-    key: 'F10',
-    disabled: running,
-  },
-  {
-    label: 'Step Into function call',
-    action: 'stepInto',
-    Icon: ArrowDownward,
-    key: 'F11',
-    disabled: running,
-  },
-  {
-    label: 'Step Out of the current function',
-    action: 'stepOut',
-    Icon: ArrowUpward,
-    key: 'Shift+F11',
-    disabled: running,
-  },
-  {
-    label: 'Trace the program (stop at every exception)',
-    action: 'trace',
-    Icon: SkipNext,
-    key: 'Shift+F12',
-    disabled: running,
-  },
-  {
-    label: 'Run the program',
-    action: 'run',
-    Icon: FastForward,
-    key: 'F12',
-    disabled: running,
-  },
-  {
-    label: 'StopDebugging',
-    action: 'stop',
-    Icon: Eject,
-    key: 'Esc',
-    disabled: running,
-  },
-  {
-    label: 'Exit program',
-    action: 'kill',
-    Icon: Close,
-    key: 'Shift+Esc',
-    disabled: false,
-  },
-]
+const actions = (running, main) =>
+  [
+    running
+      ? main
+        ? {
+            label: 'Pause the program',
+            action: 'pause',
+            Icon: Pause,
+            key: 'F8',
+            disabled: false,
+          }
+        : null
+      : {
+          label: 'Continue the program',
+          action: 'continue',
+          Icon: PlayArrow,
+          key: 'F8',
+          disabled: false,
+        },
+    {
+      label: 'Step to the next instruction',
+      action: 'step',
+      Icon: ArrowForward,
+      key: 'F9',
+      disabled: running,
+    },
+    {
+      label: 'Step Until next line (bypass loops)',
+      action: 'stepUntil',
+      Icon: Redo,
+      key: 'F10',
+      disabled: running,
+    },
+    {
+      label: 'Step Into function call',
+      action: 'stepInto',
+      Icon: ArrowDownward,
+      key: 'F11',
+      disabled: running,
+    },
+    {
+      label: 'Step Out of the current function',
+      action: 'stepOut',
+      Icon: ArrowUpward,
+      key: 'Shift+F11',
+      disabled: running,
+    },
+    {
+      label: 'Trace the program (stop at every exception)',
+      action: 'trace',
+      Icon: SkipNext,
+      key: 'Shift+F12',
+      disabled: running,
+    },
+    {
+      label: 'Run the program',
+      action: 'run',
+      Icon: FastForward,
+      key: 'F12',
+      disabled: running,
+    },
+    {
+      label: 'StopDebugging',
+      action: 'stop',
+      Icon: Eject,
+      key: 'Esc',
+      disabled: running,
+    },
+    {
+      label: 'Exit program',
+      action: 'kill',
+      Icon: Close,
+      key: 'Shift+Esc',
+      disabled: false,
+    },
+  ].filter(x => x)
 
 const useStyles = makeStyles({
   grow: {
@@ -146,6 +149,8 @@ export default memo(function TopActions({ mobile }) {
   const title = useSelector(state => state.title)
   const frames = useSelector(state => state.frames)
   const running = useSelector(state => state.running)
+  const main = useSelector(state => state.main)
+
   const dispatch = useDispatch()
   const classes = useStyles()
   const [menuEl, setMenuEl] = useState(null)
@@ -183,7 +188,7 @@ export default memo(function TopActions({ mobile }) {
   })
 
   const Action = mobile ? MobileItem : ActionButton
-  const actionItems = actions(running).map(action => (
+  const actionItems = actions(running, main).map(action => (
     <Action key={action.action} action={action} handleCommand={handleCommand} />
   ))
 

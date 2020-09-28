@@ -18,12 +18,12 @@ import {
   SET_TITLE,
   DO_COMMAND,
   PAUSE,
-  SET_CONFIG,
+  SET_INFO,
 } from './actions'
 
 const config = (state = {}, action) => {
   switch (action.type) {
-    case SET_CONFIG:
+    case SET_INFO:
       return action.config
     default:
       return state
@@ -201,6 +201,15 @@ const theme = (state = 'init', action) => {
   }
 }
 
+const main = (state = true, action) => {
+  switch (action.type) {
+    case SET_INFO:
+      return action.main
+    default:
+      return state
+  }
+}
+
 export default combineReducers({
   config,
   title,
@@ -214,4 +223,5 @@ export default combineReducers({
   connection,
   loadingLevel,
   running,
+  main,
 })
