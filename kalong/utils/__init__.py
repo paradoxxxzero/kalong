@@ -69,7 +69,7 @@ def discompile(code):
     if not uncompyle6:
         return ""
     try:
-        uncompyle6.deparse_code2str(code)
+        return uncompyle6.deparse_code2str(code)
     except Exception:
         return ""
 

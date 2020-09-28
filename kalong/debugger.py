@@ -31,6 +31,7 @@ from .utils.obj import (
     safe_getattr,
     sync_locals,
 )
+from .errors import SetFrameError
 
 try:
     from cutter import cut
@@ -111,9 +112,13 @@ def serialize_answer(prompt, frame):
         compiled_code = None
         try:
             compiled_code = compile(prompt, "<stdin>", "single")
+        except SetFrameError:
+            raise
         except Exception:
             try:
                 compiled_code = compile(prompt, "<stdin>", "exec")
+            except SetFrameError:
+                raise
             except Exception:
                 # handle ex
                 sys.excepthook(*sys.exc_info())
@@ -122,6 +127,8 @@ def serialize_answer(prompt, frame):
         if compiled_code is not None:
             try:
                 exec(compiled_code, frame.f_globals, f_locals)
+            except SetFrameError:
+                raise
             except Exception:
                 # handle ex
                 sys.excepthook(*sys.exc_info())

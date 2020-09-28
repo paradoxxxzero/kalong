@@ -21,6 +21,7 @@ from .loops import get_loop
 from .stepping import add_step, clear_step, stop_trace
 from .utils import basicConfig, get_file_from_code
 from .websockets import die, websocket_state
+from .errors import SetFrameError
 
 log = logging.getLogger(__name__)
 basicConfig(level=config.log_level)
@@ -29,7 +30,7 @@ basicConfig(level=config.log_level)
 def communicate(frame, event, arg):
     loop = get_loop()
     if loop.is_running():
-        return
+        raise SetFrameError(frame, event, arg)
 
     try:
         loop.run_until_complete(communication_loop(frame, event, arg))
@@ -55,7 +56,11 @@ async def init(ws, frame, event, arg):
     )
 
 
-async def communication_loop(frame, event, arg):
+async def communication_loop(frame_, event_, arg_):
+    frame = frame_
+    event = event_
+    arg = arg_
+
     ws, existing = await websocket_state()
     await ws.send_json({"type": "PAUSE"})
 
@@ -89,15 +94,32 @@ async def communication_loop(frame, event, arg):
                 }
 
             elif data["type"] == "SET_PROMPT":
-                response = {
-                    "type": "SET_ANSWER",
-                    "key": data["key"],
-                    "command": data.get("command"),
-                    "frame": data.get("frame"),
-                    **serialize_answer(
-                        data["prompt"], get_frame(frame, data.get("frame"))
-                    ),
-                }
+                try:
+                    response = {
+                        "type": "SET_ANSWER",
+                        "key": data["key"],
+                        "command": data.get("command"),
+                        "frame": data.get("frame"),
+                        **serialize_answer(
+                            data["prompt"], get_frame(frame, data.get("frame"))
+                        ),
+                    }
+                except SetFrameError as e:
+                    frame = e.frame
+                    event = e.event
+                    arg = e.arg
+
+                    await init(ws, frame, event, arg)
+
+                    response = {
+                        "type": "SET_ANSWER",
+                        "key": data["key"],
+                        "command": data.get("command"),
+                        "frame": data.get("frame"),
+                        "prompt": data["prompt"].strip(),
+                        "answer": "",
+                        "duration": 0,
+                    }
 
             elif data["type"] == "REQUEST_INSPECT":
                 response = {
