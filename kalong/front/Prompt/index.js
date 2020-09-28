@@ -17,7 +17,7 @@ import React, {
   useRef,
   useState,
 } from 'react'
-import ReactDOM from 'react-dom'
+import { renderToStaticMarkup } from 'react-dom/server'
 import { useDispatch, useSelector } from 'react-redux'
 
 import {
@@ -102,6 +102,7 @@ const useStyles = makeStyles(theme => ({
   '@global': {
     '.CodeMirror-hints': {
       maxHeight: '35em',
+      zIndex: 10000,
     },
   },
   suggestion: {
@@ -416,15 +417,14 @@ export default memo(function Prompt({ onScrollUp, onScrollDown }) {
         ({ text, base, complete, description }) => ({
           text,
           render: elt => {
-            ReactDOM.render(
+            elt.innerHTML = renderToStaticMarkup(
               <div className={classes.suggestion}>
                 <span className={classes.completion}>
                   <span className={classes.base}>{base}</span>
                   {complete}
                 </span>
                 <span className={classes.description}>{description}</span>
-              </div>,
-              elt
+              </div>
             )
           },
         })
