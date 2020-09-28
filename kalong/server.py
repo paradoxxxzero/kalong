@@ -11,7 +11,7 @@ from aiohttp.web_runner import GracefulExit
 
 from . import config
 from .errors import NoClientFoundError
-from .utils import basicConfig, USER_SIGNAL
+from .utils import basicConfig, USER_SIGNAL, human_readable_side, parse_origin
 from .websockets import websocket_options
 
 log = logging.getLogger(__name__)
@@ -45,11 +45,21 @@ async def peer(app, side, origin):
     if origin in app[side]:
         return app[side][origin]
     else:
-        for delay in [0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10]:
-            await asyncio.sleep(delay)
+        for delay in [0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 30]:
             if origin in app[side]:
                 return app[side][origin]
-        raise NoClientFoundError()
+            getattr(
+                log,
+                "warning"
+                if delay > 3
+                else ("info" if delay > 0.3 else "debug"),
+            )(
+                f"{human_readable_side(side).title()} connection not found, awaiting {delay} more seconds."
+            )
+            await asyncio.sleep(delay)
+        raise NoClientFoundError(
+            f"No {human_readable_side(side)} was open to connect to debugger"
+        )
 
 
 async def websocket(request):
@@ -74,11 +84,16 @@ async def websocket(request):
         if msg.type == WSMsgType.TEXT:
             data = json.loads(msg.data)
             log.debug(f"{side} -> {other_side}: {data}")
-            pair = await peer(request.app, other_side, origin)
-
+            try:
+                pair = await peer(request.app, other_side, origin)
+            except NoClientFoundError:
+                log.error(
+                    f"No {human_readable_side(other_side)} connection was found, aborting debugger"
+                )
+                break
             if data["type"] == "DO_COMMAND":
                 if data["command"] in ["pause", "kill"]:
-                    pid = int(origin.split("__")[1].split("--")[0])
+                    _, pid, _ = parse_origin(origin)
                     os.kill(
                         pid,
                         signal.SIGTERM
@@ -95,10 +110,13 @@ async def websocket(request):
     await ws.close()
     del request.app[side][origin]
 
-    if not config.detached and origin in request.app[other_side]:
-        log.debug(f"Closing {other_side} due to {side} closing.")
-        await request.app[other_side][origin].close()
-        del request.app[other_side][origin]
+    if not config.detached:
+        if origin in request.app[other_side]:
+            log.debug(f"Closing {other_side} due to {side} closing.")
+            await request.app[other_side][origin].close()
+
+        if origin in request.app[other_side]:
+            del request.app[other_side][origin]
 
     maybe_bail(request.app)
     return ws
