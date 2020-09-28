@@ -3,6 +3,7 @@ import linecache
 import logging
 import signal
 import sys
+import threading
 from functools import partial
 from pathlib import Path
 
@@ -56,17 +57,16 @@ def cleanup():
     clean_loops()
 
 
-user_signal_handler = None
+if threading.current_thread() is threading.main_thread():
+    user_signal_handler = None
 
+    def handle_user_signal(*args, **kwargs):
+        log.info("Handling breakpoint on user signal")
+        frame = sys._getframe().f_back
+        add_step("step", frame)
+        start_trace(frame)
 
-def handle_user_signal(*args, **kwargs):
-    log.info("Handling breakpoint on user signal")
-    frame = sys._getframe().f_back
-    add_step("step", frame)
-    start_trace(frame)
+        if user_signal_handler not in (signal.SIG_IGN, signal.SIG_DFL):
+            user_signal_handler(*args, **kwargs)
 
-    if user_signal_handler not in (signal.SIG_IGN, signal.SIG_DFL):
-        user_signal_handler(*args, **kwargs)
-
-
-user_signal_handler = signal.signal(USER_SIGNAL, handle_user_signal)
+    user_signal_handler = signal.signal(USER_SIGNAL, handle_user_signal)

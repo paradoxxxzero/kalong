@@ -2,6 +2,7 @@ import asyncio
 import logging
 import signal
 import sys
+import threading
 
 from .utils import current_origin
 
@@ -16,7 +17,10 @@ def get_loop():
     origin = current_origin()
     if origin not in loops:
         loops[origin] = asyncio.new_event_loop()
-        if sys.platform != "win32":
+        if (
+            sys.platform != "win32"
+            and threading.current_thread() is threading.main_thread()
+        ):
             loops[origin].add_signal_handler(signal.SIGTERM, stop)
     return loops[origin]
 

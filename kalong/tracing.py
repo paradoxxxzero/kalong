@@ -23,6 +23,17 @@ def trace(origin, frame, event, arg):
     lno = stepping.get("lno")
     filename = frame.f_code.co_filename
 
+    # When we are in _shutdown of thread, program is finished
+    if (
+        filename == threading.__file__
+        and frame.f_code.co_name in ["_shutdown", "_bootstrap_inner"]
+        or filename == process.__file__
+        and frame.f_code.co_name == "_bootstrap"
+    ):
+        stop_trace(frame)
+        die()
+        return
+
     # If we are tracing, we continue tracing if this is not an exception
     if type == "trace" and event != "exception":
         return sys.gettrace()
@@ -36,17 +47,6 @@ def trace(origin, frame, event, arg):
         else:
             # Stop tracing if below
             return
-
-    # When we are in _shutdown of thread, program is finished
-    if (
-        filename == threading.__file__
-        and frame.f_code.co_name in ["_shutdown", "_bootstrap_inner"]
-        or filename == process.__file__
-        and frame.f_code.co_name == "_bootstrap"
-    ):
-        stop_trace(frame)
-        die()
-        return
 
     # Don't trace importlib bootstrapping
     if filename == "<frozen importlib._bootstrap>":
