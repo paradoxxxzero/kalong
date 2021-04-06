@@ -45,7 +45,7 @@ async def websocket_state():
             log.info("No kalong server, starting one")
             forkserver()
             for delay in [0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2, 5, 10]:
-                await asyncio.sleep(delay, loop=get_loop())
+                await asyncio.sleep(delay)
                 try:
                     ws = await sessions[origin].ws_connect(
                         url("back"), **websocket_options
@@ -98,7 +98,6 @@ def close_all(closeables):
     loop.run_until_complete(
         asyncio.gather(
             *[closeable.close() for closeable in closeables.values()],
-            loop=loop,
             return_exceptions=True,
         )
     )
