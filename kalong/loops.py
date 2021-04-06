@@ -42,5 +42,5 @@ def clean_loops():
 
 
 def stop():
-    for task in asyncio.Task.all_tasks():
+    for task in asyncio.all_tasks():
         task.cancel()
