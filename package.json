@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "scripts": {
     "serve": "NODE_ENV=development webpack-dev-server",
-    "build": "NODE_ENV=production webpack"
+    "build": "rm -r kalong/assets && NODE_ENV=production webpack"
   },
   "license": "GPL-3.0-or-later",
   "private": true,
