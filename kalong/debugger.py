@@ -301,13 +301,8 @@ def serialize_diff_eval(leftStr, rightStr, frame):
 def serialize_suggestion(prompt, from_, to, cursor, frame):
     answer = {"prompt": prompt, "from": from_, "to": to, "suggestion": {}}
     try:
-        script = Interpreter(
-            prompt,
-            [frame.f_locals, frame.f_globals],
-            line=cursor["line"] + 1,
-            column=cursor["ch"],
-        )
-        completions = script.completions()
+        script = Interpreter(prompt, [frame.f_locals, frame.f_globals])
+        completions = script.complete(cursor["line"] + 1, cursor["ch"])
     except Exception:
         log.exception("Completion failed")
         return answer
