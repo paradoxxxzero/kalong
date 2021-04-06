@@ -91,15 +91,12 @@ def die():
         loop.run_until_complete(close_websocket())
 
 
-def close_all(closeables):
+async def close_all(closeables):
     if not closeables:
         return
-    loop = get_loop()
-    loop.run_until_complete(
-        asyncio.gather(
-            *[closeable.close() for closeable in closeables.values()],
-            return_exceptions=True,
-        )
+    await asyncio.gather(
+        *[closeable.close() for closeable in closeables.values()],
+        return_exceptions=True,
     )
 
 
@@ -107,5 +104,5 @@ def clean_websockets():
     log.info(
         f"Cleaning at exit {len(websockets)} ws and {len(sessions)} sessions"
     )
-    close_all(websockets)
-    close_all(sessions)
+    asyncio.run(close_all(websockets))
+    asyncio.run(close_all(sessions))
