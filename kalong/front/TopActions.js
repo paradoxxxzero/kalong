@@ -112,6 +112,9 @@ const useStyles = makeStyles({
   grow: {
     flexGrow: 1,
   },
+  steps: {
+    whiteSpace: 'pre',
+  },
 })
 
 const MobileItem = ({
