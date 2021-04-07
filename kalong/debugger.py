@@ -104,8 +104,12 @@ def serialize_answer(prompt, frame):
     prompt = prompt.strip()
     duration = 0
     answer = []
+    f_globals = dict(frame.f_globals)
     f_locals = dict(frame.f_locals)
+    f_globals.update(f_locals)
     f_locals["_current_frame"] = frame
+    f_locals["cut"] = cut
+
     with capture_exception(answer), capture_display(answer), capture_std(
         answer
     ):
@@ -126,13 +130,14 @@ def serialize_answer(prompt, frame):
         start = time.time()
         if compiled_code is not None:
             try:
-                exec(compiled_code, frame.f_globals, f_locals)
+                exec(compiled_code, f_globals, f_locals)
             except SetFrameError:
                 raise
             except Exception:
                 # handle ex
                 sys.excepthook(*sys.exc_info())
             del f_locals["_current_frame"]
+            del f_locals["cut"]
             sync_locals(frame, f_locals)
         duration = int((time.time() - start) * 1000 * 1000 * 1000)
 
