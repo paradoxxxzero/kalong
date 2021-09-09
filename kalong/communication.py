@@ -34,7 +34,7 @@ def communicate(frame, event, arg):
 
     try:
         loop.run_until_complete(communication_loop(frame, event, arg))
-    except asyncio.exceptions.CancelledError:
+    except asyncio.CancelledError:
         log.info("Loop got cancelled")
         die()
 
