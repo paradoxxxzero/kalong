@@ -5,7 +5,10 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "eslint src --ext .js,.jsx --fix"
+    "lint": "eslint src --ext .js,.jsx --fix",
+    "shell": "poetry run python -m kalong",
+    "devShell": "concurrently --kill-others \"yarn dev\" \"poetry run python -m kalong --front-port=59998 --detached\"",
+    "devScript": "concurrently --kill-others \"yarn dev\" \"poetry run python -m kalong --front-port=59998 --detached test.py\""
   },
   "license": "GPL-3.0-or-later",
   "private": true,
@@ -24,6 +27,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^1.0.7",
+    "concurrently": "^7.0.0",
     "eslint": "^8.6.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-config-react-app": "^7.0.0",
