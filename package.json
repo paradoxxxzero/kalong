@@ -7,8 +7,7 @@
     "preview": "vite preview",
     "lint": "eslint src --ext .js,.jsx --fix",
     "shell": "poetry run python -m kalong",
-    "devShell": "concurrently --kill-others \"yarn dev\" \"sleep 1 && poetry run python -m kalong --front-port=59998 --detached\"",
-    "devScript": "concurrently --kill-others \"yarn dev\" \"sleep 1 && poetry run python -m kalong --front-port=59998 --detached test.py\""
+    "start": "concurrently --kill-others \"yarn dev\" \"wait-port 59998 && poetry run python -m kalong --front-port=59998 --detached $FILE\""
   },
   "license": "GPL-3.0-or-later",
   "private": true,
@@ -34,6 +33,7 @@
     "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-prettier": "^4.0.0",
     "prettier": "^2.5.1",
-    "vite": "^2.7.2"
+    "vite": "^2.7.2",
+    "wait-port": "^0.2.9"
   }
 }
