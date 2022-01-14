@@ -3,7 +3,7 @@ export const commandShortcuts = {
   d: 'diff',
 }
 
-export default (state, action) => {
+export default function valueReducer(state, action) {
   const newState = (() => {
     switch (action.type) {
       case 'new-value':

@@ -1,19 +1,16 @@
-import { IconButton, makeStyles } from '@material-ui/core'
-import React, { useCallback, useState, useEffect } from 'react'
+import { Button, IconButton, makeStyles, Typography } from '@material-ui/core'
 import {
-  ExpandMore,
   ExpandLess,
+  ExpandMore,
+  MoreHoriz,
+  MoreVert,
   UnfoldLess,
   UnfoldMore,
 } from '@material-ui/icons'
-
+import React, { useCallback, useState } from 'react'
 import Snippet from '../Code/Snippet'
-import Inspectable from './Inspectable'
 import AnswerDispatch from './AnswerDispatch'
-import { Button } from '@material-ui/core'
-import { MoreVert } from '@material-ui/icons'
-import { MoreHoriz } from '@material-ui/icons'
-import { Typography } from '@material-ui/core'
+import Inspectable from './Inspectable'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -72,9 +69,10 @@ export default function Iterable({ subtype, values, id, mapping }) {
     () => setSlice(slice => (slice === 0 ? initialSlice : 0)),
     [initialSlice]
   )
-  const handleUnSlice = useCallback(() => setSlice(values.length), [
-    values.length,
-  ])
+  const handleUnSlice = useCallback(
+    () => setSlice(values.length),
+    [values.length]
+  )
   const handleExpand = useCallback(() => setExpanded(x => !x), [])
 
   const open =

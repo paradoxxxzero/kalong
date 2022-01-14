@@ -65,10 +65,10 @@ export default memo(function Answer({
   const dispatch = useDispatch()
   const [expanded, setExpanded] = useState(true)
   const handleExpand = useCallback(() => setExpanded(x => !x), [])
-  const handleView = useCallback(() => dispatch(setActiveFrame(frame)), [
-    dispatch,
-    frame,
-  ])
+  const handleView = useCallback(
+    () => dispatch(setActiveFrame(frame)),
+    [dispatch, frame]
+  )
   const handleClose = useCallback(() => {
     dispatch(removePromptAnswer(uid))
   }, [dispatch, uid])

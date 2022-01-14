@@ -1,14 +1,13 @@
-import { Tooltip, makeStyles, Menu, MuiThemeProvider } from '@material-ui/core'
+import { makeStyles, MuiThemeProvider, Tooltip } from '@material-ui/core'
 import AppBar from '@material-ui/core/AppBar'
 import IconButton from '@material-ui/core/IconButton'
-import React from 'react'
 import Toolbar from '@material-ui/core/Toolbar'
-import clsx from 'clsx'
 import { ChevronLeft, ChevronRight } from '@material-ui/icons'
+import clsx from 'clsx'
+import React from 'react'
 import { useSelector } from 'react-redux'
-
-import TopActions from './TopActions'
 import { muiThemes } from './ThemedApp'
+import TopActions from './TopActions'
 
 const drawerWidth = 240
 

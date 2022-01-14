@@ -72,9 +72,10 @@ const useStyles = makeStyles(theme => ({
         animation: 'blink 1.5s ease-in-out infinite',
         outline: 0,
       },
-      '.CodeMirror-wrap pre.CodeMirror-line, .CodeMirror-wrap pre.CodeMirror-line-like': {
-        wordBreak: 'break-word',
-      },
+      '.CodeMirror-wrap pre.CodeMirror-line, .CodeMirror-wrap pre.CodeMirror-line-like':
+        {
+          wordBreak: 'break-word',
+        },
     },
   },
   expand: {
@@ -433,9 +434,10 @@ export default memo(function Prompt({ onScrollUp, onScrollDown }) {
     [suggestions, classes]
   )
 
-  const removeSuggestion = useCallback(() => dispatch(clearSuggestion()), [
-    dispatch,
-  ])
+  const removeSuggestion = useCallback(
+    () => dispatch(clearSuggestion()),
+    [dispatch]
+  )
 
   const grow =
     scrollback.length === 0 || scrollback.slice(-1)[0].answer !== null

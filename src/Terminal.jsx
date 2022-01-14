@@ -1,8 +1,7 @@
 import { makeStyles } from '@material-ui/core'
-import { useSelector } from 'react-redux'
-import React, { useRef, useCallback, useEffect, memo } from 'react'
 import clsx from 'clsx'
-
+import React, { memo, useCallback, useRef } from 'react'
+import { useSelector } from 'react-redux'
 import Answer from './Answer'
 import Prompt from './Prompt'
 

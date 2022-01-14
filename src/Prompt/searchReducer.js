@@ -1,4 +1,4 @@
-export default (state, action) => {
+export default function searchReducer(state, action) {
   switch (action.type) {
     case 'search':
       return {

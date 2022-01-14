@@ -1,6 +1,6 @@
 import { setConnectionState } from './actions'
 
-export default store => {
+export default function websocketMiddleware(store) {
   let closing = false
   const verbose = ['debug', 'info'].includes(store.getState().config.log)
   const queue = []
