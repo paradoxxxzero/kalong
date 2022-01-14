@@ -7,23 +7,23 @@
     "preview": "vite preview",
     "lint": "eslint src --ext .js,.jsx --fix",
     "shell": "poetry run python -m kalong",
-    "devShell": "concurrently --kill-others \"yarn dev\" \"poetry run python -m kalong --front-port=59998 --detached\"",
-    "devScript": "concurrently --kill-others \"yarn dev\" \"poetry run python -m kalong --front-port=59998 --detached test.py\""
+    "devShell": "concurrently --kill-others \"yarn dev\" \"sleep 1 && poetry run python -m kalong --front-port=59998 --detached\"",
+    "devScript": "concurrently --kill-others \"yarn dev\" \"sleep 1 && poetry run python -m kalong --front-port=59998 --detached test.py\""
   },
   "license": "GPL-3.0-or-later",
   "private": true,
   "dependencies": {
-    "@material-ui/core": "^4.10.1",
+    "@material-ui/core": "^4.12.3",
     "@material-ui/icons": "^4.9.1",
-    "@thebespokepixel/es-tinycolor": "^2.0.1",
+    "@thebespokepixel/es-tinycolor": "^3.1.0",
     "clsx": "^1.1.1",
-    "codemirror": "^5.58.1",
+    "codemirror": "^5.65.0",
     "fast-deep-equal": "^3.1.1",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
-    "react-redux": "^7.2.0",
-    "react-swipeable-views": "^0.13.9",
-    "redux": "^4.0.5"
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-redux": "^7.2.6",
+    "react-swipeable-views": "^0.14.0",
+    "redux": "^4.1.2"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^1.0.7",
