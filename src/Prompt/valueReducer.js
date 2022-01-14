@@ -60,6 +60,7 @@ export default function valueReducer(state, action) {
         throw new Error()
     }
   })()
+
   if (newState.value) {
     const commandMatch = newState.value.match(/^\?(\S+)\s(.*)/)
     if (commandMatch) {
@@ -74,7 +75,6 @@ export default function valueReducer(state, action) {
       }
     }
   }
-
   return newState
 }
 

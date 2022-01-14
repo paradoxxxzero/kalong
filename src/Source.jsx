@@ -1,40 +1,49 @@
-import { makeStyles } from '@material-ui/core'
-import { tinycolor } from '@thebespokepixel/es-tinycolor'
+import { completionKeymap } from '@codemirror/autocomplete'
+import { closeBracketsKeymap } from '@codemirror/closebrackets'
+import { defaultKeymap } from '@codemirror/commands'
+import { commentKeymap } from '@codemirror/comment'
+import { foldGutter, foldKeymap } from '@codemirror/fold'
+import { lineNumbers } from '@codemirror/gutter'
+import { historyKeymap } from '@codemirror/history'
+import { python } from '@codemirror/lang-python'
+import { lintKeymap } from '@codemirror/lint'
+import { highlightSelectionMatches, searchKeymap } from '@codemirror/search'
+import { EditorState } from '@codemirror/state'
+import { oneDark } from '@codemirror/theme-one-dark'
+import {
+  drawSelection,
+  EditorView,
+  highlightSpecialChars,
+  keymap,
+} from '@codemirror/view'
+import CodeMirror from '@uiw/react-codemirror'
+import React, { memo, useCallback, useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import React, { useEffect, memo } from 'react'
-import blueGrey from '@material-ui/core/colors/blueGrey'
-import clsx from 'clsx'
-
 import { getFile } from './actions'
-import { range } from './util'
-import Code from './Code'
-import CodeSource from './Code/Source'
-import Gutter from './Code/Gutter'
-import InView from './Code/InView'
-import Line from './Code/Line'
+import { context } from './extensions'
 
-const cmBg = f => f(tinycolor(blueGrey[900])).toString()
-
-const useStyles = makeStyles({
-  source: {},
-  context: {
-    backgroundColor: cmBg(c => c.darken(2)),
-    borderRight: `1px solid ${cmBg(c => c.darken(6))}`,
-    borderLeft: `1px solid ${cmBg(c => c.darken(6))}`,
-  },
-  contextTop: {
-    borderTop: `1px solid ${cmBg(c => c.darken(6))}`,
-  },
-  contextBottom: {
-    borderBottom: `1px solid ${cmBg(c => c.darken(6))}`,
-  },
-  active: {
-    backgroundColor: cmBg(c => c.lighten(5)),
-  },
-})
+const baseExtensions = [
+  lineNumbers(),
+  highlightSpecialChars(),
+  foldGutter(),
+  drawSelection(),
+  highlightSelectionMatches(),
+  keymap.of([
+    ...closeBracketsKeymap,
+    ...defaultKeymap,
+    ...searchKeymap,
+    ...historyKeymap,
+    ...foldKeymap,
+    ...commentKeymap,
+    ...completionKeymap,
+    ...lintKeymap,
+  ]),
+  EditorState.readOnly.of(true),
+  EditorView.lineWrapping,
+  python(),
+]
 
 export default memo(function Source({ currentFile, className }) {
-  const classes = useStyles()
   const dispatch = useDispatch()
   const files = useSelector(state => state.files)
   const {
@@ -43,45 +52,54 @@ export default memo(function Source({ currentFile, className }) {
     firstFunctionLineNumber,
     lastFunctionLineNumber,
   } = currentFile
+  const source = files[absoluteFilename]
+
   useEffect(() => {
-    if (absoluteFilename && typeof files[absoluteFilename] === 'undefined') {
+    if (absoluteFilename && typeof source === 'undefined') {
       dispatch(getFile(absoluteFilename))
     }
   }, [dispatch, files, absoluteFilename])
-  if (!files[absoluteFilename]) {
-    return null
-  }
+
+  const extensions = useMemo(() => {
+    return [
+      ...baseExtensions,
+      context({
+        active: lineNumber,
+        first: firstFunctionLineNumber,
+        last: lastFunctionLineNumber,
+      }),
+    ]
+  }, [lineNumber, firstFunctionLineNumber, lastFunctionLineNumber])
+
+  const handleUpdate = useCallback(
+    viewUpdate => {
+      const { state, view } = viewUpdate
+      let pos
+      try {
+        pos = state.doc.line(lineNumber).from
+      } catch (e) {
+        return
+      }
+
+      const scroller = view.scrollDOM
+      const { top } = view.lineBlockAt(pos)
+      scroller.scrollTo({
+        top: top - scroller.clientHeight / 2,
+      })
+    },
+    [lineNumber]
+  )
+
   return (
-    <Code
-      className={clsx(classes.source, className)}
-      readOnly
-      lineNumbers
-      lineWrapping
-      theme="material"
-      gutters={['CodeMirror-linemarkers', 'CodeMirror-linenumbers']}
+    <CodeMirror
+      className={className}
+      editable={false}
+      basicSetup={false}
+      theme={oneDark}
       height="100%"
-    >
-      <CodeSource code={files[absoluteFilename]} />
-      {/* Active line */}
-      <Line line={lineNumber} classes={{ background: classes.active }} />
-      <Gutter line={lineNumber} gutter="CodeMirror-linemarkers" marker="➤" />
-      {/* Context */}
-      <Line
-        line={firstFunctionLineNumber}
-        classes={{ background: classes.contextTop }}
-      />
-      {range(firstFunctionLineNumber, lastFunctionLineNumber + 1).map(line => (
-        <Line
-          key={line}
-          line={line}
-          classes={{ background: classes.context }}
-        />
-      ))}
-      <Line
-        line={lastFunctionLineNumber}
-        classes={{ background: classes.contextBottom }}
-      />
-      <InView line={lineNumber} />
-    </Code>
+      extensions={extensions}
+      value={source}
+      onUpdate={handleUpdate}
+    />
   )
 })
