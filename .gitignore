@@ -11,6 +11,6 @@ htmlcov
 node_modules/
 lib/
 coverage/
-kalong/assets/
+kalong/static/
 yarn-error.log
 dist/

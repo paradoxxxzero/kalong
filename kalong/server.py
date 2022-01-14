@@ -72,7 +72,7 @@ async def websocket(request):
     if not state.ok:
         log.debug(f"Sending {side} app for {origin}")
         return web.FileResponse(
-            Path(__file__).parent / "assets" / "index.html"
+            Path(__file__).parent / "static" / "index.html"
         )
 
     await ws.prepare(request)
@@ -128,5 +128,7 @@ def serve():
     app["back"] = {}
     app.on_shutdown.append(shutdown)
     app.router.add_get(r"/{side:(front|back)}/{origin}", websocket)
-    app.router.add_static("/assets/", Path(__file__).parent / "assets")
+    app.router.add_static(
+        "/assets/", Path(__file__).parent / "static" / "assets"
+    )
     web.run_app(app, host=config.host, port=config.port, print=False)

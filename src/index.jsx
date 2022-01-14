@@ -29,9 +29,3 @@ const renderRoot = () => {
 }
 
 renderRoot()
-if (module.hot) {
-  module.hot.accept('./ThemedApp', () => renderRoot())
-  module.hot.accept('./reducer', () => {
-    store.replaceReducer(reducer)
-  })
-}

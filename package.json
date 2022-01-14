@@ -2,8 +2,9 @@
   "name": "kalong",
   "version": "0.1.0",
   "scripts": {
-    "serve": "NODE_ENV=development webpack-dev-server",
-    "build": "rm -r kalong/assets && NODE_ENV=production webpack"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "license": "GPL-3.0-or-later",
   "private": true,
@@ -21,35 +22,10 @@
     "redux": "^4.0.5"
   },
   "devDependencies": {
-    "@babel/core": "7.11.6",
-    "@babel/plugin-proposal-class-properties": "^7.10.1",
-    "@babel/plugin-proposal-decorators": "^7.10.1",
-    "@babel/plugin-proposal-object-rest-spread": "^7.10.1",
-    "@babel/preset-env": "^7.10.2",
-    "@babel/preset-react": "^7.10.1",
-    "@babel/register": "^7.10.1",
-    "babel-core": "7.0.0-bridge.0",
-    "babel-eslint": "10.1.0",
-    "babel-loader": "8.1.0",
-    "css-loader": "4.3.0",
-    "eslint": "^7.9.0",
-    "eslint-config-prettier": "^6.11.0",
-    "eslint-config-react-app": "^5.2.1",
-    "eslint-loader": "4.0.2",
-    "eslint-plugin-flowtype": "^5.2.0",
-    "eslint-plugin-import": "^2.22.0",
-    "eslint-plugin-jsx-a11y": "^6.3.1",
-    "eslint-plugin-prettier": "^3.1.4",
-    "eslint-plugin-react": "^7.21.0",
-    "eslint-plugin-react-hooks": "^4.1.2",
-    "file-loader": "^6.0.0",
-    "html-webpack-plugin": "^4.3.0",
-    "prettier": "^2.0.5",
-    "style-loader": "^1.2.1",
-    "url-loader": "4.1.0",
-    "webpack": "4.44.2",
-    "webpack-cli": "^3.3.11",
-    "webpack-dev-server": "3.11.0",
-    "webpack-manifest-plugin": "2.2.0"
+    "@vitejs/plugin-react": "^1.0.7",
+    "eslint": "^8.6.0",
+    "eslint-config-react-app": "^7.0.0",
+    "prettier": "^2.5.1",
+    "vite": "^2.7.2"
   }
 }
