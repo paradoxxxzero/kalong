@@ -46,38 +46,35 @@ export default function TopBar({
   onDrawerClose,
 }) {
   const classes = useStyles()
-  const theme = useSelector(state => state.theme)
   return (
-    <MuiThemeProvider theme={muiThemes[theme]}>
-      <AppBar
-        position="fixed"
-        className={clsx(classes.appBar, {
-          [classes.appBarShift]: open && !mobile,
-        })}
-      >
-        <Toolbar>
-          <Tooltip title={`${open ? 'Close' : 'Open'} the call stack`}>
-            <IconButton
-              color="inherit"
-              onClick={open ? onDrawerClose : onDrawerOpen}
-              className={classes.menuButton}
-            >
-              {!mobile && open ? (
-                rtl ? (
-                  <ChevronRight />
-                ) : (
-                  <ChevronLeft />
-                )
-              ) : rtl ? (
-                <ChevronLeft />
-              ) : (
+    <AppBar
+      position="fixed"
+      className={clsx(classes.appBar, {
+        [classes.appBarShift]: open && !mobile,
+      })}
+    >
+      <Toolbar>
+        <Tooltip title={`${open ? 'Close' : 'Open'} the call stack`}>
+          <IconButton
+            color="inherit"
+            onClick={open ? onDrawerClose : onDrawerOpen}
+            className={classes.menuButton}
+          >
+            {!mobile && open ? (
+              rtl ? (
                 <ChevronRight />
-              )}
-            </IconButton>
-          </Tooltip>
-          <TopActions mobile={mobile} />
-        </Toolbar>
-      </AppBar>
-    </MuiThemeProvider>
+              ) : (
+                <ChevronLeft />
+              )
+            ) : rtl ? (
+              <ChevronLeft />
+            ) : (
+              <ChevronRight />
+            )}
+          </IconButton>
+        </Tooltip>
+        <TopActions mobile={mobile} />
+      </Toolbar>
+    </AppBar>
   )
 }
