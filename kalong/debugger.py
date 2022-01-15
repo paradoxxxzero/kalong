@@ -320,6 +320,7 @@ def serialize_suggestion(prompt, from_, to, cursor, frame):
         {
             "text": comp.name_with_symbols,
             "description": comp.description,
+            "type": comp.type,
             "base": comp.name_with_symbols[
                 : len(comp.name_with_symbols) - len(comp.complete)
             ],

@@ -22,6 +22,12 @@ import { useDispatch, useSelector } from 'react-redux'
 import { getFile } from './actions'
 import { context } from './extensions'
 
+const styleOverrides = EditorView.theme({
+  '&,& .cm-content': {
+    fontFamily: '"Fira Code", monospace',
+  },
+})
+
 const baseExtensions = [
   lineNumbers(),
   highlightSpecialChars(),
@@ -40,6 +46,7 @@ const baseExtensions = [
   ]),
   EditorState.readOnly.of(true),
   EditorView.lineWrapping,
+  styleOverrides,
   python(),
 ]
 
@@ -58,7 +65,7 @@ export default memo(function Source({ currentFile, className }) {
     if (absoluteFilename && typeof source === 'undefined') {
       dispatch(getFile(absoluteFilename))
     }
-  }, [dispatch, files, absoluteFilename])
+  }, [dispatch, files, absoluteFilename, source])
 
   const extensions = useMemo(() => {
     return [

@@ -1,4 +1,8 @@
-import { autocompletion, completionKeymap } from '@codemirror/autocomplete'
+import {
+  autocompletion,
+  completionKeymap,
+  completionStatus,
+} from '@codemirror/autocomplete'
 import { closeBrackets, closeBracketsKeymap } from '@codemirror/closebrackets'
 import { defaultKeymap } from '@codemirror/commands'
 import { commentKeymap } from '@codemirror/comment'
@@ -16,7 +20,6 @@ import {
   drawSelection,
   dropCursor,
   EditorView,
-  highlightActiveLine,
   highlightSpecialChars,
   keymap,
 } from '@codemirror/view'
@@ -40,22 +43,37 @@ import React, {
   useRef,
   useState,
 } from 'react'
-import { renderToStaticMarkup } from 'react-dom/server'
 import { useDispatch, useSelector } from 'react-redux'
+import { store } from '..'
 import {
   clearScrollback,
-  clearSuggestion,
   doCommand,
   requestDiffEval,
   requestInspectEval,
   requestSuggestion,
   setPrompt,
-  setSuggestion,
 } from '../actions'
 import { uid } from '../util'
 import searchReducer, { initialSearch } from './searchReducer'
 import { lexArgs, splitDiff } from './utils'
 import valueReducer, { commandShortcuts, initialValue } from './valueReducer'
+
+const jediTypeToCodeMirrorType = {
+  module: 'namespace',
+  class: 'class',
+  instance: 'variable',
+  function: 'function',
+  param: 'interface',
+  path: 'text',
+  keyword: 'keyword',
+  property: 'property',
+  statement: 'constant',
+  // Remaining cm types:
+  // constant
+  // enum
+  // method
+  // type
+}
 
 const getHighlighter = re => ({
   token: stream => {
@@ -72,6 +90,29 @@ const getHighlighter = re => ({
   },
 })
 
+const styleOverrides = EditorView.theme({
+  '&,& .cm-content, & .cm-tooltip.cm-tooltip-autocomplete > ul ': {
+    fontFamily: '"Fira Code", monospace',
+  },
+  '&.cm-editor.cm-focused': {
+    outline: 'none',
+  },
+})
+
+const promptCursorStyles = EditorView.theme({
+  '& .cm-cursor': {
+    width: '12px',
+    border: 'none',
+    outline: '1px solid rgba(0, 0, 0, .5)',
+    display: 'block',
+  },
+  '&.cm-focused .cm-cursor': {
+    background: 'rgba(0, 0, 0, .75)',
+    animation: 'blink 1.5s ease-in-out infinite',
+    outline: 0,
+  },
+})
+
 const baseExtensions = [
   highlightSpecialChars(),
   history(),
@@ -84,9 +125,9 @@ const baseExtensions = [
   closeBrackets(),
   autocompletion(),
   rectangularSelection(),
-  highlightActiveLine(),
   highlightSelectionMatches(),
   EditorView.lineWrapping,
+  styleOverrides,
   keymap.of([
     ...closeBracketsKeymap,
     ...defaultKeymap,
@@ -175,7 +216,6 @@ export default memo(function Prompt({ onScrollUp, onScrollDown }) {
 
   const history = useSelector(state => state.history)
   const scrollback = useSelector(state => state.scrollback)
-  const suggestions = useSelector(state => state.suggestions)
   const activeFrame = useSelector(state => state.activeFrame)
 
   const dispatch = useDispatch()
@@ -229,8 +269,8 @@ export default memo(function Prompt({ onScrollUp, onScrollDown }) {
 
   const handleEnter = useCallback(
     view => {
-      if (!prompt.value) {
-        return
+      if (!prompt.value || completionStatus(view.state) === 'active') {
+        return false
       }
       const key = uid()
       switch (prompt.command) {
@@ -258,15 +298,27 @@ export default memo(function Prompt({ onScrollUp, onScrollDown }) {
     [activeFrame, dispatch, prompt.command, prompt.value]
   )
 
-  const handleUp = useCallback(() => {
-    valueDispatch({ type: 'handle-up', history })
-    return true
-  }, [history])
+  const handleUp = useCallback(
+    view => {
+      if (completionStatus(view.state) === 'active') {
+        return false
+      }
+      valueDispatch({ type: 'handle-up', history })
+      return true
+    },
+    [history]
+  )
 
-  const handleDown = useCallback(() => {
-    valueDispatch({ type: 'handle-down', history })
-    return true
-  }, [history])
+  const handleDown = useCallback(
+    view => {
+      if (completionStatus(view.state) === 'active') {
+        return false
+      }
+      valueDispatch({ type: 'handle-down', history })
+      return true
+    },
+    [history]
+  )
 
   const handleEntered = useCallback(() => {
     if (code.current) {
@@ -274,37 +326,6 @@ export default memo(function Prompt({ onScrollUp, onScrollDown }) {
       code.current.view.focus()
     }
   }, [code])
-
-  const handleCompletion = useCallback(
-    view => {
-      const cursor = view.state.doc.lineAt(view.state.selection.main.head)
-      const token = codeMirror.getTokenAt(cursor)
-      const from = {
-        line: cursor.number - 1,
-        ch: token.type && token.type !== 'operator' ? token.start : token.end,
-      }
-      const to = { line: cursor.line, ch: token.end }
-      if (!prompt.value.includes(' ') && prompt.value.startsWith('?')) {
-        dispatch(
-          setSuggestion({
-            prompt: prompt.value,
-            from,
-            to,
-            suggestion: {
-              from: { line: from.line, ch: 0 },
-              to,
-              list: Object.values(commandShortcuts).map(cmd => ({
-                text: `?${cmd}`,
-              })),
-            },
-          })
-        )
-        return
-      }
-      dispatch(requestSuggestion(prompt.value, from, to, cursor, activeFrame))
-    },
-    [activeFrame, dispatch, prompt.value]
-  )
 
   const handleBackspace = useCallback(
     view => {
@@ -360,12 +381,10 @@ export default memo(function Prompt({ onScrollUp, onScrollDown }) {
         ? history.slice(index)
         : [...history].sort(() => -1).slice(history.length - index - 1)
       const newIndex = historySearched.findIndex(p => p && p.match(valueRE))
-      console.log(index, historySearched, newIndex)
       if (newIndex === -1) {
         searchDispatch({ type: 'not-found', value: newSearch })
         return
       }
-      console.log(newIndex)
       const finalIndex = search.reverse ? index + newIndex : index - newIndex
       searchDispatch({
         type: 'found',
@@ -465,33 +484,75 @@ export default memo(function Prompt({ onScrollUp, onScrollDown }) {
     [handleInsertHistoryArg]
   )
 
-  const provideSuggestion = useCallback(
-    () => ({
-      from: suggestions.suggestion.from,
-      to: suggestions.suggestion.to,
-      list: suggestions.suggestion.list.map(
-        ({ text, base, complete, description }) => ({
-          text,
-          render: elt => {
-            elt.innerHTML = renderToStaticMarkup(
-              <div className={classes.suggestion}>
-                <span className={classes.completion}>
-                  <span className={classes.base}>{base}</span>
-                  {complete}
-                </span>
-                <span className={classes.description}>{description}</span>
-              </div>
-            )
-          },
-        })
-      ),
-    }),
-    [suggestions, classes]
-  )
+  const autocomplete = useCallback(
+    async context => {
+      let word = context.matchBefore(/\w*/)
+      if (word.from === word.to && !context.explicit) return null
+      const lineCurrent = context.state.doc.lineAt(
+        context.state.selection.main.head
+      )
+      const lineFrom = context.state.doc.lineAt(word.from)
+      const lineTo = context.state.doc.lineAt(word.to)
+      const cursor = {
+        line: lineCurrent.number - 1,
+        ch: context.state.selection.main.head - lineCurrent.from,
+      }
+      const from = {
+        line: lineFrom.number - 1,
+        ch: word.from - lineFrom.from,
+      }
+      const to = {
+        line: lineTo.number - 1,
+        ch: word.to - lineTo.from,
+      }
 
-  const removeSuggestion = useCallback(
-    () => dispatch(clearSuggestion()),
-    [dispatch]
+      if (!prompt.value.includes(' ') && prompt.value.startsWith('?')) {
+        return {
+          from: word.from,
+          options: Object.values(commandShortcuts).map(cmd => ({
+            label: `?${cmd}`,
+            type: 'namespace',
+          })),
+        }
+      }
+
+      dispatch(requestSuggestion(prompt.value, from, to, cursor, activeFrame))
+
+      const suggestions = await Promise.race([
+        new Promise(resolve => setTimeout(() => resolve([]), 5000)),
+        new Promise(resolve => {
+          const unsub = store.subscribe((...args) => {
+            const {
+              suggestions: {
+                prompt: cPrompt,
+                from: cFrom,
+                to: cTo,
+                suggestion,
+              },
+            } = store.getState()
+            if (
+              cPrompt === prompt.value &&
+              from.line === cFrom.line &&
+              from.ch === cFrom.ch &&
+              to.line === cTo.line &&
+              to.ch === cTo.ch
+            ) {
+              resolve(suggestion.list)
+              unsub()
+            }
+          })
+        }),
+      ])
+      return {
+        from: word.from,
+        options: suggestions.map(({ text, description, type }) => ({
+          label: text,
+          info: description,
+          type: jediTypeToCodeMirrorType[type] || type,
+        })),
+      }
+    },
+    [activeFrame, dispatch, prompt.value]
   )
 
   const grow =
@@ -557,9 +618,12 @@ export default memo(function Prompt({ onScrollUp, onScrollDown }) {
           { key: 'Alt-d', run: handleCommand.d, preventDefault: true },
         ])
       ),
+      autocompletion({ override: [autocomplete] }),
+      promptCursorStyles,
       ...baseExtensions,
     ]
   }, [
+    autocomplete,
     handleBackspace,
     handleClearScreen,
     handleCommand.d,

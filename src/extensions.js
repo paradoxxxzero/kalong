@@ -7,18 +7,18 @@ const borderLuminance = 0.8
 const activeLuminance = 0.5
 
 const contextTheme = EditorView.baseTheme({
-  '.cm-context-top': {
+  '& .cm-context-top': {
     borderTop: `1px solid rgba(0, 0, 0, ${borderLuminance})`,
   },
-  '.cm-context-bottom': {
+  '& .cm-context-bottom': {
     borderBottom: `1px solid rgba(0, 0, 0, ${borderLuminance})`,
   },
-  '.cm-context': {
+  '& .cm-context': {
     backgroundColor: `rgba(0, 0, 0, ${contextLuminance})`,
     borderRight: `1px solid rgba(0, 0, 0, ${borderLuminance})`,
     borderLeft: `1px solid rgba(0, 0, 0, ${borderLuminance})`,
   },
-  '.cm-context-active': {
+  '& .cm-context-active': {
     backgroundColor: `rgba(0, 0, 0, ${activeLuminance})`,
   },
 })
