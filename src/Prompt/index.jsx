@@ -23,11 +23,9 @@ import {
   highlightSpecialChars,
   keymap,
 } from '@codemirror/view'
-import { Card, CardHeader, Chip, Grow, IconButton } from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
 import { ExpandMore } from '@mui/icons-material'
+import { Box, Card, CardHeader, Chip, Grow, IconButton } from '@mui/material'
 import CodeMirror from '@uiw/react-codemirror'
-import clsx from 'clsx'
 import React, {
   memo,
   useCallback,
@@ -135,77 +133,7 @@ const baseExtensions = [
   python(),
 ]
 
-const useStyles = makeStyles(theme => ({
-  card: {
-    margin: '1em',
-  },
-  prompt: {
-    '@global': {
-      '.CodeMirror-cursors': {
-        visibility: 'visible !important',
-      },
-      '.CodeMirror-cursor': {
-        width: 'auto',
-        border: 'none',
-        outline: '1px solid rgba(0, 0, 0, .5)',
-      },
-      '.CodeMirror-focused .CodeMirror-cursor': {
-        background: 'rgba(0, 0, 0, .75)',
-        animation: 'blink 1.5s ease-in-out infinite',
-        outline: 0,
-      },
-      '.CodeMirror-wrap pre.CodeMirror-line, .CodeMirror-wrap pre.CodeMirror-line-like':
-        {
-          wordBreak: 'break-word',
-        },
-    },
-  },
-  expand: {
-    transform: 'rotate(0deg)',
-    marginLeft: 'auto',
-    transition: theme.transitions.create('transform', {
-      duration: theme.transitions.duration.shortest,
-    }),
-  },
-  expandOpen: {
-    transform: 'rotate(270deg)',
-  },
-  dialog: {
-    fontSize: '.5em',
-    color: theme.palette.text.secondary,
-    display: 'flex',
-    alignItems: 'center',
-  },
-  searchLabel: {
-    padding: '4px 0',
-  },
-  notFound: {
-    color: theme.palette.error.main,
-  },
-  '@global': {
-    '.CodeMirror-hints': {
-      maxHeight: '35em',
-      zIndex: 10000,
-    },
-  },
-  suggestion: {
-    padding: '8px',
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  completion: {
-    fontSize: '1.25em',
-  },
-  base: {
-    fontWeight: 'bold',
-  },
-  description: {
-    color: theme.palette.text.secondary,
-  },
-}))
-
 export default memo(function Prompt({ onScrollUp, onScrollDown }) {
-  const classes = useStyles()
   const code = useRef()
 
   const history = useSelector(state => state.history)
@@ -679,13 +607,17 @@ export default memo(function Prompt({ onScrollUp, onScrollDown }) {
       unmountOnExit
       onEntered={handleEntered}
     >
-      <Card raised className={classes.card}>
+      <Card raised sx={{ m: 1 }}>
         <CardHeader
           avatar={
             <>
               <IconButton
-                className={clsx(classes.expand, {
-                  [classes.expandOpen]: grow,
+                sx={theme => ({
+                  transform: `rotate(${grow ? 270 : 0}deg)`,
+                  marginLeft: 'auto',
+                  transition: theme.transitions.create('transform', {
+                    duration: theme.transitions.duration.shortest,
+                  }),
                 })}
                 onClick={handleEnter}
                 size="large"
@@ -701,7 +633,6 @@ export default memo(function Prompt({ onScrollUp, onScrollDown }) {
             <>
               <CodeMirror
                 ref={code}
-                className={classes.prompt}
                 value={prompt.value}
                 basicSetup={false}
                 theme="light"
@@ -722,17 +653,20 @@ export default memo(function Prompt({ onScrollUp, onScrollDown }) {
                 {search.highlight && <Highlight mode={search.highlight} />} */}
               {/* </Code> */}
               {search.value !== null && (
-                <label
-                  className={clsx(classes.dialog, {
-                    [classes.notFound]: search.notFound,
-                  })}
+                <Box
+                  component="label"
+                  sx={{
+                    fontSize: '.5em',
+                    color: search.notFound ? 'error.main' : 'text.secondary',
+                    display: 'flex',
+                    alignItems: 'center',
+                  }}
                 >
-                  <span className={classes.searchLabel}>
+                  <Box component="span" sx={{ px: 0, py: 0.5 }}>
                     {search.insensitive && 'I-'}Search{' '}
                     {search.reverse ? 'backward' : 'forward'}:
-                  </span>
+                  </Box>
                   <CodeMirror
-                    className={classes.search}
                     value={search.value}
                     height="auto"
                     autoFocus
@@ -741,7 +675,7 @@ export default memo(function Prompt({ onScrollUp, onScrollDown }) {
                     width="100%"
                     onChange={handleIncrementalSearch}
                   />
-                </label>
+                </Box>
               )}
             </>
           }

@@ -1,8 +1,9 @@
+import { ExpandMore, Warning } from '@mui/icons-material'
 import {
-  Divider,
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Divider,
   Grid,
   List,
   ListItem,
@@ -10,32 +11,9 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
 import React, { useCallback } from 'react'
-import { Warning, ExpandMore } from '@mui/icons-material'
-
-import Inspectable from './Inspectable'
 import Snippet from '../Snippet'
-
-const useStyles = makeStyles(theme => ({
-  centered: {
-    alignItems: 'center',
-  },
-  heading: {
-    display: 'flex',
-    alignItems: 'center',
-  },
-  cause: {
-    padding: '8px 8px 0 0',
-  },
-  warn: {
-    color: theme.palette.error.main,
-    padding: '8px 8px 0 8px',
-  },
-  button: {
-    paddingTop: '5px',
-  },
-}))
+import Inspectable from './Inspectable'
 
 export default function Exception({
   id,
@@ -51,24 +29,27 @@ export default function Exception({
     onChange(expanded ? null : i)
   }, [i, expanded, onChange])
 
-  const classes = useStyles()
-
   return (
     <Accordion expanded={expanded} onChange={handleExpand}>
       <AccordionSummary
         expandIcon={<ExpandMore />}
-        className={classes.centered}
+        sx={{ alignItems: 'center' }}
       >
         <Grid container direction="row" alignItems="center">
-          <Typography className={classes.warn}>
+          <Typography
+            sx={theme => ({
+              color: theme.palette.error.main,
+              padding: '8px 8px 0 8px',
+            })}
+          >
             <Warning />
           </Typography>
           {subtype !== 'root' && (
-            <Typography color="textSecondary" className={classes.cause}>
+            <Typography color="textSecondary" sx={{ p: 1, pb: 0 }}>
               {subtype === 'cause' ? 'Caused by' : 'Issued from'}
             </Typography>
           )}
-          <Inspectable id={id} className={classes.button}>
+          <Inspectable id={id} sx={{ pt: 0.6 }}>
             <Typography variant="h6">
               <Snippet value={name} mode="text" noBreakAll />
             </Typography>

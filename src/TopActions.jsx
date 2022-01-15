@@ -1,22 +1,25 @@
 import {
+  ArrowDownward,
+  ArrowForward,
+  ArrowUpward,
+  Close,
+  Eject,
+  FastForward,
+  MoreVert,
+  Pause,
+  PlayArrow,
+  Redo,
+  SkipNext,
+} from '@mui/icons-material'
+import {
+  Box,
   IconButton,
   ListItemIcon,
   Menu,
   MenuItem,
   Tooltip,
 } from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
 import Typography from '@mui/material/Typography'
-import {
-  ArrowDownward,
-  ArrowForward,
-  ArrowUpward,
-  Close,
-  MoreVert,
-  PlayArrow,
-  Pause,
-  Redo,
-} from '@mui/icons-material'
 import React, {
   memo,
   useCallback,
@@ -25,11 +28,7 @@ import React, {
   useState,
 } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-
 import { doCommand } from './actions'
-import { SkipNext } from '@mui/icons-material'
-import { FastForward } from '@mui/icons-material'
-import { Eject } from '@mui/icons-material'
 
 const actions = (running, main) =>
   [
@@ -108,15 +107,6 @@ const actions = (running, main) =>
     },
   ].filter(x => x)
 
-const useStyles = makeStyles({
-  grow: {
-    flexGrow: 1,
-  },
-  steps: {
-    whiteSpace: 'pre',
-  },
-})
-
 const MobileItem = ({
   action: { label, action, disabled, Icon },
   handleCommand,
@@ -156,7 +146,6 @@ export default memo(function TopActions({ mobile }) {
   const main = useSelector(state => state.main)
 
   const dispatch = useDispatch()
-  const classes = useStyles()
   const [menuEl, setMenuEl] = useState(null)
   const handleCommand = useCallback(
     evt => dispatch(doCommand(evt.currentTarget.getAttribute('data-action'))),
@@ -173,12 +162,12 @@ export default memo(function TopActions({ mobile }) {
       if (!action) {
         return
       }
-      handleCommand[action.action]()
+      dispatch(doCommand(action.action))
       evt.preventDefault()
     }
     window.addEventListener('keydown', handleGlobalActions)
     return () => window.removeEventListener('keydown', handleGlobalActions)
-  }, [running, handleCommand])
+  }, [running, dispatch])
 
   const closeMenu = useCallback(() => setMenuEl(null), [])
   const openMenu = useCallback(
@@ -203,7 +192,7 @@ export default memo(function TopActions({ mobile }) {
       </Typography>
       {!!frames.length && (
         <>
-          <div className={classes.grow} />
+          <Box sx={{ flexGrow: 1 }} />
           {mobile ? (
             <>
               <IconButton onClick={openMenu} size="large">
@@ -214,7 +203,7 @@ export default memo(function TopActions({ mobile }) {
               </Menu>
             </>
           ) : (
-            <div className={classes.steps}>{actionItems}</div>
+            <Box sx={{ whiteSpace: 'pre' }}>{actionItems}</Box>
           )}
         </>
       )}

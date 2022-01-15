@@ -1,4 +1,6 @@
+import { OpenInNew } from '@mui/icons-material'
 import {
+  Box,
   Chip,
   Link,
   Tab,
@@ -8,47 +10,19 @@ import {
   TableRow,
   Tabs,
 } from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
-import React, { useState, useCallback } from 'react'
+import React, { useCallback, useState } from 'react'
 import SwipeableViews from 'react-swipeable-views'
-import clsx from 'clsx'
-import { OpenInNew } from '@mui/icons-material'
-
+import Snippet from '../Snippet'
 import ClassBases from './ClassBases'
 import Inspectable from './Inspectable'
 import Obj from './Obj'
-import Snippet from '../Snippet'
-
-const useStyles = makeStyles(theme => ({
-  name: {
-    wordBreak: 'normal',
-  },
-  doc: {
-    padding: theme.spacing(3),
-    fontSize: '.7em',
-  },
-  source: {
-    padding: theme.spacing(3),
-    fontSize: '.9em',
-  },
-  tabContent: {
-    maxHeight: '400px',
-  },
-  type: {
-    margin: '4px',
-  },
-  signature: {
-    color: theme.palette.text.secondary,
-  },
-}))
 
 export default function Inspect({ attributes, doc, source, infos }) {
-  const classes = useStyles()
   const [tab, setTab] = useState(0)
   const handleChange = useCallback((event, value) => setTab(value), [setTab])
 
   return (
-    <div className={classes.root}>
+    <Box>
       <Tabs
         value={tab}
         onChange={handleChange}
@@ -74,22 +48,22 @@ export default function Inspect({ attributes, doc, source, infos }) {
         )}
       </Tabs>
       <SwipeableViews axis="x" index={tab} onChangeIndex={setTab}>
-        <div className={classes.tabContent}>
+        <Box sx={{ maxHeight: '400px' }}>
           <Table>
             <TableBody>
               {infos.type ? (
                 <TableRow>
-                  <TableCell className={classes.name} align="right">
+                  <TableCell sx={{ wordBreak: 'normal' }} align="right">
                     Type
                   </TableCell>
                   <TableCell>
-                    <Chip label={infos.type} className={classes.type} />
+                    <Chip label={infos.type} sx={{ m: 0.5 }} />
                   </TableCell>
                 </TableRow>
               ) : null}
               {infos.bases ? (
                 <TableRow>
-                  <TableCell className={classes.name} align="right">
+                  <TableCell sx={{ wordBreak: 'normal' }} align="right">
                     Bases
                   </TableCell>
                   <TableCell>
@@ -99,7 +73,7 @@ export default function Inspect({ attributes, doc, source, infos }) {
               ) : null}
               {infos.mro ? (
                 <TableRow>
-                  <TableCell className={classes.name} align="right">
+                  <TableCell sx={{ wordBreak: 'normal' }} align="right">
                     MRO
                   </TableCell>
                   <TableCell>
@@ -109,7 +83,7 @@ export default function Inspect({ attributes, doc, source, infos }) {
                         id={id}
                         type="chip"
                         label={type.trim()}
-                        className={classes.type}
+                        sx={{ m: 0.5 }}
                         color={
                           ['object', 'type'].includes(type)
                             ? void 0
@@ -122,7 +96,7 @@ export default function Inspect({ attributes, doc, source, infos }) {
               ) : null}
               {infos.signature ? (
                 <TableRow>
-                  <TableCell className={classes.name} align="right">
+                  <TableCell sx={{ wordBreak: 'normal' }} align="right">
                     Signature
                   </TableCell>
                   <TableCell>
@@ -132,14 +106,14 @@ export default function Inspect({ attributes, doc, source, infos }) {
               ) : null}
               {infos.fqn ? (
                 <TableRow>
-                  <TableCell className={classes.name} align="right">
+                  <TableCell sx={{ wordBreak: 'normal' }} align="right">
                     Full Qualified Name
                   </TableCell>
                   <TableCell>{infos.fqn}</TableCell>
                 </TableRow>
               ) : null}
               <TableRow>
-                <TableCell className={classes.name} align="right">
+                <TableCell sx={{ wordBreak: 'normal' }} align="right">
                   Identity
                 </TableCell>
                 <TableCell>
@@ -148,7 +122,7 @@ export default function Inspect({ attributes, doc, source, infos }) {
               </TableRow>
               {infos.online_doc ? (
                 <TableRow>
-                  <TableCell className={classes.name} align="right">
+                  <TableCell sx={{ wordBreak: 'normal' }} align="right">
                     Online documentation
                   </TableCell>
                   <TableCell>
@@ -164,7 +138,7 @@ export default function Inspect({ attributes, doc, source, infos }) {
               ) : null}
               {infos.file ? (
                 <TableRow>
-                  <TableCell className={classes.name} align="right">
+                  <TableCell sx={{ wordBreak: 'normal' }} align="right">
                     Declared in file
                   </TableCell>
                   <TableCell>
@@ -175,7 +149,7 @@ export default function Inspect({ attributes, doc, source, infos }) {
               ) : null}
               {infos.comments ? (
                 <TableRow>
-                  <TableCell className={classes.name} align="right">
+                  <TableCell sx={{ wordBreak: 'normal' }} align="right">
                     Comments
                   </TableCell>
                   <TableCell>
@@ -185,16 +159,21 @@ export default function Inspect({ attributes, doc, source, infos }) {
               ) : null}
             </TableBody>
           </Table>
-        </div>
+        </Box>
         {Object.entries(attributes).map(([attr, values]) => (
-          <div key={attr} className={classes.tabContent}>
+          <Box key={attr} sx={{ maxHeight: '400px' }}>
             <Table>
               <TableBody>
                 {values.map(({ key, value, id, signature }) => (
                   <TableRow key={key}>
-                    <TableCell className={classes.name} align="right">
+                    <TableCell sx={{ wordBreak: 'normal' }} align="right">
                       {key}
-                      <span className={classes.signature}>{signature}</span>
+                      <Box
+                        component="span"
+                        sx={theme => ({ color: theme.palette.text.secondary })}
+                      >
+                        {signature}
+                      </Box>
                     </TableCell>
                     <TableCell>
                       <Obj value={value} id={id} />
@@ -203,15 +182,27 @@ export default function Inspect({ attributes, doc, source, infos }) {
                 ))}
               </TableBody>
             </Table>
-          </div>
+          </Box>
         ))}
-        <div className={clsx(classes.tabContent, classes.doc)}>
+        <Box
+          sx={{
+            p: 3,
+            fontSize: '.7em',
+            maxHeight: '400px',
+          }}
+        >
           <Snippet value={doc} mode="text" />
-        </div>
-        <div className={clsx(classes.tabContent, classes.source)}>
+        </Box>
+        <Box
+          sx={{
+            p: 3,
+            fontSize: '.9em',
+            maxHeight: '400px',
+          }}
+        >
           <Snippet value={source} />
-        </div>
+        </Box>
       </SwipeableViews>
-    </div>
+    </Box>
   )
 }

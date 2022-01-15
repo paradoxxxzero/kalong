@@ -1,68 +1,19 @@
-import makeStyles from '@mui/styles/makeStyles'
-import { useSelector, useDispatch } from 'react-redux'
-import { useTheme } from '@mui/material/styles'
+import { Box, GlobalStyles } from '@mui/material'
 import CssBaseline from '@mui/material/CssBaseline'
-import React, { useState, useEffect, useCallback } from 'react'
+import { useTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import clsx from 'clsx'
-
-import FiraCode from './font/FiraCode-Regular.otf'
+import React, { useCallback, useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { hello } from './actions'
 import FiraCodeBold from './font/FiraCode-Bold.otf'
+import FiraCode from './font/FiraCode-Regular.otf'
 import GlobalIndicator from './GlobalIndicator'
 import Main from './Main'
 import SideDrawer from './SideDrawer'
 import TopBar from './TopBar'
-import { hello } from './actions'
 
-const useStyles = makeStyles({
-  root: {
-    display: 'flex',
-    width: '100vw',
-    height: '100vh',
-    justifyContent: 'center',
-    fontVariant: 'oldstyle-nums',
-    transition: 'filter 500ms ease-in',
-  },
-  mute: {
-    filter: 'grayscale(100%)',
-  },
-  content: {
-    flexGrow: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    minWidth: 0, // Fix codemirror wrapping
-  },
-  terminal: {
-    flex: 1,
-  },
-  source: {
-    flex: 1,
-  },
-  indicator: {
-    position: 'fixed',
-    right: '1em',
-    bottom: '1em',
-  },
-  '@global': {
-    '@font-face': [
-      {
-        fontFamily: 'Fira Code',
-        fontWeight: 'normal',
-        fontStyle: 'normal',
-        src: `url(${FiraCode}) format("opentype")`,
-      },
-      {
-        fontFamily: 'Fira Code',
-        fontWeight: 'bold',
-        fontStyle: 'normal',
-        src: `url(${FiraCodeBold}) format("opentype")`,
-      },
-    ],
-  },
-})
 
 export default function App() {
-  const classes = useStyles()
   const theme = useTheme()
   const mobile = useMediaQuery(theme.breakpoints.down('md'))
   const dispatch = useDispatch()
@@ -83,7 +34,37 @@ export default function App() {
   const openDrawer = useCallback(() => setOpen(true), [])
   const closeDrawer = useCallback(() => setOpen(false), [])
   return (
-    <div className={clsx(classes.root, { [classes.mute]: running })}>
+    <Box
+      sx={{
+        display: 'flex',
+        width: '100vw',
+        height: '100vh',
+        justifyContent: 'center',
+        fontVariant: 'oldstyle-nums',
+        transition: 'filter 500ms ease-in',
+        filter: running ? 'grayscale(100%)' : undefined,
+      }}
+    >
+      <GlobalStyles
+        styles={{
+          '@global': {
+            '@font-face': [
+              {
+                fontFamily: 'Fira Code',
+                fontWeight: 'normal',
+                fontStyle: 'normal',
+                src: `url(${FiraCode}) format("opentype")`,
+              },
+              {
+                fontFamily: 'Fira Code',
+                fontWeight: 'bold',
+                fontStyle: 'normal',
+                src: `url(${FiraCodeBold}) format("opentype")`,
+              },
+            ],
+          },
+        }}
+      />
       <CssBaseline />
       <TopBar
         mobile={mobile}
@@ -99,7 +80,13 @@ export default function App() {
         onDrawerClose={closeDrawer}
       />
       <Main />
-      <GlobalIndicator className={classes.indicator} />
-    </div>
+      <GlobalIndicator
+        sx={{
+          position: 'fixed',
+          right: '1em',
+          bottom: '1em',
+        }}
+      />
+    </Box>
   )
 }

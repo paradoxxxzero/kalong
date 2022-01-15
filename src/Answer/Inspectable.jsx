@@ -1,40 +1,36 @@
 import { Button, Chip } from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
-import { useDispatch } from 'react-redux'
 import React, { useCallback } from 'react'
-import clsx from 'clsx'
-
+import { useDispatch } from 'react-redux'
 import { requestInspect } from '../actions'
 import { uid } from '../util'
 
-const useStyles = makeStyles(() => ({
-  button: {
-    minWidth: 'auto',
-    textTransform: 'none',
-    padding: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.02)',
-    display: 'inline',
-  },
-}))
-
 export default function Inspectable({
   id,
-  type,
-  className,
+  type = 'button',
   children,
+  sx,
   ...props
 }) {
-  const classes = useStyles()
   const dispatch = useDispatch()
   const handleClick = useCallback(() => {
     dispatch(requestInspect(uid(), id))
   }, [dispatch, id])
   const Component = type === 'chip' ? Chip : Button
-
   return (
     <Component
       onClick={handleClick}
-      className={clsx(classes[type || 'button'], className)}
+      sx={[
+        type === 'button'
+          ? {
+              minWidth: 'auto',
+              textTransform: 'none',
+              padding: 0,
+              backgroundColor: 'rgba(0, 0, 0, 0.02)',
+              display: 'inline',
+            }
+          : {},
+        ...(Array.isArray(sx) ? sx : [sx]),
+      ]}
       component="a"
       {...props}
     >

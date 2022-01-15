@@ -99,7 +99,7 @@ export default memo(function Source({ currentFile, className }) {
 
   return (
     <CodeMirror
-      className={className}
+      style={{ flex: 1 }}
       editable={false}
       basicSetup={false}
       theme={oneDark}

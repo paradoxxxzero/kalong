@@ -1,3 +1,4 @@
+import { Close, ExpandMore, RemoveRedEye } from '@mui/icons-material'
 import {
   Card,
   CardContent,
@@ -8,50 +9,12 @@ import {
   IconButton,
   Typography,
 } from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
+import React, { memo, useCallback, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import React, { useState, useCallback, memo } from 'react'
-import clsx from 'clsx'
-import { Close, RemoveRedEye, ExpandMore } from '@mui/icons-material'
-
-import { prettyTime } from '../util'
 import { removePromptAnswer, setActiveFrame } from '../actions'
-import AnswerDispatch from './AnswerDispatch'
 import Snippet from '../Snippet'
-
-const useStyles = makeStyles(theme => ({
-  header: {
-    '& .MuiCardHeader-content': {
-      minWidth: 0,
-    },
-  },
-  answer: {
-    minWidth: 0,
-    padding: '0 16px',
-    flex: 1,
-  },
-  prompt: {
-    padding: '4px', // .CodeMirror pre padding and .CodeMirror-lines
-  },
-  element: {
-    margin: '1em',
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  expand: {
-    transform: 'rotate(0deg)',
-    marginLeft: 'auto',
-    transition: theme.transitions.create('transform', {
-      duration: theme.transitions.duration.shortest,
-    }),
-  },
-  expandOpen: {
-    transform: 'rotate(180deg)',
-  },
-  content: {
-    display: 'flex',
-  },
-}))
+import { prettyTime } from '../util'
+import AnswerDispatch from './AnswerDispatch'
 
 export default memo(function Answer({
   uid,
@@ -61,7 +24,6 @@ export default memo(function Answer({
   command,
   frame,
 }) {
-  const classes = useStyles()
   const dispatch = useDispatch()
   const [expanded, setExpanded] = useState(true)
   const handleExpand = useCallback(() => setExpanded(x => !x), [])
@@ -74,14 +36,22 @@ export default memo(function Answer({
   }, [dispatch, uid])
 
   return (
-    <Card className={classes.element}>
+    <Card sx={{ m: 1, display: 'flex', flexDirection: 'column' }}>
       <CardHeader
-        className={classes.header}
+        sx={{
+          '.MuiCardHeader-conent': {
+            minWidth: 8,
+          },
+        }}
         avatar={
           <>
             <IconButton
-              className={clsx(classes.expand, {
-                [classes.expandOpen]: expanded,
+              sx={theme => ({
+                transform: `rotate(${expanded ? 180 : 0}deg)`,
+                marginLeft: 'auto',
+                transition: theme.transitions.create('transform', {
+                  duration: theme.transitions.duration.shortest,
+                }),
               })}
               onClick={handleExpand}
               size="large"
@@ -91,7 +61,7 @@ export default memo(function Answer({
             {command && <Chip label={command} />}
           </>
         }
-        title={<Snippet className={classes.prompt} value={prompt} noBreak />}
+        title={<Snippet sx={{ p: 0.5 }} value={prompt} noBreak />}
         titleTypographyProps={{ variant: 'h5', noWrap: true }}
         action={
           <>
@@ -108,10 +78,19 @@ export default memo(function Answer({
         <>
           <Divider />
           <Collapse in={expanded} timeout="auto" unmountOnExit>
-            <CardContent className={classes.content}>
+            <CardContent
+              sx={{
+                display: 'flex',
+              }}
+            >
               <Typography
                 variant="body1"
-                className={classes.answer}
+                sx={{
+                  minWidth: 0,
+                  px: 2,
+                  py: 0,
+                  flex: 1,
+                }}
                 component="div"
               >
                 {answer.map((props, i) => (
@@ -119,13 +98,7 @@ export default memo(function Answer({
                   <AnswerDispatch key={i} {...props} />
                 ))}
               </Typography>
-              {duration && (
-                <Snippet
-                  className={classes.duration}
-                  value={prettyTime(duration)}
-                  noBreakAll
-                />
-              )}
+              {duration && <Snippet value={prettyTime(duration)} noBreakAll />}
             </CardContent>
           </Collapse>
         </>

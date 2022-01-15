@@ -1,48 +1,9 @@
-import makeStyles from '@mui/styles/makeStyles'
+import { Box } from '@mui/material'
 import React from 'react'
-import clsx from 'clsx'
-
 import Inspectable from './Inspectable'
 
 const arrowLength = '1em'
 const arrowThickness = '3px'
-
-const useStyles = makeStyles(() => ({
-  cls: {
-    // backgroundColor: 'rgba(0, 0, 0, 0.1)',
-    display: 'flex',
-    alignItems: 'center',
-  },
-  bases: {
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  clsName: {
-    margin: '4px',
-  },
-  frontLiner: {
-    borderBottom: `${arrowThickness} solid black`,
-    width: arrowLength,
-  },
-  backLiner: {
-    display: 'flex',
-    flexDirection: 'column',
-    width: arrowLength,
-    alignSelf: 'normal',
-  },
-  backLinerTop: {
-    flex: 1,
-    borderLeft: `${arrowThickness} solid black`,
-    borderBottom: `${arrowThickness} solid black`,
-  },
-  backLinerBottom: {
-    flex: 1,
-    borderLeft: `${arrowThickness} solid black`,
-  },
-  noLeftLiner: {
-    borderLeft: 'none',
-  },
-}))
 
 export default function ClassBases({
   cls: { id, name, bases },
@@ -50,43 +11,68 @@ export default function ClassBases({
   last,
   root,
 }) {
-  const classes = useStyles()
   return (
-    <div className={classes.cls}>
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+      }}
+    >
       {!root && (
-        <div className={classes.backLiner}>
-          <div
-            className={clsx(classes.backLinerTop, {
-              [classes.noLeftLiner]: first,
-            })}
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            width: arrowLength,
+            alignSelf: 'normal',
+          }}
+        >
+          <Box
+            sx={{
+              flex: 1,
+              borderLeft: first ? 'none' : `${arrowThickness} solid black`,
+              borderBottom: `${arrowThickness} solid black`,
+            }}
           />
-          <div
-            className={clsx(classes.backLinerBottom, {
-              [classes.noLeftLiner]: last,
-            })}
+          <Box
+            sx={{
+              flex: 1,
+              borderLeft: first ? 'none' : `${arrowThickness} solid black`,
+            }}
           />
-        </div>
+        </Box>
       )}
-      <div className={classes.clsName}>
+      <Box sx={{ m: 0.5 }}>
         <Inspectable
           id={id}
           type="chip"
           label={name}
           color={['object', 'type'].includes(name) ? void 0 : 'secondary'}
         />
-      </div>
-      {!!bases.length && <div className={classes.frontLiner} />}
-      <div className={classes.bases}>
+      </Box>
+      {!!bases.length && (
+        <Box
+          sx={{
+            borderBottom: `${arrowThickness} solid black`,
+            width: arrowLength,
+          }}
+        />
+      )}
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
         {bases.map((base, i) => (
           <ClassBases
             key={base.id}
             cls={base}
-            classes={classes}
             first={i === 0}
             last={i === bases.length - 1}
           />
         ))}
-      </div>
-    </div>
+      </Box>
+    </Box>
   )
 }

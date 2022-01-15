@@ -1,8 +1,7 @@
 import { defaultHighlightStyle, highlightTree } from '@codemirror/highlight'
-import makeStyles from '@mui/styles/makeStyles'
-import clsx from 'clsx'
-import React, { memo, useEffect, useRef, useState } from 'react'
 import { python } from '@codemirror/lang-python'
+import { Box } from '@mui/material'
+import React, { memo, useEffect, useState } from 'react'
 
 function runmode(textContent, language, callback, options) {
   const tree = language.parser.parse(textContent)
@@ -16,25 +15,11 @@ function runmode(textContent, language, callback, options) {
     callback(textContent.slice(pos, tree.length), null, pos, tree.length)
 }
 
-const useStyles = makeStyles(() => ({
-  snippet: {
-    fontFamily: 'Fira Code',
-  },
-  nonBreakingSnippet: {
-    whiteSpace: 'pre-wrap',
-    wordBreak: 'break-all',
-    overflowWrap: 'break-word',
-  },
-  breakingSnippet: {
-    whiteSpace: 'pre-wrap',
-  },
-}))
-
 const pyLang = python().language
 const diffLang = null // TODO: diff().language
 
 export default memo(function Snippet({
-  className,
+  sx,
   value = '',
   mode = 'python',
   onClick,
@@ -42,10 +27,9 @@ export default memo(function Snippet({
   noBreak,
 }) {
   const [chunks, setChunks] = useState([[value, null, 0]])
-  const classes = useStyles()
   useEffect(() => {
     const lang = { python: pyLang, diff: diffLang }[mode]
-    if (!lang) {
+    if (!lang || !value) {
       return
     }
     setChunks([])
@@ -54,13 +38,17 @@ export default memo(function Snippet({
     })
   }, [mode, value])
   return (
-    <code
-      className={clsx(
-        classes.snippet,
-        className,
-        !noBreak &&
-          (noBreakAll ? classes.breakingSnippet : classes.nonBreakingSnippet)
-      )}
+    <Box
+      component="code"
+      sx={[
+        {
+          fontFamily: '"Fira Code", monospace',
+          whiteSpace: noBreak ? undefined : 'pre-wrap',
+          wordBreak: noBreak || noBreakAll ? undefined : 'break-all',
+          overflowWrap: noBreak || noBreakAll ? undefined : 'break-word',
+        },
+        ...(Array.isArray(sx) ? sx : [sx]),
+      ]}
       onClick={onClick}
     >
       {chunks.map(([text, cls, from]) => (
@@ -68,6 +56,6 @@ export default memo(function Snippet({
           {text}
         </span>
       ))}
-    </code>
+    </Box>
   )
 })

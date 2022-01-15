@@ -1,48 +1,6 @@
-import makeStyles from '@mui/styles/makeStyles'
+import { Box } from '@mui/material'
 import ClickAwayListener from '@mui/material/ClickAwayListener'
-import React, { useRef, useState, useCallback } from 'react'
-import clsx from 'clsx'
-
-const useStyles = makeStyles(theme => ({
-  wrapper: {
-    display: 'flex',
-  },
-  horizontal: {
-    flexDirection: 'column',
-  },
-  divider: {
-    backgroundColor: theme.palette.text.primary,
-    minWidth: '6px',
-    minHeight: '6px',
-    userSelect: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-
-    '&::before': {
-      display: 'block',
-      content: "''",
-      background: theme.palette.background.paper,
-      borderRadius: '15%',
-    },
-  },
-  verticalDivider: {
-    cursor: 'ew-resize',
-
-    '&::before': {
-      width: '50%',
-      height: '5%',
-    },
-  },
-  horizontalDivider: {
-    cursor: 'ns-resize',
-
-    '&::before': {
-      width: '5%',
-      height: '50%',
-    },
-  },
-}))
+import React, { useCallback, useRef, useState } from 'react'
 
 const computeRelativePosition = (event, element) => {
   if (!element || !element.getBoundingClientRect) {
@@ -58,7 +16,6 @@ const computeRelativePosition = (event, element) => {
 }
 
 export default function Splitter({ children, className, vertical }) {
-  const classes = useStyles()
   const [ratio, setRatio] = useState(50)
   const [origin, setOrigin] = useState(null)
   const splitter = useRef()
@@ -102,19 +59,20 @@ export default function Splitter({ children, className, vertical }) {
   }
 
   return (
-    <div
-      className={clsx(
-        className,
-        classes.wrapper,
-        vertical ? classes.vertical : classes.horizontal
-      )}
+    <Box
       ref={splitter}
+      sx={{
+        display: 'flex',
+        flex: 1,
+        minHeight: 0,
+        flexDirection: vertical ? 'row' : 'column',
+      }}
       onTouchMove={handleTouchMove}
       onMouseMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       onMouseUp={handleTouchEnd}
     >
-      <div
+      <Box
         style={{
           [vertical ? 'width' : 'height']: `${ratio}%`,
           display: 'flex',
@@ -124,18 +82,33 @@ export default function Splitter({ children, className, vertical }) {
         }}
       >
         {children[0]}
-      </div>
+      </Box>
       <ClickAwayListener onClickAway={handleTouchEnd}>
-        <div
-          className={clsx(
-            classes.divider,
-            vertical ? classes.verticalDivider : classes.horizontalDivider
-          )}
+        <Box
+          sx={theme => ({
+            backgroundColor: theme.palette.text.primary,
+            minWidth: '6px',
+            minHeight: '6px',
+            userSelect: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: vertical ? 'ew-resize' : 'ns-resize',
+
+            '&::before': {
+              display: 'block',
+              content: "''",
+              background: theme.palette.background.paper,
+              borderRadius: '15%',
+              width: vertical ? 0.5 : 0.05,
+              height: vertical ? 0.05 : 0.5,
+            },
+          })}
           onTouchStart={handleTouchStart}
           onMouseDown={handleTouchStart}
         />
       </ClickAwayListener>
-      <div
+      <Box
         style={{
           display: 'flex',
           minHeight: 0,
@@ -145,7 +118,7 @@ export default function Splitter({ children, className, vertical }) {
         }}
       >
         {children[1]}
-      </div>
-    </div>
+      </Box>
+    </Box>
   )
 }

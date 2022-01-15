@@ -1,5 +1,3 @@
-import { Button, IconButton, Typography } from '@mui/material'
-import makeStyles from '@mui/styles/makeStyles'
 import {
   ExpandLess,
   ExpandMore,
@@ -8,57 +6,15 @@ import {
   UnfoldLess,
   UnfoldMore,
 } from '@mui/icons-material'
+import { Box, Button, IconButton, Typography } from '@mui/material'
 import React, { useCallback, useState } from 'react'
 import Snippet from '../Snippet'
 import AnswerDispatch from './AnswerDispatch'
 import Inspectable from './Inspectable'
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    margin: theme.spacing(1),
-    padding: theme.spacing(1),
-    transition: '250ms ease-in-out box-shadow',
-    '&:hover': {
-      boxShadow: '0 0 5px rgba(0, 0, 0, .125)',
-    },
-  },
-  noWrap: {
-    whiteSpace: 'pre',
-  },
-  buttonSize: {
-    fontSize: theme.typography.button.fontSize,
-  },
-  indented: {
-    paddingLeft: '2em',
-  },
-  inline: {
-    display: 'inline',
-  },
-  icon: {
-    fontSize: '16px',
-  },
-  button: {
-    padding: '4px',
-  },
-  count: {
-    fontSize: '0.7em',
-    fontStyle: 'italic',
-  },
-  ellipsis: {
-    fontSize: '0.75em',
-  },
-  unbreakable: {
-    whiteSpace: 'pre',
-  },
-  moreCount: {
-    color: theme.palette.text.secondary,
-  },
-}))
-
 export default function Iterable({ subtype, values, id, mapping }) {
   const sliceStep = Math.max(Math.min(50, values.length / 5), 20)
   const initialSlice = Math.min(values.length, sliceStep)
-  const classes = useStyles()
   const [expanded, setExpanded] = useState(true)
   const [slice, setSlice] = useState(initialSlice)
 
@@ -85,10 +41,22 @@ export default function Iterable({ subtype, values, id, mapping }) {
   const sliced = values.slice(0, slice)
 
   return (
-    <div className={classes.root}>
+    <Box
+      sx={{
+        m: 1,
+        p: 1,
+        transition: '250ms ease-in-out box-shadow',
+        '&:hover': {
+          boxShadow: '0 0 5px rgba(0, 0, 0, .125)',
+        },
+      }}
+    >
       {!!values.length && (
         <Typography
-          className={classes.count}
+          sx={{
+            fontSize: '0.7em',
+            fontStyle: 'italic',
+          }}
           color="textSecondary"
           component="span"
         >
@@ -99,25 +67,27 @@ export default function Iterable({ subtype, values, id, mapping }) {
         <Snippet mode="text" value={open} />
       </Inspectable>
       {!!values.length && (
-        <IconButton
-          onClick={handleSliceFold}
-          className={classes.button}
-          size="large"
-        >
+        <IconButton onClick={handleSliceFold} sx={{ p: 0.5 }} size="large">
           {slice === 0 ? (
-            <UnfoldMore className={classes.icon} />
+            <UnfoldMore sx={{ fontSize: '16px' }} />
           ) : (
-            <UnfoldLess className={classes.icon} />
+            <UnfoldLess sx={{ fontSize: '16px' }} />
           )}
         </IconButton>
       )}
-      <section
-        className={
-          expanded && sliced.length > 1 ? classes.indented : classes.inline
-        }
+      <Box
+        component="section"
+        sx={{
+          pl: expanded && sliced.length > 1 ? 1 : undefined,
+          display: expanded && sliced.length > 1 ? undefined : 'inline',
+        }}
       >
         {sliced.map((props, i) => (
-          <span key={`member-${id}-${i}`} className={classes.unbreakable}>
+          <Box
+            component="span"
+            key={`member-${id}-${i}`}
+            sx={{ whiteSpace: 'pre' }}
+          >
             {mapping ? (
               <>
                 <AnswerDispatch {...props.key} />
@@ -129,19 +99,15 @@ export default function Iterable({ subtype, values, id, mapping }) {
             )}
             {i + 1 !== values.length && <Snippet mode="text" value=", " />}
             {expanded && sliced.length > 1 && <br />}
-          </span>
+          </Box>
         ))}
         {values.length > sliced.length && (
-          <span className={classes.unbreakable}>
-            <IconButton
-              onClick={handleSliceMore}
-              className={classes.button}
-              size="large"
-            >
-              <MoreHoriz className={classes.icon} />
+          <Box component="span" sx={{ whiteSpace: 'pre' }}>
+            <IconButton onClick={handleSliceMore} sx={{ p: 0.5 }} size="large">
+              <MoreHoriz sx={{ fontSize: '16px' }} />
             </IconButton>
             <Button
-              className={classes.moreCount}
+              sx={{ color: 'text.secondary' }}
               size="small"
               component="span"
               onClick={handleSliceMore}
@@ -149,17 +115,13 @@ export default function Iterable({ subtype, values, id, mapping }) {
               {values.length - sliced.length} more
             </Button>
             {values.length > sliced.length + sliceStep && (
-              <IconButton
-                onClick={handleUnSlice}
-                className={classes.button}
-                size="large"
-              >
-                <MoreVert className={classes.icon} />
+              <IconButton onClick={handleUnSlice} sx={{ p: 0.5 }} size="large">
+                <MoreVert sx={{ fontSize: '16px' }} />
               </IconButton>
             )}
-          </span>
+          </Box>
         )}
-      </section>
+      </Box>
       <Inspectable id={id}>
         {values.length === 1 && open === '(' && (
           <Snippet mode="text" value="," />
@@ -167,18 +129,14 @@ export default function Iterable({ subtype, values, id, mapping }) {
         <Snippet mode="text" value={close} />
       </Inspectable>
       {sliced.length > 1 && (
-        <IconButton
-          onClick={handleExpand}
-          className={classes.button}
-          size="large"
-        >
+        <IconButton onClick={handleExpand} sx={{ p: 0.5 }} size="large">
           {expanded ? (
-            <ExpandLess className={classes.icon} />
+            <ExpandLess sx={{ fontSize: '16px' }} />
           ) : (
-            <ExpandMore className={classes.icon} />
+            <ExpandMore sx={{ fontSize: '16px' }} />
           )}
         </IconButton>
       )}
-    </div>
+    </Box>
   )
 }
