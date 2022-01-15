@@ -1,7 +1,7 @@
 import { makeStyles } from '@material-ui/core'
 import React from 'react'
 
-import Snippet from '../Code/Snippet'
+import Snippet from '../Snippet'
 
 const useStyles = makeStyles(() => ({
   out: {
@@ -13,5 +13,5 @@ const useStyles = makeStyles(() => ({
 
 export default function Out({ text }) {
   const classes = useStyles()
-  return <Snippet className={classes.out} value={text} mode={null} />
+  return <Snippet className={classes.out} value={text} mode="text" />
 }

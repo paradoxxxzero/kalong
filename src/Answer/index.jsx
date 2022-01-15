@@ -17,7 +17,7 @@ import { Close, RemoveRedEye, ExpandMore } from '@material-ui/icons'
 import { prettyTime } from '../util'
 import { removePromptAnswer, setActiveFrame } from '../actions'
 import AnswerDispatch from './AnswerDispatch'
-import Snippet from '../Code/Snippet'
+import Snippet from '../Snippet'
 
 const useStyles = makeStyles(theme => ({
   header: {

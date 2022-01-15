@@ -1,7 +1,7 @@
 import { makeStyles } from '@material-ui/core'
 import React from 'react'
 
-import Snippet from '../Code/Snippet'
+import Snippet from '../Snippet'
 
 const useStyles = makeStyles(() => ({
   diff: {
@@ -13,5 +13,5 @@ const useStyles = makeStyles(() => ({
 
 export default function Diff({ diff }) {
   const classes = useStyles()
-  return <Snippet className={classes.diff} value={diff} mode={'diff'} />
+  return <Snippet className={classes.diff} value={diff} mode="diff" />
 }

@@ -1,7 +1,7 @@
 import React from 'react'
 
 import Inspectable from './Inspectable'
-import Snippet from '../Code/Snippet'
+import Snippet from '../Snippet'
 
 export default function Obj({ id, value }) {
   return (

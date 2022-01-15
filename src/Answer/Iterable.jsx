@@ -8,7 +8,7 @@ import {
   UnfoldMore,
 } from '@material-ui/icons'
 import React, { useCallback, useState } from 'react'
-import Snippet from '../Code/Snippet'
+import Snippet from '../Snippet'
 import AnswerDispatch from './AnswerDispatch'
 import Inspectable from './Inspectable'
 
@@ -95,7 +95,7 @@ export default function Iterable({ subtype, values, id, mapping }) {
         </Typography>
       )}
       <Inspectable id={id}>
-        <Snippet mode={null} value={open} />
+        <Snippet mode="text" value={open} />
       </Inspectable>
       {!!values.length && (
         <IconButton onClick={handleSliceFold} className={classes.button}>
@@ -116,13 +116,13 @@ export default function Iterable({ subtype, values, id, mapping }) {
             {mapping ? (
               <>
                 <AnswerDispatch {...props.key} />
-                <Snippet mode={null} value=": " />
+                <Snippet mode="text" value=": " />
                 <AnswerDispatch {...props.value} />
               </>
             ) : (
               <AnswerDispatch {...props} />
             )}
-            {i + 1 !== values.length && <Snippet mode={null} value=", " />}
+            {i + 1 !== values.length && <Snippet mode="text" value=", " />}
             {expanded && sliced.length > 1 && <br />}
           </span>
         ))}
@@ -149,9 +149,9 @@ export default function Iterable({ subtype, values, id, mapping }) {
       </section>
       <Inspectable id={id}>
         {values.length === 1 && open === '(' && (
-          <Snippet mode={null} value="," />
+          <Snippet mode="text" value="," />
         )}
-        <Snippet mode={null} value={close} />
+        <Snippet mode="text" value={close} />
       </Inspectable>
       {sliced.length > 1 && (
         <IconButton onClick={handleExpand} className={classes.button}>

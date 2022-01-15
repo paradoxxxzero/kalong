@@ -17,7 +17,7 @@ import { OpenInNew } from '@material-ui/icons'
 import ClassBases from './ClassBases'
 import Inspectable from './Inspectable'
 import Obj from './Obj'
-import Snippet from '../Code/Snippet'
+import Snippet from '../Snippet'
 
 const useStyles = makeStyles(theme => ({
   name: {
@@ -179,7 +179,7 @@ export default function Inspect({ attributes, doc, source, infos }) {
                     Comments
                   </TableCell>
                   <TableCell>
-                    <Snippet value={infos.comments} mode={null} />
+                    <Snippet value={infos.comments} mode="text" />
                   </TableCell>
                 </TableRow>
               ) : null}
@@ -206,7 +206,7 @@ export default function Inspect({ attributes, doc, source, infos }) {
           </div>
         ))}
         <div className={clsx(classes.tabContent, classes.doc)}>
-          <Snippet value={doc} mode={null} />
+          <Snippet value={doc} mode="text" />
         </div>
         <div className={clsx(classes.tabContent, classes.source)}>
           <Snippet value={source} />

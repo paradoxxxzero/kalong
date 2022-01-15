@@ -15,7 +15,7 @@ import React, { useCallback } from 'react'
 import { Warning, ExpandMore } from '@material-ui/icons'
 
 import Inspectable from './Inspectable'
-import Snippet from '../Code/Snippet'
+import Snippet from '../Snippet'
 
 const useStyles = makeStyles(theme => ({
   centered: {
@@ -70,13 +70,13 @@ export default function Exception({
           )}
           <Inspectable id={id} className={classes.button}>
             <Typography variant="h6">
-              <Snippet value={name} mode={null} noBreakAll />
+              <Snippet value={name} mode="text" noBreakAll />
             </Typography>
             <Typography variant="subtitle1">
-              <Snippet value={' ― '} mode={null} />
+              <Snippet value={' ― '} mode="text" />
             </Typography>
             <Typography>
-              <Snippet value={description} mode={null} />
+              <Snippet value={description} mode="text" />
             </Typography>
           </Inspectable>
         </Grid>

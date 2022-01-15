@@ -6,7 +6,7 @@ import React, { useCallback, memo } from 'react'
 import { Star } from '@material-ui/icons'
 
 import { setActiveFrame } from './actions'
-import Snippet from './Code/Snippet'
+import Snippet from './Snippet'
 
 export default memo(function Frame({ frame, last }) {
   const activeFrame = useSelector(state => state.activeFrame)
