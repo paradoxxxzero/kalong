@@ -9,10 +9,10 @@ import {
   ListItemText,
   Tooltip,
   Typography,
-  makeStyles,
-} from '@material-ui/core'
+} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import React, { useCallback } from 'react'
-import { Warning, ExpandMore } from '@material-ui/icons'
+import { Warning, ExpandMore } from '@mui/icons-material'
 
 import Inspectable from './Inspectable'
 import Snippet from '../Snippet'

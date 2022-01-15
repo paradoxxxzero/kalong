@@ -1,4 +1,5 @@
-import { Button, IconButton, makeStyles, Typography } from '@material-ui/core'
+import { Button, IconButton, Typography } from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import {
   ExpandLess,
   ExpandMore,
@@ -6,7 +7,7 @@ import {
   MoreVert,
   UnfoldLess,
   UnfoldMore,
-} from '@material-ui/icons'
+} from '@mui/icons-material'
 import React, { useCallback, useState } from 'react'
 import Snippet from '../Snippet'
 import AnswerDispatch from './AnswerDispatch'
@@ -98,7 +99,11 @@ export default function Iterable({ subtype, values, id, mapping }) {
         <Snippet mode="text" value={open} />
       </Inspectable>
       {!!values.length && (
-        <IconButton onClick={handleSliceFold} className={classes.button}>
+        <IconButton
+          onClick={handleSliceFold}
+          className={classes.button}
+          size="large"
+        >
           {slice === 0 ? (
             <UnfoldMore className={classes.icon} />
           ) : (
@@ -128,7 +133,11 @@ export default function Iterable({ subtype, values, id, mapping }) {
         ))}
         {values.length > sliced.length && (
           <span className={classes.unbreakable}>
-            <IconButton onClick={handleSliceMore} className={classes.button}>
+            <IconButton
+              onClick={handleSliceMore}
+              className={classes.button}
+              size="large"
+            >
               <MoreHoriz className={classes.icon} />
             </IconButton>
             <Button
@@ -140,7 +149,11 @@ export default function Iterable({ subtype, values, id, mapping }) {
               {values.length - sliced.length} more
             </Button>
             {values.length > sliced.length + sliceStep && (
-              <IconButton onClick={handleUnSlice} className={classes.button}>
+              <IconButton
+                onClick={handleUnSlice}
+                className={classes.button}
+                size="large"
+              >
                 <MoreVert className={classes.icon} />
               </IconButton>
             )}
@@ -154,7 +167,11 @@ export default function Iterable({ subtype, values, id, mapping }) {
         <Snippet mode="text" value={close} />
       </Inspectable>
       {sliced.length > 1 && (
-        <IconButton onClick={handleExpand} className={classes.button}>
+        <IconButton
+          onClick={handleExpand}
+          className={classes.button}
+          size="large"
+        >
           {expanded ? (
             <ExpandLess className={classes.icon} />
           ) : (

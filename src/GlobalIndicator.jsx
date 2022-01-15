@@ -1,10 +1,9 @@
-import { CircularProgress, Paper, Tooltip, makeStyles } from '@material-ui/core'
+import { CircularProgress, Paper, Tooltip } from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import { useSelector } from 'react-redux'
 import React from 'react'
 import clsx from 'clsx'
-import green from '@material-ui/core/colors/green'
-import pink from '@material-ui/core/colors/pink'
-import red from '@material-ui/core/colors/red'
+import { green, pink, red } from '@mui/material/colors'
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -42,7 +41,7 @@ export default function GlobalIndicator({ className }) {
     indicator = (
       <CircularProgress
         className={clsx(classes.loader, classes.dead)}
-        variant="static"
+        variant="determinate"
         value={100}
       />
     )
@@ -55,7 +54,7 @@ export default function GlobalIndicator({ className }) {
       indicator = (
         <CircularProgress
           className={clsx(classes.loader, classes.allgood)}
-          variant="static"
+          variant="determinate"
           value={100}
         />
       )

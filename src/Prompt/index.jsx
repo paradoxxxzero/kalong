@@ -23,15 +23,9 @@ import {
   highlightSpecialChars,
   keymap,
 } from '@codemirror/view'
-import {
-  Card,
-  CardHeader,
-  Chip,
-  Grow,
-  IconButton,
-  makeStyles,
-} from '@material-ui/core'
-import { ExpandMore } from '@material-ui/icons'
+import { Card, CardHeader, Chip, Grow, IconButton } from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
+import { ExpandMore } from '@mui/icons-material'
 import CodeMirror from '@uiw/react-codemirror'
 import clsx from 'clsx'
 import React, {
@@ -694,6 +688,7 @@ export default memo(function Prompt({ onScrollUp, onScrollDown }) {
                   [classes.expandOpen]: grow,
                 })}
                 onClick={handleEnter}
+                size="large"
               >
                 <ExpandMore />
               </IconButton>

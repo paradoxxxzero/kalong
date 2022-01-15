@@ -1,8 +1,9 @@
-import { Link, makeStyles } from '@material-ui/core'
-import Divider from '@material-ui/core/Divider'
-import Drawer from '@material-ui/core/Drawer'
+import { Link } from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
+import Divider from '@mui/material/Divider'
+import Drawer from '@mui/material/Drawer'
 import React from 'react'
-import Typography from '@material-ui/core/Typography'
+import Typography from '@mui/material/Typography'
 import clsx from 'clsx'
 
 import Frames from './Frames'

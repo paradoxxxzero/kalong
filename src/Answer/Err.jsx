@@ -1,8 +1,8 @@
-import { makeStyles } from '@material-ui/core'
+import makeStyles from '@mui/styles/makeStyles'
 import React from 'react'
-import red from '@material-ui/core/colors/red'
-
 import Snippet from '../Snippet'
+
+import { red } from '@mui/material/colors'
 
 const useStyles = makeStyles(() => ({
   err: {

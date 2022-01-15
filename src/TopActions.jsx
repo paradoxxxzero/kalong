@@ -1,12 +1,12 @@
 import {
   IconButton,
   ListItemIcon,
-  makeStyles,
   Menu,
   MenuItem,
   Tooltip,
-} from '@material-ui/core'
-import Typography from '@material-ui/core/Typography'
+} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
+import Typography from '@mui/material/Typography'
 import {
   ArrowDownward,
   ArrowForward,
@@ -16,7 +16,7 @@ import {
   PlayArrow,
   Pause,
   Redo,
-} from '@material-ui/icons'
+} from '@mui/icons-material'
 import React, {
   memo,
   useCallback,
@@ -27,9 +27,9 @@ import React, {
 import { useDispatch, useSelector } from 'react-redux'
 
 import { doCommand } from './actions'
-import { SkipNext } from '@material-ui/icons'
-import { FastForward } from '@material-ui/icons'
-import { Eject } from '@material-ui/icons'
+import { SkipNext } from '@mui/icons-material'
+import { FastForward } from '@mui/icons-material'
+import { Eject } from '@mui/icons-material'
 
 const actions = (running, main) =>
   [
@@ -142,6 +142,7 @@ const ActionButton = ({
         onClick={handleCommand}
         disabled={disabled}
         data-action={action}
+        size="large"
       >
         <Icon />
       </IconButton>
@@ -205,7 +206,7 @@ export default memo(function TopActions({ mobile }) {
           <div className={classes.grow} />
           {mobile ? (
             <>
-              <IconButton onClick={openMenu}>
+              <IconButton onClick={openMenu} size="large">
                 <MoreVert />
               </IconButton>
               <Menu anchorEl={menuEl} open={!!menuEl} onClose={closeMenu}>

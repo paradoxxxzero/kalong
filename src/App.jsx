@@ -1,9 +1,9 @@
-import { makeStyles } from '@material-ui/core'
+import makeStyles from '@mui/styles/makeStyles'
 import { useSelector, useDispatch } from 'react-redux'
-import { useTheme } from '@material-ui/core/styles'
-import CssBaseline from '@material-ui/core/CssBaseline'
+import { useTheme } from '@mui/material/styles'
+import CssBaseline from '@mui/material/CssBaseline'
 import React, { useState, useEffect, useCallback } from 'react'
-import useMediaQuery from '@material-ui/core/useMediaQuery'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import clsx from 'clsx'
 
 import FiraCode from './font/FiraCode-Regular.otf'
@@ -64,7 +64,7 @@ const useStyles = makeStyles({
 export default function App() {
   const classes = useStyles()
   const theme = useTheme()
-  const mobile = useMediaQuery(theme.breakpoints.down('sm'))
+  const mobile = useMediaQuery(theme.breakpoints.down('md'))
   const dispatch = useDispatch()
   const running = useSelector(state => state.running)
   const frames = useSelector(state => state.frames)

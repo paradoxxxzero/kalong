@@ -1,9 +1,9 @@
-import { ListItemSecondaryAction, Tooltip, Typography } from '@material-ui/core'
+import { ListItemSecondaryAction, Tooltip, Typography } from '@mui/material'
 import { useSelector, useDispatch } from 'react-redux'
-import ListItem from '@material-ui/core/ListItem'
-import ListItemText from '@material-ui/core/ListItemText'
+import ListItem from '@mui/material/ListItem'
+import ListItemText from '@mui/material/ListItemText'
 import React, { useCallback, memo } from 'react'
-import { Star } from '@material-ui/icons'
+import { Star } from '@mui/icons-material'
 
 import { setActiveFrame } from './actions'
 import Snippet from './Snippet'

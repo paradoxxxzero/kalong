@@ -1,8 +1,9 @@
-import { makeStyles, MuiThemeProvider, Tooltip } from '@material-ui/core'
-import AppBar from '@material-ui/core/AppBar'
-import IconButton from '@material-ui/core/IconButton'
-import Toolbar from '@material-ui/core/Toolbar'
-import { ChevronLeft, ChevronRight } from '@material-ui/icons'
+import { ThemeProvider, StyledEngineProvider, Tooltip } from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
+import AppBar from '@mui/material/AppBar'
+import IconButton from '@mui/material/IconButton'
+import Toolbar from '@mui/material/Toolbar'
+import { ChevronLeft, ChevronRight } from '@mui/icons-material'
 import clsx from 'clsx'
 import React from 'react'
 import { useSelector } from 'react-redux'
@@ -59,6 +60,7 @@ export default function TopBar({
             color="inherit"
             onClick={open ? onDrawerClose : onDrawerOpen}
             className={classes.menuButton}
+            size="large"
           >
             {!mobile && open ? (
               rtl ? (

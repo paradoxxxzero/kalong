@@ -7,12 +7,12 @@ import {
   TableCell,
   TableRow,
   Tabs,
-  makeStyles,
-} from '@material-ui/core'
+} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import React, { useState, useCallback } from 'react'
 import SwipeableViews from 'react-swipeable-views'
 import clsx from 'clsx'
-import { OpenInNew } from '@material-ui/icons'
+import { OpenInNew } from '@mui/icons-material'
 
 import ClassBases from './ClassBases'
 import Inspectable from './Inspectable'

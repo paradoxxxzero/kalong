@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux'
-import List from '@material-ui/core/List'
+import List from '@mui/material/List'
 import React, { useEffect, memo } from 'react'
 
 import { /* getFrames,*/ setActiveFrame } from './actions'

@@ -1,4 +1,5 @@
-import { Button, Chip, makeStyles } from '@material-ui/core'
+import { Button, Chip } from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import { useDispatch } from 'react-redux'
 import React, { useCallback } from 'react'
 import clsx from 'clsx'

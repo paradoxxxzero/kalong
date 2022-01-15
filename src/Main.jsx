@@ -1,5 +1,5 @@
-import { makeStyles } from '@material-ui/core'
-import useMediaQuery from '@material-ui/core/useMediaQuery'
+import makeStyles from '@mui/styles/makeStyles'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import React from 'react'
 import { useSelector } from 'react-redux'
 import Source from './Source'

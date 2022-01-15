@@ -7,12 +7,12 @@ import {
   Divider,
   IconButton,
   Typography,
-  makeStyles,
-} from '@material-ui/core'
+} from '@mui/material'
+import makeStyles from '@mui/styles/makeStyles'
 import { useDispatch } from 'react-redux'
 import React, { useState, useCallback, memo } from 'react'
 import clsx from 'clsx'
-import { Close, RemoveRedEye, ExpandMore } from '@material-ui/icons'
+import { Close, RemoveRedEye, ExpandMore } from '@mui/icons-material'
 
 import { prettyTime } from '../util'
 import { removePromptAnswer, setActiveFrame } from '../actions'
@@ -84,6 +84,7 @@ export default memo(function Answer({
                 [classes.expandOpen]: expanded,
               })}
               onClick={handleExpand}
+              size="large"
             >
               <ExpandMore />
             </IconButton>
@@ -94,10 +95,10 @@ export default memo(function Answer({
         titleTypographyProps={{ variant: 'h5', noWrap: true }}
         action={
           <>
-            <IconButton onClick={handleView}>
+            <IconButton onClick={handleView} size="large">
               <RemoveRedEye />
             </IconButton>
-            <IconButton onClick={handleClose}>
+            <IconButton onClick={handleClose} size="large">
               <Close />
             </IconButton>
           </>

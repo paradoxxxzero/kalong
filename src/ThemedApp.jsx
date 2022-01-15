@@ -1,40 +1,58 @@
-import { MuiThemeProvider, createMuiTheme } from '@material-ui/core'
+import {
+  ThemeProvider,
+  StyledEngineProvider,
+  createTheme,
+  adaptV4Theme,
+} from '@mui/material'
 import React from 'react'
-import green from '@material-ui/core/colors/green'
-import grey from '@material-ui/core/colors/grey'
-import brown from '@material-ui/core/colors/brown'
-import orange from '@material-ui/core/colors/orange'
-import blueGrey from '@material-ui/core/colors/blueGrey'
 
 import App from './App'
 import { useSelector } from 'react-redux'
 
+import { green, grey, brown, orange, blueGrey } from '@mui/material/colors'
+
 const base = {}
 
 export const muiThemes = {
-  init: createMuiTheme({ ...base, palette: { primary: { main: brown[500] } } }),
-  line: createMuiTheme({ ...base, palette: { primary: { main: green[600] } } }),
-  call: createMuiTheme({ ...base, palette: { primary: { main: green[400] } } }),
-  return: createMuiTheme({
-    ...base,
-    palette: { primary: { main: green[800] } },
-  }),
-  exception: createMuiTheme({
-    ...base,
-    palette: { primary: { main: orange[400] } },
-  }),
-  shell: createMuiTheme({
-    ...base,
-    palette: { primary: { main: blueGrey[700] } },
-  }),
-  dead: createMuiTheme({ ...base, palette: { primary: { main: grey[900] } } }),
+  init: createTheme(
+    adaptV4Theme({ ...base, palette: { primary: { main: brown[500] } } })
+  ),
+  line: createTheme(
+    adaptV4Theme({ ...base, palette: { primary: { main: green[600] } } })
+  ),
+  call: createTheme(
+    adaptV4Theme({ ...base, palette: { primary: { main: green[400] } } })
+  ),
+  return: createTheme(
+    adaptV4Theme({
+      ...base,
+      palette: { primary: { main: green[800] } },
+    })
+  ),
+  exception: createTheme(
+    adaptV4Theme({
+      ...base,
+      palette: { primary: { main: orange[400] } },
+    })
+  ),
+  shell: createTheme(
+    adaptV4Theme({
+      ...base,
+      palette: { primary: { main: blueGrey[700] } },
+    })
+  ),
+  dead: createTheme(
+    adaptV4Theme({ ...base, palette: { primary: { main: grey[900] } } })
+  ),
 }
 
 export default function ThemedApp() {
   const theme = useSelector(state => state.theme)
   return (
-    <MuiThemeProvider theme={muiThemes[theme] || muiThemes.line}>
-      <App />
-    </MuiThemeProvider>
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider theme={muiThemes[theme] || muiThemes.line}>
+        <App />
+      </ThemeProvider>
+    </StyledEngineProvider>
   )
 }

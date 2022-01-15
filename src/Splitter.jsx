@@ -1,5 +1,5 @@
-import { makeStyles } from '@material-ui/core'
-import ClickAwayListener from '@material-ui/core/ClickAwayListener'
+import makeStyles from '@mui/styles/makeStyles'
+import ClickAwayListener from '@mui/material/ClickAwayListener'
 import React, { useRef, useState, useCallback } from 'react'
 import clsx from 'clsx'
 
