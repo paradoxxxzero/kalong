@@ -37,10 +37,11 @@ export default function Exception({
       >
         <Grid container direction="row" alignItems="center">
           <Typography
-            sx={theme => ({
-              color: theme.palette.error.main,
-              padding: '8px 8px 0 8px',
-            })}
+            sx={{
+              color: 'error.main',
+              p: 1,
+              pb: 0,
+            }}
           >
             <Warning />
           </Typography>

@@ -168,10 +168,7 @@ export default function Inspect({ attributes, doc, source, infos }) {
                   <TableRow key={key}>
                     <TableCell sx={{ wordBreak: 'normal' }} align="right">
                       {key}
-                      <Box
-                        component="span"
-                        sx={theme => ({ color: theme.palette.text.secondary })}
-                      >
+                      <Box component="span" sx={{ color: 'text.secondary' }}>
                         {signature}
                       </Box>
                     </TableCell>

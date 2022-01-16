@@ -17,7 +17,7 @@ import {
   keymap,
 } from '@codemirror/view'
 import CodeMirror from '@uiw/react-codemirror'
-import React, { memo, useCallback, useEffect, useMemo } from 'react'
+import React, { memo, useEffect, useMemo, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getFile } from './actions'
 import { context } from './extensions'
@@ -59,6 +59,7 @@ export default memo(function Source({ currentFile, className }) {
     firstFunctionLineNumber,
     lastFunctionLineNumber,
   } = currentFile
+  const sourceRef = useRef()
   const source = files[absoluteFilename]
 
   useEffect(() => {
@@ -78,27 +79,24 @@ export default memo(function Source({ currentFile, className }) {
     ]
   }, [lineNumber, firstFunctionLineNumber, lastFunctionLineNumber])
 
-  const handleUpdate = useCallback(
-    viewUpdate => {
-      const { state, view } = viewUpdate
-      let pos
-      try {
-        pos = state.doc.line(lineNumber).from
-      } catch (e) {
-        return
-      }
-
-      const scroller = view.scrollDOM
-      const { top } = view.lineBlockAt(pos)
-      scroller.scrollTo({
-        top: top - scroller.clientHeight / 2,
-      })
-    },
-    [lineNumber]
-  )
+  useEffect(() => {
+    if (source && sourceRef.current) {
+      const pos = source
+        .split('\n')
+        .slice(0, lineNumber - 1)
+        .join('\n').length
+      const { view } = sourceRef.current
+      view.dispatch(
+        view.state.update({
+          effects: EditorView.scrollIntoView(pos, { y: 'center' }),
+        })
+      )
+    }
+  }, [source, lineNumber])
 
   return (
     <CodeMirror
+      ref={sourceRef}
       style={{ flex: 1 }}
       editable={false}
       basicSetup={false}
@@ -106,7 +104,6 @@ export default memo(function Source({ currentFile, className }) {
       height="100%"
       extensions={extensions}
       value={source}
-      onUpdate={handleUpdate}
     />
   )
 })
