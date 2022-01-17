@@ -161,8 +161,11 @@ export default memo(function Prompt({
       }
     }
     const handleGlobalFocus = ({ key }) => {
-      if (!code.current?.view?.hasFocus) {
+      if (code.current?.view) {
         const { view } = code.current
+        if (view.hasFocus) {
+          return
+        }
         // Check if key is a printable char
         if (key.length === 1 || key === 'Spacebar') {
           view.dispatch(
