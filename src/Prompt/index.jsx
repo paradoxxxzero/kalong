@@ -89,6 +89,9 @@ const styleOverrides = EditorView.theme({
   '&.cm-editor.cm-focused': {
     outline: 'none',
   },
+  '& .cm-tooltip': {
+    fontSize: '0.75em',
+  },
 })
 
 const promptCursorStyles = EditorView.theme({
@@ -185,7 +188,11 @@ export default memo(function Prompt({
 
   const handleChange = useCallback((newValue, viewUpdate) => {
     if (viewUpdate.selectionSet) {
-      valueDispatch({ type: 'new-value', value: newValue })
+      console.log('u')
+      valueDispatch({
+        type: 'new-value',
+        value: newValue,
+      })
     }
   }, [])
 
@@ -201,8 +208,11 @@ export default memo(function Prompt({
 
   const handleEnter = useCallback(
     view => {
-      if (!prompt.value || completionStatus(view.state) === 'active') {
+      if (view.state && completionStatus(view.state) === 'active') {
         return false
+      }
+      if (!prompt.value) {
+        return true
       }
       const key = uid()
       switch (prompt.command) {
@@ -226,6 +236,7 @@ export default memo(function Prompt({
       }
 
       valueDispatch({ type: 'reset' })
+      return true
     },
     [activeFrame, dispatch, prompt.command, prompt.value]
   )
@@ -608,6 +619,13 @@ export default memo(function Prompt({
     ]
   }, [handleSearch, handleSearchClose])
 
+  useEffect(() => {
+    if (code.current?.view && prompt.passive) {
+      const { view } = code.current
+      view.dispatch({ selection: { anchor: prompt.value.length } })
+    }
+  }, [prompt.value, prompt.passive])
+
   return (
     <Grow
       in={grow}
@@ -629,7 +647,7 @@ export default memo(function Prompt({
                   }),
                 })}
                 onClick={handleEnter}
-                size="large"
+                size="small"
               >
                 <ExpandMore />
               </IconButton>

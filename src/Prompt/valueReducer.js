@@ -12,6 +12,7 @@ export default function valueReducer(state, action) {
           index: -1,
           value: action.value,
           transientValue: action.value,
+          passive: false,
         }
       case 'handle-up':
         return {
@@ -22,6 +23,7 @@ export default function valueReducer(state, action) {
               Math.min(state.index + 1, action.history.length - 1)
             ] || '',
           command: null,
+          passive: true,
         }
       case 'handle-down':
         return {
@@ -31,6 +33,7 @@ export default function valueReducer(state, action) {
             action.history[Math.max(state.index - 1, -1)] ||
             state.transientValue,
           command: null,
+          passive: true,
         }
       case 'jump':
         return {
@@ -38,6 +41,7 @@ export default function valueReducer(state, action) {
           index: action.index,
           value: action.value,
           command: null,
+          passive: true,
         }
       case 'toggle-command':
         return {
@@ -55,6 +59,7 @@ export default function valueReducer(state, action) {
           value: '',
           transientValue: '',
           command: null,
+          passive: true,
         }
       default:
         throw new Error()
@@ -83,4 +88,5 @@ export const initialValue = {
   value: '',
   transientValue: '',
   command: null,
+  passive: true,
 }

@@ -32,6 +32,7 @@ export default function Inspectable({
         ...(Array.isArray(sx) ? sx : [sx]),
       ]}
       component="a"
+      color="neutral"
       {...props}
     >
       {children}

@@ -30,7 +30,6 @@ export default function GlobalIndicator({ sx }) {
             color: {
               connecting: pink[200],
               closed: red[900],
-              open: level > 0 ? undefined : green[300],
             }[connectionState],
           })}
           variant={full ? 'determinate' : undefined}

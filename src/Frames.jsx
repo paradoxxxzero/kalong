@@ -26,7 +26,7 @@ export default memo(function Frames() {
   }, [activeFrame])
 
   return (
-    <List ref={listRef}>
+    <List ref={listRef} sx={{ p: 0 }}>
       {frames.map((frame, i) => (
         <Frame key={frame.key} frame={frame} last={i === frames.length - 1} />
       ))}

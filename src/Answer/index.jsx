@@ -42,8 +42,8 @@ export default memo(function Answer({
     <Card sx={{ m: 1, display: 'flex', flexDirection: 'column' }}>
       <CardHeader
         sx={{
-          '.MuiCardHeader-conent': {
-            minWidth: 8,
+          '.MuiCardHeader-content': {
+            minWidth: 0,
           },
         }}
         avatar={
@@ -57,7 +57,7 @@ export default memo(function Answer({
                 }),
               })}
               onClick={handleExpand}
-              size="large"
+              size="small"
             >
               <ExpandMore />
             </IconButton>

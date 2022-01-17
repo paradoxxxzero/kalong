@@ -1,10 +1,13 @@
-import { ListItemSecondaryAction, Tooltip, Typography } from '@mui/material'
-import { useSelector, useDispatch } from 'react-redux'
-import ListItem from '@mui/material/ListItem'
-import ListItemText from '@mui/material/ListItemText'
-import React, { useCallback, memo } from 'react'
 import { Star } from '@mui/icons-material'
-
+import {
+  ListItemButton,
+  ListItemSecondaryAction,
+  Tooltip,
+  Typography,
+} from '@mui/material'
+import ListItemText from '@mui/material/ListItemText'
+import React, { memo, useCallback } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { setActiveFrame } from './actions'
 import Snippet from './Snippet'
 
@@ -16,8 +19,7 @@ export default memo(function Frame({ frame, last }) {
   }, [dispatch, frame.key])
 
   return (
-    <ListItem
-      button
+    <ListItemButton
       divider={!last}
       selected={frame.key === activeFrame}
       onClick={handleClick}
@@ -49,6 +51,6 @@ export default memo(function Frame({ frame, last }) {
           </Tooltip>
         )}
       </ListItemSecondaryAction>
-    </ListItem>
+    </ListItemButton>
   )
 })

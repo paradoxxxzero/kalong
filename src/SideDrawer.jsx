@@ -64,15 +64,34 @@ export default function SideDrawer({ rtl, open, mobile, onDrawerClose }) {
                 fontSize: '2.25em',
                 '&:hover span': {
                   display: 'inline-block',
-                  transform: 'rotate3d(0, 1, 0, 180deg)',
+                  '&.K': {
+                    transform:
+                      'rotate3d(0, 0, 1, -90deg) translate(-8.5px, 0px)',
+                    textDecoration: 'none',
+                  },
+                  '&.o': {
+                    transform: 'rotate3d(0, 1, 0, 180deg)',
+                    textDecoration: 'underline',
+                  },
                   transformOrigin: 'center',
-                  textDecoration: 'underline',
                 },
               }}
             >
-              Kal
               <Box
                 component="span"
+                className="K"
+                sx={{
+                  transform: 'rotate3d(0, 1, 0, 0deg)',
+                  transition: 'transform 500ms',
+                  marginLeft: '-1px',
+                }}
+              >
+                K
+              </Box>
+              al
+              <Box
+                component="span"
+                className="o"
                 sx={{
                   transform: 'rotate3d(0, 1, 0, 0deg)',
                   transition: 'transform 500ms',
