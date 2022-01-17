@@ -58,3 +58,15 @@ export const prettyTime = time => {
   mtime = (mtime - 60 * htime).toFixed(0)
   return `${htime}h${withZero(mtime)}m${withZero(stime)}s`
 }
+
+export const scrollIntoViewIfNeeded = e => {
+  if (!e) {
+    return
+  }
+  const { top, bottom } = e.getBoundingClientRect()
+  if (top < 0) {
+    e.scrollIntoView()
+  } else if (bottom > window.innerHeight) {
+    e.scrollIntoView(false)
+  }
+}

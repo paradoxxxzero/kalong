@@ -10,11 +10,12 @@ import {
   Typography,
 } from '@mui/material'
 import React, { memo, useCallback, useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { removePromptAnswer, setActiveFrame } from '../actions'
 import Snippet from '../Snippet'
 import { prettyTime } from '../util'
 import AnswerDispatch from './AnswerDispatch'
+import { Tooltip } from '@mui/material'
 
 export default memo(function Answer({
   uid,
@@ -26,6 +27,8 @@ export default memo(function Answer({
 }) {
   const dispatch = useDispatch()
   const [expanded, setExpanded] = useState(true)
+  const frames = useSelector(state => state.frames)
+  const currentFrame = frames.find(({ key }) => key === frame)
   const handleExpand = useCallback(() => setExpanded(x => !x), [])
   const handleView = useCallback(
     () => dispatch(setActiveFrame(frame)),
@@ -65,9 +68,17 @@ export default memo(function Answer({
         titleTypographyProps={{ variant: 'h5', noWrap: true }}
         action={
           <>
-            <IconButton onClick={handleView} size="large">
-              <RemoveRedEye />
-            </IconButton>
+            <Tooltip
+              title={
+                currentFrame
+                  ? `${currentFrame.absoluteFilename}:${currentFrame.lineNumber}`
+                  : '?'
+              }
+            >
+              <IconButton onClick={handleView} size="large">
+                <RemoveRedEye />
+              </IconButton>
+            </Tooltip>
             <IconButton onClick={handleClose} size="large">
               <Close />
             </IconButton>

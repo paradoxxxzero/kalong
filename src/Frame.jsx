@@ -11,10 +11,9 @@ import Snippet from './Snippet'
 export default memo(function Frame({ frame, last }) {
   const activeFrame = useSelector(state => state.activeFrame)
   const dispatch = useDispatch()
-  const handleClick = useCallback(
-    () => dispatch(setActiveFrame(frame.key)),
-    [dispatch, frame]
-  )
+  const handleClick = useCallback(() => {
+    dispatch(setActiveFrame(frame.key))
+  }, [dispatch, frame.key])
 
   return (
     <ListItem

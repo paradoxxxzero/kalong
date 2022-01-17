@@ -15,9 +15,10 @@ export default memo(function Terminal({ className }) {
     scroller.current.scrollTop += 300
   }, [scroller])
 
-  // useEffect(() => {
-  //   scroller.current.scrollTop = scroller.current.scrollHeight
-  // }, [scrollback])
+  const scrollToBottom = useCallback(() => {
+    scroller.current.scrollTop = scroller.current.scrollHeight
+  }, [])
+
   return (
     <Box
       sx={{ flex: 1, overflowY: 'auto', scrollBehavior: 'smooth' }}
@@ -26,7 +27,11 @@ export default memo(function Terminal({ className }) {
       {scrollback.map(({ key, ...props }) => (
         <Answer key={key} uid={key} {...props} />
       ))}
-      <Prompt onScrollUp={handleScrollUp} onScrollDown={handleScrollDown} />
+      <Prompt
+        onScrollUp={handleScrollUp}
+        onScrollDown={handleScrollDown}
+        scrollToBottom={scrollToBottom}
+      />
     </Box>
   )
 })

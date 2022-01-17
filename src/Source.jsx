@@ -80,7 +80,7 @@ export default memo(function Source({ currentFile, className }) {
   }, [lineNumber, firstFunctionLineNumber, lastFunctionLineNumber])
 
   useEffect(() => {
-    if (source && sourceRef.current) {
+    if (source && sourceRef.current?.view) {
       const pos = source
         .split('\n')
         .slice(0, lineNumber - 1)

@@ -133,7 +133,11 @@ const baseExtensions = [
   python(),
 ]
 
-export default memo(function Prompt({ onScrollUp, onScrollDown }) {
+export default memo(function Prompt({
+  onScrollUp,
+  onScrollDown,
+  scrollToBottom,
+}) {
   const code = useRef()
 
   const history = useSelector(state => state.history)
@@ -153,16 +157,19 @@ export default memo(function Prompt({ onScrollUp, onScrollDown }) {
       const selection = getSelection().toString()
       if (selection) {
         const key = uid()
-        dispatch(requestInspectEval(key, selection))
+        dispatch(setPrompt(key, selection, null, activeFrame))
       }
     }
-    const handleGlobalFocus = ({ keyCode }) => {
-      if (keyCode !== 13) {
-        return
-      }
-
-      if (code.current) {
-        code.current.view.focus()
+    const handleGlobalFocus = ({ key }) => {
+      if (!code.current?.view?.hasFocus) {
+        const { view } = code.current
+        // Check if key is a printable char
+        if (key.length === 1 || key === 'Spacebar') {
+          view.dispatch(
+            view.state.replaceSelection(key === 'Spacebar' ? ' ' : key)
+          )
+        }
+        view.focus()
       }
     }
     window.addEventListener('keydown', handleGlobalEval)
@@ -171,7 +178,7 @@ export default memo(function Prompt({ onScrollUp, onScrollDown }) {
       window.removeEventListener('keydown', handleGlobalEval)
       window.removeEventListener('keyup', handleGlobalFocus)
     }
-  }, [dispatch])
+  }, [activeFrame, dispatch])
 
   const handleChange = useCallback((newValue, viewUpdate) => {
     if (viewUpdate.selectionSet) {
@@ -244,7 +251,6 @@ export default memo(function Prompt({ onScrollUp, onScrollDown }) {
 
   const handleEntered = useCallback(() => {
     if (code.current) {
-      // code.current.refresh()
       code.current.view.focus()
     }
   }, [code])
@@ -639,19 +645,9 @@ export default memo(function Prompt({ onScrollUp, onScrollDown }) {
                 onChange={handleChange}
                 height="auto"
                 extensions={extensions}
-                // cursorBlinkRate={0}
-                // viewportMargin={Infinity}
                 width="100%"
+                onUpdate={scrollToBottom}
               />
-              {/* {suggestions && suggestions.prompt === prompt.value && (
-                  <Hint
-                    hint={provideSuggestion}
-                    onEndCompletion={removeSuggestion}
-                  />
-                )}
-
-                {search.highlight && <Highlight mode={search.highlight} />} */}
-              {/* </Code> */}
               {search.value !== null && (
                 <Box
                   component="label"
