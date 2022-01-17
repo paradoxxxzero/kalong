@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "kalong"
-version = "0.2.1"
+version = "0.2.2"
 description = "A new take on python debugging"
 authors = ["Florian Mounier <paradoxxx.zero@gmail.com>"]
 license = "GPLv3+"

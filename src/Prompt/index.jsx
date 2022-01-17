@@ -2,6 +2,8 @@ import {
   autocompletion,
   completionKeymap,
   completionStatus,
+  startCompletion,
+  acceptCompletion,
 } from '@codemirror/autocomplete'
 import { closeBrackets, closeBracketsKeymap } from '@codemirror/closebrackets'
 import { defaultKeymap } from '@codemirror/commands'
@@ -188,7 +190,6 @@ export default memo(function Prompt({
 
   const handleChange = useCallback((newValue, viewUpdate) => {
     if (viewUpdate.selectionSet) {
-      console.log('u')
       valueDispatch({
         type: 'new-value',
         value: newValue,
@@ -487,14 +488,31 @@ export default memo(function Prompt({
       ])
       return {
         from: word.from,
-        options: suggestions.map(({ text, description, type }) => ({
+        options: suggestions.map(({ text, description, docstring, type }) => ({
           label: text,
-          info: description,
+          // detail: description,
+          info: docstring,
           type: jediTypeToCodeMirrorType[type] || type,
         })),
       }
     },
     [activeFrame, dispatch, prompt.value]
+  )
+
+  const handleTabOrComplete = useCallback(
+    view => {
+      const pos = view.state.selection.main.head
+      if (prompt.value.slice(0, pos).split('\n').slice(-1)[0].match(/^\s*$/)) {
+        return false
+      }
+      if (completionStatus(view.state) === 'active') {
+        acceptCompletion(view)
+      } else {
+        startCompletion(view)
+      }
+      return true
+    },
+    [prompt.value]
   )
 
   const grow =
@@ -508,7 +526,7 @@ export default memo(function Prompt({
           { key: 'ArrowDown', run: handleDown, preventDefault: true },
           { key: 'Enter', run: handleEnter, preventDefault: true },
           { key: 'Backspace', run: handleBackspace, preventDefault: true },
-          // { key: 'Ctrl-Space', run: handleCompletion, preventDefault: true },
+          { key: 'Tab', run: handleTabOrComplete, preventDefault: true },
           { key: 'Ctrl-c', run: handleRemoveAllOrCopy, preventDefault: true },
           { key: 'Ctrl-d', run: handleDieIfEmpty, preventDefault: true },
           { key: 'Ctrl-l', run: handleClearScreen, preventDefault: true },
@@ -577,6 +595,7 @@ export default memo(function Prompt({
     handleInsertHistoryArgUp,
     handleRemoveAllOrCopy,
     handleSearch,
+    handleTabOrComplete,
     handleUp,
     onScrollDown,
     onScrollUp,
