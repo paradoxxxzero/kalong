@@ -10,7 +10,7 @@ def protected(f, *args, **kwargs):
         return 42
 
 
-def fun(skip=False, gen_catched_exception=False):
+def fun(skip=False, gen_catched_exception=False, l=0):
     a = 4
     b = 9
     breakpoint()
@@ -23,6 +23,9 @@ def fun(skip=False, gen_catched_exception=False):
     if gen_catched_exception:
         protected(subfun, b, a)
     print(c * d)
+    if l < 5:
+        print("Going deeper")
+        fun(l=l + 1)
     return (a - b) / (c * d)
 
 

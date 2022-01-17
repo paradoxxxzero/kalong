@@ -61,7 +61,7 @@ def get_frame(frame, key):
         return frame
 
     for f in iter_frame(frame):
-        if id(f.f_code) == key:
+        if id(f) == key:
             return f
     log.warn(f"Frame {key} not found")
     return frame
@@ -88,7 +88,7 @@ def serialize_frames(current_frame, current_tb):
         startlnos = dis.findlinestarts(code)
         lastlineno = list(startlnos)[-1][1]
         yield {
-            "key": id(code),
+            "key": id(frame),
             "absoluteFilename": str(fn),
             "filename": fn.name,
             "function": code.co_name,
