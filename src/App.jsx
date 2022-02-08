@@ -12,7 +12,6 @@ import Main from './Main'
 import SideDrawer from './SideDrawer'
 import TopBar from './TopBar'
 
-
 export default function App() {
   const theme = useTheme()
   const mobile = useMediaQuery(theme.breakpoints.down('md'))

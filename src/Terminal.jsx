@@ -1,10 +1,10 @@
 import { Box } from '@mui/material'
-import React, { memo, useCallback, useRef } from 'react'
+import React, { useCallback, useRef } from 'react'
 import { useSelector } from 'react-redux'
 import Answer from './Answer'
 import Prompt from './Prompt'
 
-export default memo(function Terminal({ className }) {
+export default (function Terminal({ className }) {
   const scrollback = useSelector(state => state.scrollback)
   const scroller = useRef()
   const handleScrollUp = useCallback(() => {

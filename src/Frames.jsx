@@ -1,12 +1,11 @@
-import { useDispatch, useSelector } from 'react-redux'
 import List from '@mui/material/List'
-import React, { useEffect, memo, useRef } from 'react'
-
-import { /* getFrames,*/ setActiveFrame } from './actions'
+import React, { useEffect, useRef } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { setActiveFrame } from './actions'
 import Frame from './Frame'
 import { scrollIntoViewIfNeeded } from './util'
 
-export default memo(function Frames() {
+export default function Frames() {
   const frames = useSelector(state => state.frames)
   const activeFrame = useSelector(state => state.activeFrame)
   const listRef = useRef()
@@ -32,4 +31,4 @@ export default memo(function Frames() {
       ))}
     </List>
   )
-})
+}

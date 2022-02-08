@@ -1,9 +1,9 @@
 import {
+  acceptCompletion,
   autocompletion,
   completionKeymap,
   completionStatus,
   startCompletion,
-  acceptCompletion,
 } from '@codemirror/autocomplete'
 import { closeBrackets, closeBracketsKeymap } from '@codemirror/closebrackets'
 import { defaultKeymap } from '@codemirror/commands'
@@ -29,7 +29,6 @@ import { ExpandMore } from '@mui/icons-material'
 import { Box, Card, CardHeader, Chip, Grow, IconButton } from '@mui/material'
 import CodeMirror from '@uiw/react-codemirror'
 import React, {
-  memo,
   useCallback,
   useEffect,
   useMemo,
@@ -47,11 +46,11 @@ import {
   requestSuggestion,
   setPrompt,
 } from '../actions'
+import { lineWrappingHarder } from '../extensions'
 import { uid } from '../util'
 import searchReducer, { initialSearch } from './searchReducer'
 import { lexArgs, splitDiff } from './utils'
 import valueReducer, { commandShortcuts, initialValue } from './valueReducer'
-import { lineWrappingHarder } from '../extensions'
 
 const jediTypeToCodeMirrorType = {
   module: 'namespace',
@@ -140,11 +139,7 @@ const baseExtensions = [
   python(),
 ]
 
-export default memo(function Prompt({
-  onScrollUp,
-  onScrollDown,
-  scrollToBottom,
-}) {
+export default (function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
   const code = useRef()
 
   const history = useSelector(state => state.history)

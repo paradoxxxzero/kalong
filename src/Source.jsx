@@ -17,7 +17,7 @@ import {
   keymap,
 } from '@codemirror/view'
 import CodeMirror from '@uiw/react-codemirror'
-import React, { memo, useEffect, useMemo, useRef } from 'react'
+import React, { useEffect, useMemo, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getFile } from './actions'
 import { context, lineWrappingHarder } from './extensions'
@@ -51,7 +51,7 @@ const baseExtensions = [
   python(),
 ]
 
-export default memo(function Source({ currentFile, className }) {
+export default (function Source({ currentFile, className }) {
   const dispatch = useDispatch()
   const files = useSelector(state => state.files)
   const {

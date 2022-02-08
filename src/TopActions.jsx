@@ -20,13 +20,7 @@ import {
   Tooltip,
 } from '@mui/material'
 import Typography from '@mui/material/Typography'
-import React, {
-  memo,
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useState,
-} from 'react'
+import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { doCommand } from './actions'
 
@@ -137,7 +131,7 @@ const ActionButton = ({
     </IconButton>
   </Tooltip>
 )
-export default memo(function TopActions({ mobile }) {
+export default (function TopActions({ mobile }) {
   const title = useSelector(state => state.title)
   const frames = useSelector(state => state.frames)
   const running = useSelector(state => state.running)
