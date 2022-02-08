@@ -5,7 +5,11 @@ import webbrowser
 from threading import Lock
 
 from aiohttp import ClientSession
-from aiohttp.client_exceptions import ClientConnectorError
+from aiohttp.client_exceptions import (
+    ClientConnectorError,
+    ClientOSError,
+    ServerDisconnectedError,
+)
 
 from .errors import NoServerFoundError
 from .forking import forkserver
@@ -44,8 +48,8 @@ async def websocket_state():
             # If there are no server available, fork one
             log.info("No kalong server, starting one")
             forkserver()
-            for delay in [0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2, 5, 10]:
-                await asyncio.sleep(delay)
+            for _ in range(500):
+                await asyncio.sleep(0.05)
                 try:
                     ws = await sessions[origin].ws_connect(
                         url("back"), **websocket_options

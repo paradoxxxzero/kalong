@@ -45,18 +45,10 @@ async def peer(app, side, origin):
     if origin in app[side]:
         return app[side][origin]
     else:
-        for delay in [0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 30]:
+        for _ in range(500):
+            await asyncio.sleep(0.05)
             if origin in app[side]:
                 return app[side][origin]
-            getattr(
-                log,
-                "warning"
-                if delay > 3
-                else ("info" if delay > 0.3 else "debug"),
-            )(
-                f"{human_readable_side(side).title()} connection not found, awaiting {delay} more seconds."
-            )
-            await asyncio.sleep(delay)
         raise NoClientFoundError(
             f"No {human_readable_side(side)} was open to connect to debugger"
         )
