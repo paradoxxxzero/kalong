@@ -126,17 +126,15 @@ const ActionButton = ({
   handleCommand,
 }) => (
   <Tooltip title={`${label} [${key}]`}>
-    <span>
-      <IconButton
-        color="inherit"
-        onClick={handleCommand}
-        disabled={disabled}
-        data-action={action}
-        size="large"
-      >
-        <Icon />
-      </IconButton>
-    </span>
+    <IconButton
+      color="inherit"
+      onClick={handleCommand}
+      disabled={disabled}
+      data-action={action}
+      size="large"
+    >
+      <Icon />
+    </IconButton>
   </Tooltip>
 )
 export default memo(function TopActions({ mobile }) {
