@@ -20,7 +20,7 @@ import CodeMirror from '@uiw/react-codemirror'
 import React, { memo, useEffect, useMemo, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getFile } from './actions'
-import { context } from './extensions'
+import { context, lineWrappingHarder } from './extensions'
 
 const styleOverrides = EditorView.theme({
   '&,& .cm-content': {
@@ -46,6 +46,7 @@ const baseExtensions = [
   ]),
   EditorState.readOnly.of(true),
   EditorView.lineWrapping,
+  lineWrappingHarder,
   styleOverrides,
   python(),
 ]

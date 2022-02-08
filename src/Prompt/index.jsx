@@ -51,6 +51,7 @@ import { uid } from '../util'
 import searchReducer, { initialSearch } from './searchReducer'
 import { lexArgs, splitDiff } from './utils'
 import valueReducer, { commandShortcuts, initialValue } from './valueReducer'
+import { lineWrappingHarder } from '../extensions'
 
 const jediTypeToCodeMirrorType = {
   module: 'namespace',
@@ -124,6 +125,7 @@ const baseExtensions = [
   rectangularSelection(),
   highlightSelectionMatches(),
   EditorView.lineWrapping,
+  lineWrappingHarder,
   styleOverrides,
   keymap.of([
     ...closeBracketsKeymap,

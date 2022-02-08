@@ -95,3 +95,9 @@ const showContext = ViewPlugin.fromClass(
 export function context({ active, first, last }) {
   return [contextTheme, contextFacet.of({ active, first, last }), showContext]
 }
+
+export const lineWrappingHarder = EditorView.theme({
+  '& .cm-lineWrapping': {
+    wordBreak: 'break-all',
+  },
+})
