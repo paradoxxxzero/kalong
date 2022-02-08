@@ -1,7 +1,7 @@
 import { defaultHighlightStyle, highlightTree } from '@codemirror/highlight'
 import { python } from '@codemirror/lang-python'
 import { Box } from '@mui/material'
-import React, { memo, useEffect, useState } from 'react'
+import React, { forwardRef, memo, useEffect, useState } from 'react'
 
 function runmode(textContent, language, callback, options) {
   const tree = language.parser.parse(textContent)
@@ -18,44 +18,44 @@ function runmode(textContent, language, callback, options) {
 const pyLang = python().language
 const diffLang = null // TODO: diff().language
 
-export default memo(function Snippet({
-  sx,
-  value = '',
-  mode = 'python',
-  onClick,
-  noBreakAll,
-  noBreak,
-}) {
-  const [chunks, setChunks] = useState([[value, null, 0]])
-  useEffect(() => {
-    const lang = { python: pyLang, diff: diffLang }[mode]
-    if (!lang || !value) {
-      return
-    }
-    setChunks([])
-    runmode(value, lang, (text, cls, from) => {
-      setChunks(chunks => [...chunks, [text, cls, from]])
-    })
-  }, [mode, value])
-  return (
-    <Box
-      component="code"
-      sx={[
-        {
-          fontFamily: '"Fira Code", monospace',
-          whiteSpace: noBreak ? undefined : 'pre-wrap',
-          wordBreak: noBreak || noBreakAll ? undefined : 'break-all',
-          overflowWrap: noBreak || noBreakAll ? undefined : 'break-word',
-        },
-        ...(Array.isArray(sx) ? sx : [sx]),
-      ]}
-      onClick={onClick}
-    >
-      {chunks.map(([text, cls, from]) => (
-        <span key={from} className={cls}>
-          {text}
-        </span>
-      ))}
-    </Box>
-  )
-})
+export default memo(
+  forwardRef(function Snippet(
+    { sx, value = '', mode = 'python', onClick, noBreak, ...props },
+    ref
+  ) {
+    const [chunks, setChunks] = useState([[value, null, 0]])
+    useEffect(() => {
+      const lang = { python: pyLang, diff: diffLang }[mode]
+      if (!lang || !value) {
+        return
+      }
+      setChunks([])
+      runmode(value, lang, (text, cls, from) => {
+        setChunks(chunks => [...chunks, [text, cls, from]])
+      })
+    }, [mode, value])
+    return (
+      <Box
+        ref={ref}
+        component="code"
+        sx={[
+          {
+            fontFamily: '"Fira Code", monospace',
+            whiteSpace: noBreak ? undefined : 'pre-wrap',
+            wordBreak: noBreak || 'break-all',
+            overflowWrap: noBreak || 'break-word',
+          },
+          ...(Array.isArray(sx) ? sx : [sx]),
+        ]}
+        onClick={onClick}
+        {...props}
+      >
+        {chunks.map(([text, cls, from]) => (
+          <span key={from} className={cls}>
+            {text}
+          </span>
+        ))}
+      </Box>
+    )
+  })
+)

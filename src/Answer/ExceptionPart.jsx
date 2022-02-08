@@ -50,14 +50,14 @@ export default function Exception({
               {subtype === 'cause' ? 'Caused by' : 'Issued from'}
             </Typography>
           )}
-          <Inspectable id={id} sx={{ pt: 0.6 }}>
-            <Typography variant="h6">
-              <Snippet value={name} mode="text" noBreakAll />
+          <Inspectable id={id} sx={{ pt: 0.6, flex: 1 }}>
+            <Typography variant="h6" component="span">
+              <Snippet value={name} mode="text" />
             </Typography>
-            <Typography variant="subtitle1">
+            <Typography variant="subtitle1" component="span">
               <Snippet value={' ― '} mode="text" />
             </Typography>
-            <Typography>
+            <Typography component="span">
               <Snippet value={description} mode="text" />
             </Typography>
           </Inspectable>

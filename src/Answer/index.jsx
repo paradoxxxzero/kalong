@@ -64,7 +64,11 @@ export default memo(function Answer({
             {command && <Chip label={command} />}
           </>
         }
-        title={<Snippet sx={{ p: 0.5 }} value={prompt} noBreak />}
+        title={
+          <Tooltip title={prompt}>
+            <Snippet sx={{ p: 0.5 }} value={prompt} noBreak />
+          </Tooltip>
+        }
         titleTypographyProps={{ variant: 'h5', noWrap: true }}
         action={
           <>
@@ -109,7 +113,7 @@ export default memo(function Answer({
                   <AnswerDispatch key={i} {...props} />
                 ))}
               </Typography>
-              {duration && <Snippet value={prettyTime(duration)} noBreakAll />}
+              {duration && <Snippet value={prettyTime(duration)} />}
             </CardContent>
           </Collapse>
         </>
