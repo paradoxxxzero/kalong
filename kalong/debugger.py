@@ -308,28 +308,29 @@ def serialize_suggestion(prompt, from_, to, cursor, frame):
     try:
         script = Interpreter(prompt, [frame.f_locals, frame.f_globals])
         completions = script.complete(cursor["line"] + 1, cursor["ch"])
+
+        params_first_completions = [
+            c for c in completions if c.name_with_symbols != c.name
+        ] + [c for c in completions if c.name_with_symbols == c.name]
+
+        completions = [
+            {
+                "text": comp.name_with_symbols,
+                "description": comp.description,
+                "docstring": comp.docstring(),
+                "type": comp.type,
+                "base": comp.name_with_symbols[
+                    : len(comp.name_with_symbols) - len(comp.complete)
+                ],
+                "complete": comp.complete,
+            }
+            for comp in params_first_completions
+        ]
+
+        suggestion = {"from": from_, "to": to, "list": completions}
+        answer["suggestion"] = suggestion
     except Exception:
         log.exception("Completion failed")
         return answer
 
-    params_first_completions = [
-        c for c in completions if c.name_with_symbols != c.name
-    ] + [c for c in completions if c.name_with_symbols == c.name]
-
-    completions = [
-        {
-            "text": comp.name_with_symbols,
-            "description": comp.description,
-            "docstring": comp.docstring(),
-            "type": comp.type,
-            "base": comp.name_with_symbols[
-                : len(comp.name_with_symbols) - len(comp.complete)
-            ],
-            "complete": comp.complete,
-        }
-        for comp in params_first_completions
-    ]
-
-    suggestion = {"from": from_, "to": to, "list": completions}
-    answer["suggestion"] = suggestion
     return answer

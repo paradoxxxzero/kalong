@@ -108,7 +108,7 @@ export default function SideDrawer({ rtl, open, mobile, onDrawerClose }) {
             underline="hover"
           >
             <Typography variant="subtitle1" sx={{ fontSize: '1.25em' }}>
-              v0.2.2
+              v0.2.3
             </Typography>
           </Link>
         </Box>
