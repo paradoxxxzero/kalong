@@ -191,7 +191,7 @@ async def communication_loop(frame_, event_, arg_):
                 break
 
         elif msg.type == WSMsgType.ERROR:
-            log.error(f"WebSocket closed", exc_info=ws.exception())
+            log.error("WebSocket closed", exc_info=ws.exception())
             break
 
     # Browser exited, stopping debug if we are not stepping
