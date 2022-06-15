@@ -5,6 +5,7 @@ import signal
 import socket
 import sys
 import threading
+import traceback
 from pathlib import Path
 
 from .. import config
@@ -18,6 +19,10 @@ except ImportError:
 try:
     import uncompyle6
 except ImportError:
+    uncompyle6 = None
+except Exception:
+    print("Uncompyle crashed at import:")
+    traceback.print_exc()
     uncompyle6 = None
 
 ORIGIN_RE = re.compile(r"(.+)__(.+)--(.+)")
