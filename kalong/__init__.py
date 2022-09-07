@@ -1,5 +1,5 @@
 """A new take on debugging"""
-__version__ = "0.2.4"
+__version__ = "0.2.5"
 import os
 import sys
 
