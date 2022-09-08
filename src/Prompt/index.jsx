@@ -4,18 +4,20 @@ import {
   completionKeymap,
   completionStatus,
   startCompletion,
+  closeBrackets,
+  closeBracketsKeymap,
 } from '@codemirror/autocomplete'
-import { closeBrackets, closeBracketsKeymap } from '@codemirror/closebrackets'
-import { defaultKeymap } from '@codemirror/commands'
-import { commentKeymap } from '@codemirror/comment'
-import { foldKeymap } from '@codemirror/fold'
-import { defaultHighlightStyle } from '@codemirror/highlight'
-import { history, historyKeymap } from '@codemirror/history'
+import { defaultKeymap, history, historyKeymap } from '@codemirror/commands'
 import { python } from '@codemirror/lang-python'
-import { indentOnInput } from '@codemirror/language'
+import {
+  indentOnInput,
+  foldKeymap,
+  bracketMatching,
+  defaultHighlightStyle,
+  syntaxHighlighting,
+} from '@codemirror/language'
 import { lintKeymap } from '@codemirror/lint'
-import { bracketMatching } from '@codemirror/matchbrackets'
-import { rectangularSelection } from '@codemirror/rectangular-selection'
+import { rectangularSelection } from '@codemirror/view'
 import { highlightSelectionMatches, searchKeymap } from '@codemirror/search'
 import { EditorState, Prec } from '@codemirror/state'
 import {
@@ -117,7 +119,7 @@ const baseExtensions = [
   dropCursor(),
   EditorState.allowMultipleSelections.of(true),
   indentOnInput(),
-  defaultHighlightStyle.fallback,
+  syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
   bracketMatching(),
   closeBrackets(),
   autocompletion(),
@@ -132,7 +134,6 @@ const baseExtensions = [
     ...searchKeymap,
     ...historyKeymap,
     ...foldKeymap,
-    ...commentKeymap,
     ...completionKeymap,
     ...lintKeymap,
   ]),

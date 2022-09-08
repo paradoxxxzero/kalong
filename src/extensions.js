@@ -1,5 +1,4 @@
-import { RangeSetBuilder } from '@codemirror/rangeset'
-import { Facet } from '@codemirror/state'
+import { Facet, RangeSetBuilder } from '@codemirror/state'
 import { Decoration, EditorView, ViewPlugin } from '@codemirror/view'
 
 const contextLuminance = 0.2

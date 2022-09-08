@@ -1,10 +1,7 @@
-import { completionKeymap } from '@codemirror/autocomplete'
-import { closeBracketsKeymap } from '@codemirror/closebrackets'
-import { defaultKeymap } from '@codemirror/commands'
-import { commentKeymap } from '@codemirror/comment'
-import { foldGutter, foldKeymap } from '@codemirror/fold'
-import { lineNumbers } from '@codemirror/gutter'
-import { historyKeymap } from '@codemirror/history'
+import { completionKeymap, closeBracketsKeymap } from '@codemirror/autocomplete'
+import { defaultKeymap, historyKeymap } from '@codemirror/commands'
+import { foldGutter, foldKeymap } from '@codemirror/language'
+import { lineNumbers } from '@codemirror/view'
 import { python } from '@codemirror/lang-python'
 import { lintKeymap } from '@codemirror/lint'
 import { highlightSelectionMatches, searchKeymap } from '@codemirror/search'
@@ -40,7 +37,6 @@ const baseExtensions = [
     ...searchKeymap,
     ...historyKeymap,
     ...foldKeymap,
-    ...commentKeymap,
     ...completionKeymap,
     ...lintKeymap,
   ]),
