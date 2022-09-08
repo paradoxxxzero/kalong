@@ -141,6 +141,7 @@ const baseExtensions = [
 
 export default (function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
   const code = useRef()
+  const searchCode = useRef()
 
   const history = useSelector(state => state.history)
   const scrollback = useSelector(state => state.scrollback)
@@ -162,7 +163,11 @@ export default (function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
         dispatch(setPrompt(key, selection, null, activeFrame))
       }
     }
-    const handleGlobalFocus = ({ key }) => {
+    const handleGlobalFocus = ({ key, target }) => {
+      // Don't focus the prompt if the user is typing in the search field
+      if (searchCode.current?.view.dom.contains(target)) {
+        return
+      }
       if (code.current?.view) {
         const { view } = code.current
         if (view.hasFocus) {
@@ -687,6 +692,7 @@ export default (function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
                     {search.reverse ? 'backward' : 'forward'}:
                   </Box>
                   <CodeMirror
+                    ref={searchCode}
                     value={search.value}
                     height="auto"
                     autoFocus
