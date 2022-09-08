@@ -110,6 +110,7 @@ const scrollback = (state = [], action) => {
       return state.map(promptAnswer =>
         action.key === promptAnswer.key
           ? {
+              ...promptAnswer,
               key: action.key,
               prompt: action.prompt,
               command: action.command,

@@ -1,5 +1,4 @@
 export default function searchReducer(state, action) {
-  console.log(action.type)
   switch (action.type) {
     case 'search':
       return {

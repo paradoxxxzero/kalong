@@ -77,17 +77,33 @@ export default (function Source({ currentFile, className }) {
   }, [lineNumber, firstFunctionLineNumber, lastFunctionLineNumber])
 
   useEffect(() => {
-    if (source && sourceRef.current?.view) {
-      const pos = source
-        .split('\n')
-        .slice(0, lineNumber - 1)
-        .join('\n').length
-      const { view } = sourceRef.current
-      view.dispatch(
-        view.state.update({
-          effects: EditorView.scrollIntoView(pos, { y: 'center' }),
-        })
-      )
+    let timeout = null
+    if (source && sourceRef.current) {
+      // Use a timeout here because view is null while file is loading.
+      const setLine = () => {
+        if (sourceRef.current.view) {
+          const pos = source
+            .split('\n')
+            .slice(0, lineNumber - 1)
+            .join('\n').length
+          const { view } = sourceRef.current
+          view.dispatch(
+            view.state.update({
+              effects: EditorView.scrollIntoView(pos, { y: 'center' }),
+            })
+          )
+        } else {
+          timeout = setTimeout(() => {
+            timeout = null
+            setLine()
+          }, 10)
+        }
+      }
+
+      setLine()
+    }
+    return () => {
+      timeout && clearTimeout(timeout)
     }
   }, [source, lineNumber])
 

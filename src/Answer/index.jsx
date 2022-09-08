@@ -76,7 +76,10 @@ export default memo(function Answer({
         m: 1,
         display: 'flex',
         flexDirection: 'column',
-        opacity: !currentFrame ? 0.75 : frame === activeFrame ? 1 : 0.5,
+        opacity: frame === activeFrame ? 1 : 0.75,
+        filter: currentFrame ? 'none' : 'grayscale(100%)',
+        transition: theme =>
+          theme.transitions.create(['opacity', 'box-shadow']),
       }}
     >
       <CardHeader
