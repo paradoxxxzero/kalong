@@ -1,4 +1,11 @@
-import { Close, ExpandMore, Refresh, RemoveRedEye } from '@mui/icons-material'
+import {
+  Close,
+  ContentCopy,
+  ExpandMore,
+  Map,
+  Refresh,
+  Visibility,
+} from '@mui/icons-material'
 import {
   Card,
   CardContent,
@@ -7,15 +14,20 @@ import {
   Collapse,
   Divider,
   IconButton,
+  Tooltip,
   Typography,
 } from '@mui/material'
 import React, { memo, useCallback, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { removePromptAnswer, setActiveFrame, setPrompt } from '../actions'
+import {
+  refreshPrompt,
+  removePromptAnswer,
+  setActiveFrame,
+  setWatching,
+} from '../actions'
 import Snippet from '../Snippet'
 import { prettyTime } from '../util'
 import AnswerDispatch from './AnswerDispatch'
-import { Tooltip } from '@mui/material'
 
 export default memo(function Answer({
   uid,
@@ -24,15 +36,31 @@ export default memo(function Answer({
   prompt,
   command,
   frame,
+  watching,
 }) {
   const dispatch = useDispatch()
   const [expanded, setExpanded] = useState(true)
   const frames = useSelector(state => state.frames)
   const currentFrame = frames.find(({ key }) => key === frame)
+  const activeFrame = useSelector(state => state.activeFrame)
   const handleExpand = useCallback(() => setExpanded(x => !x), [])
+  const handleCopy = useCallback(() => {
+    navigator.clipboard?.writeText(prompt)
+  }, [prompt])
+
+  const handleWatch = useCallback(
+    () =>
+      dispatch(
+        setWatching(
+          uid,
+          watching === 'frame' ? 'all' : watching === 'all' ? null : 'frame'
+        )
+      ),
+    [dispatch, uid, watching]
+  )
   const handleRefresh = useCallback(
-    () => dispatch(setPrompt(uid, prompt, command), frame),
-    [command, dispatch, frame, prompt, uid]
+    () => dispatch(refreshPrompt(uid, prompt, command, activeFrame)),
+    [activeFrame, command, dispatch, prompt, uid]
   )
   const handleView = useCallback(
     () => dispatch(setActiveFrame(frame)),
@@ -43,7 +71,14 @@ export default memo(function Answer({
   }, [dispatch, uid])
 
   return (
-    <Card sx={{ m: 1, display: 'flex', flexDirection: 'column' }}>
+    <Card
+      sx={{
+        m: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        opacity: !currentFrame ? 0.75 : frame === activeFrame ? 1 : 0.5,
+      }}
+    >
       <CardHeader
         sx={{
           '.MuiCardHeader-content': {
@@ -76,20 +111,35 @@ export default memo(function Answer({
         titleTypographyProps={{ variant: 'h5', noWrap: true }}
         action={
           <>
-            <IconButton onClick={handleRefresh} size="large">
+            <IconButton onClick={handleCopy} size="small">
+              <ContentCopy />
+            </IconButton>
+            {currentFrame ? (
+              <Tooltip
+                title={`${currentFrame.absoluteFilename}:${currentFrame.lineNumber}`}
+              >
+                <IconButton onClick={handleView} size="small">
+                  <Map />
+                </IconButton>
+              </Tooltip>
+            ) : null}
+            <IconButton onClick={handleRefresh} size="small">
               <Refresh />
             </IconButton>
-            <Tooltip
-              title={
-                currentFrame
-                  ? `${currentFrame.absoluteFilename}:${currentFrame.lineNumber}`
-                  : '?'
-              }
+            <IconButton
+              onClick={handleWatch}
+              size="small"
+              sx={{
+                color:
+                  watching === 'all'
+                    ? 'warning.main'
+                    : watching === 'frame'
+                    ? 'info.main'
+                    : undefined,
+              }}
             >
-              <IconButton onClick={handleView} size="large">
-                <RemoveRedEye />
-              </IconButton>
-            </Tooltip>
+              <Visibility />
+            </IconButton>
             <IconButton onClick={handleClose} size="large">
               <Close />
             </IconButton>

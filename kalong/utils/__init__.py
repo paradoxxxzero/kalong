@@ -94,3 +94,21 @@ def get_file_from_code(frame, filename):
 
         if filename == str(fn):
             return discompile(frame.f_code)
+
+
+def cutter_mock(text, cursor):
+    ch = cursor["ch"]
+    new_text = []
+    for lno, line in enumerate(text.split("\n")):
+        new_line = []
+        for c, char in enumerate(line):
+            if char == "!":
+                new_line.append("[0].")
+                if lno == cursor["line"] and c <= ch:
+                    cursor["ch"] += 3
+
+            else:
+                new_line.append(char)
+        new_text.append("".join(new_line))
+
+    return "\n".join(new_text), cursor

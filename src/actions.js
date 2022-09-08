@@ -77,6 +77,16 @@ export const setPrompt = (key, prompt, command, frame) => ({
   remote: true,
 })
 
+export const REFRESH_PROMPT = 'REFRESH_PROMPT'
+export const refreshPrompt = (key, prompt, command, frame) => ({
+  type: REFRESH_PROMPT,
+  key,
+  prompt,
+  command,
+  frame,
+  remote: true,
+})
+
 export const REMOVE_PROMPT_ANSWER = 'REMOVE_PROMPT_ANSWER'
 export const removePromptAnswer = key => ({
   type: REMOVE_PROMPT_ANSWER,
@@ -97,27 +107,6 @@ export const requestInspect = (key, id) => ({
   remote: true,
 })
 
-export const REQUEST_INSPECT_EVAL = 'REQUEST_INSPECT_EVAL'
-export const requestInspectEval = (key, prompt, command, frame) => ({
-  type: REQUEST_INSPECT_EVAL,
-  key,
-  prompt,
-  command,
-  frame,
-  remote: true,
-})
-
-export const REQUEST_DIFF_EVAL = 'REQUEST_DIFF_EVAL'
-export const requestDiffEval = (key, left, right, command, frame) => ({
-  type: REQUEST_DIFF_EVAL,
-  key,
-  left,
-  right,
-  command,
-  frame,
-  remote: true,
-})
-
 export const SET_ANSWER = 'SET_ANSWER'
 export const setAnswer = ({ key, prompt, command, answer }) => ({
   type: SET_ANSWER,
@@ -125,6 +114,13 @@ export const setAnswer = ({ key, prompt, command, answer }) => ({
   prompt,
   command,
   answer,
+})
+
+export const SET_WATCHING = 'SET_WATCHING'
+export const setWatching = (key, watching) => ({
+  type: SET_WATCHING,
+  key,
+  watching,
 })
 
 export const CLEAR_SCROLLBACK = 'CLEAR_SCROLLBACK'

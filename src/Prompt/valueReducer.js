@@ -1,7 +1,14 @@
+import { splitDiff } from './utils'
 export const commandShortcuts = {
   i: 'inspect',
   d: 'diff',
 }
+
+export const commandShortcutsReverse = Object.fromEntries(
+  Object.entries(commandShortcuts).map(([k, v]) => [v, k])
+)
+
+export const diffSeparator = '≏'
 
 export default function valueReducer(state, action) {
   const newState = (() => {
@@ -77,6 +84,15 @@ export default function valueReducer(state, action) {
       if (command) {
         newState.value = expr
         newState.command = command
+      }
+    }
+    if (
+      newState.command === 'diff' &&
+      !newState.value.includes(diffSeparator)
+    ) {
+      const [left, right] = splitDiff(newState.value)
+      if (right) {
+        newState.value = `${left} ${diffSeparator} ${right}`
       }
     }
   }

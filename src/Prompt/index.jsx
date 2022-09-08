@@ -1,23 +1,22 @@
 import {
   acceptCompletion,
   autocompletion,
+  closeBrackets,
+  closeBracketsKeymap,
   completionKeymap,
   completionStatus,
   startCompletion,
-  closeBrackets,
-  closeBracketsKeymap,
 } from '@codemirror/autocomplete'
 import { defaultKeymap, history, historyKeymap } from '@codemirror/commands'
 import { python } from '@codemirror/lang-python'
 import {
-  indentOnInput,
-  foldKeymap,
   bracketMatching,
   defaultHighlightStyle,
+  foldKeymap,
+  indentOnInput,
   syntaxHighlighting,
 } from '@codemirror/language'
 import { lintKeymap } from '@codemirror/lint'
-import { rectangularSelection } from '@codemirror/view'
 import { highlightSelectionMatches, searchKeymap } from '@codemirror/search'
 import { EditorState, Prec } from '@codemirror/state'
 import {
@@ -26,6 +25,7 @@ import {
   EditorView,
   highlightSpecialChars,
   keymap,
+  rectangularSelection,
 } from '@codemirror/view'
 import { ExpandMore } from '@mui/icons-material'
 import { Box, Card, CardHeader, Chip, Grow, IconButton } from '@mui/material'
@@ -42,17 +42,16 @@ import { useDispatch, useSelector } from 'react-redux'
 import {
   clearScrollback,
   doCommand,
-  requestDiffEval,
-  requestInspectEval,
   requestSuggestion,
   setPrompt,
+  removePromptAnswer,
 } from '../actions'
 import { lineWrappingHarder } from '../extensions'
+import { store } from '../store'
 import { uid } from '../util'
 import searchReducer, { initialSearch } from './searchReducer'
-import { lexArgs, splitDiff } from './utils'
+import { lexArgs } from './utils'
 import valueReducer, { commandShortcuts, initialValue } from './valueReducer'
-import { store } from '../store'
 
 const jediTypeToCodeMirrorType = {
   module: 'namespace',
@@ -214,25 +213,7 @@ export default (function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
         return true
       }
       const key = uid()
-      switch (prompt.command) {
-        case 'inspect':
-          dispatch(
-            requestInspectEval(key, prompt.value, prompt.command, activeFrame)
-          )
-          break
-        case 'diff':
-          dispatch(
-            requestDiffEval(
-              key,
-              ...splitDiff(prompt.value),
-              prompt.command,
-              activeFrame
-            )
-          )
-          break
-        default:
-          dispatch(setPrompt(key, prompt.value, prompt.command, activeFrame))
-      }
+      dispatch(setPrompt(key, prompt.value, prompt.command, activeFrame))
 
       valueDispatch({ type: 'reset' })
       return true
@@ -270,12 +251,17 @@ export default (function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
 
   const handleBackspace = useCallback(
     view => {
-      if (view.state.selection.main.head === 0 && prompt.command) {
-        valueDispatch({ type: 'remove-command' })
-        return true
+      if (view.state.selection.main.head === 0) {
+        if (prompt.command) {
+          valueDispatch({ type: 'remove-command' })
+          return true
+        } else if (scrollback.length) {
+          dispatch(removePromptAnswer(scrollback.slice(-1)[0].key))
+          return true
+        }
       }
     },
-    [prompt]
+    [dispatch, prompt.command, scrollback]
   )
 
   const handleRemoveCommand = useCallback(() => {

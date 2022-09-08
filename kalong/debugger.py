@@ -21,7 +21,7 @@ from pprint import pformat
 
 from jedi import Interpreter
 
-from .utils import discompile
+from .utils import cutter_mock, discompile
 from .utils.io import capture_display, capture_exception, capture_std
 from .utils.iterators import iter_cause, iter_stack, iter_frame
 from .utils.obj import (
@@ -40,6 +40,7 @@ except ImportError:
     cut = None
 
 log = logging.getLogger(__name__)
+diff_separator = "≏"
 
 
 def get_title(frame, event, arg):
@@ -262,7 +263,9 @@ def serialize_inspect(key):
     return {"prompt": repr(obj), "answer": answer}
 
 
-def serialize_diff_eval(leftStr, rightStr, frame):
+def serialize_diff_eval(prompt, frame):
+    leftStr, rightStr = (s.strip() for s in prompt.split(diff_separator))
+
     try:
         leftKey = get_id_from_expression(leftStr, frame)
     except Exception:
@@ -287,10 +290,10 @@ def serialize_diff_eval(leftStr, rightStr, frame):
             "type": "diff",
             "diff": "".join(
                 difflib.unified_diff(
-                    (pformat(left, indent=2, width=5) + "\n").splitlines(
+                    (pformat(left, indent=2, width=80) + "\n").splitlines(
                         keepends=True
                     ),
-                    (pformat(right, indent=2, width=5) + "\n").splitlines(
+                    (pformat(right, indent=2, width=80) + "\n").splitlines(
                         keepends=True
                     ),
                     fromfile=leftStr,
@@ -300,11 +303,17 @@ def serialize_diff_eval(leftStr, rightStr, frame):
         }
     ]
 
-    return {"prompt": f"{leftStr} ? {rightStr}", "answer": answer}
+    return {
+        "prompt": f"{leftStr} {diff_separator} {rightStr}",
+        "answer": answer,
+    }
 
 
 def serialize_suggestion(prompt, from_, to, cursor, frame):
     answer = {"prompt": prompt, "from": from_, "to": to, "suggestion": {}}
+    # Partial cutter completion support
+    if cut and "!" in prompt:
+        prompt, cursor = cutter_mock(prompt, cursor)
     try:
         script = Interpreter(prompt, [frame.f_locals, frame.f_globals])
         completions = script.complete(cursor["line"] + 1, cursor["ch"])

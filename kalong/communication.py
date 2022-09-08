@@ -93,15 +93,26 @@ async def communication_loop(frame_, event_, arg_):
                     "source": file,
                 }
 
-            elif data["type"] == "SET_PROMPT":
+            elif (
+                data["type"] == "SET_PROMPT"
+                or data["type"] == "REFRESH_PROMPT"
+            ):
                 try:
+                    eval_fun = (
+                        serialize_inspect_eval
+                        if data.get("command") == "inspect"
+                        else serialize_diff_eval
+                        if data.get("command") == "diff"
+                        else serialize_answer
+                    )
                     response = {
                         "type": "SET_ANSWER",
                         "key": data["key"],
                         "command": data.get("command"),
                         "frame": data.get("frame"),
-                        **serialize_answer(
-                            data["prompt"], get_frame(frame, data.get("frame"))
+                        **eval_fun(
+                            data["prompt"],
+                            get_frame(frame, data.get("frame")),
                         ),
                     }
                 except SetFrameError as e:
@@ -127,28 +138,6 @@ async def communication_loop(frame_, event_, arg_):
                     "key": data["key"],
                     "command": data.get("command"),
                     **serialize_inspect(data["id"]),
-                }
-
-            elif data["type"] == "REQUEST_INSPECT_EVAL":
-                response = {
-                    "type": "SET_ANSWER",
-                    "key": data["key"],
-                    "command": data.get("command"),
-                    **serialize_inspect_eval(
-                        data["prompt"], get_frame(frame, data.get("frame"))
-                    ),
-                }
-
-            elif data["type"] == "REQUEST_DIFF_EVAL":
-                response = {
-                    "type": "SET_ANSWER",
-                    "key": data["key"],
-                    "command": data.get("command"),
-                    **serialize_diff_eval(
-                        data["left"],
-                        data["right"],
-                        get_frame(frame, data.get("frame")),
-                    ),
                 }
 
             elif data["type"] == "REQUEST_SUGGESTION":

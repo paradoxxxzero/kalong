@@ -3,23 +3,24 @@ import { combineReducers } from 'redux'
 import {
   CLEAR_SCROLLBACK,
   CLEAR_SUGGESTION,
+  DO_COMMAND,
+  PAUSE,
+  REFRESH_PROMPT,
   REMOVE_PROMPT_ANSWER,
-  REQUEST_DIFF_EVAL,
   REQUEST_INSPECT,
-  REQUEST_INSPECT_EVAL,
   SET_ACTIVE_FRAME,
-  SET_CONNECTION_STATE,
   SET_ANSWER,
+  SET_CONNECTION_STATE,
   SET_FILE,
   SET_FRAMES,
+  SET_INFO,
   SET_PROMPT,
   SET_SUGGESTION,
   SET_THEME,
   SET_TITLE,
-  DO_COMMAND,
-  PAUSE,
-  SET_INFO,
+  SET_WATCHING,
 } from './actions'
+import { commandShortcutsReverse } from './Prompt/valueReducer'
 
 const config = (state = {}, action) => {
   switch (action.type) {
@@ -76,19 +77,27 @@ const activeFrame = (state = null, action) => {
 const scrollback = (state = [], action) => {
   switch (action.type) {
     case SET_PROMPT:
-      // In case of refresh
-      if (state.map(({ key }) => key).includes(action.key)) {
-        return state.map(promptAnswer =>
-          action.key === promptAnswer.key
-            ? { ...promptAnswer, prompt: `${action.prompt}…` }
-            : promptAnswer
-        )
-      }
-
       return [
         ...state,
-        { key: action.key, prompt: `${action.prompt}…`, answer: null },
+        {
+          key: action.key,
+          prompt: `${action.prompt}…`,
+          frame: action.frame,
+          answer: null,
+        },
       ]
+
+    case REFRESH_PROMPT:
+      return state.map(promptAnswer =>
+        action.key === promptAnswer.key
+          ? {
+              ...promptAnswer,
+              prompt: `${action.prompt}…`,
+              frame: action.frame || promptAnswer.frame,
+            }
+          : promptAnswer
+      )
+
     case REMOVE_PROMPT_ANSWER:
       return state.filter(promptAnswer => action.key !== promptAnswer.key)
     case REQUEST_INSPECT:
@@ -96,11 +105,7 @@ const scrollback = (state = [], action) => {
         ...state,
         { key: action.key, prompt: `${action.id}…`, answer: null },
       ]
-    case REQUEST_INSPECT_EVAL:
-      return [
-        ...state,
-        { key: action.key, prompt: `${action.prompt}…`, answer: null },
-      ]
+
     case SET_ANSWER:
       return state.map(promptAnswer =>
         action.key === promptAnswer.key
@@ -114,11 +119,16 @@ const scrollback = (state = [], action) => {
             }
           : promptAnswer
       )
-    case REQUEST_DIFF_EVAL:
-      return [
-        ...state,
-        { key: action.key, prompt: `${action.prompt}…`, answer: null },
-      ]
+
+    case SET_WATCHING:
+      return state.map(promptAnswer =>
+        action.key === promptAnswer.key
+          ? {
+              ...promptAnswer,
+              watching: action.watching,
+            }
+          : promptAnswer
+      )
 
     case CLEAR_SCROLLBACK:
       return []
@@ -161,25 +171,14 @@ const running = (state = false, action) => {
 const history = (state = [], action) => {
   switch (action.type) {
     case SET_PROMPT:
+      const prompt = action.command
+        ? `?${commandShortcutsReverse[action.command]} ${action.prompt}`
+        : action.prompt
       return [
-        action.prompt,
-        ...state.filter(historyPrompt => historyPrompt !== action.prompt),
+        prompt,
+        ...state.filter(historyPrompt => historyPrompt !== prompt),
       ]
-    case REQUEST_INSPECT_EVAL:
-      return [
-        `?i ${action.prompt}`,
-        ...state.filter(
-          historyPrompt => historyPrompt !== `?i ${action.prompt}`
-        ),
-      ]
-    case REQUEST_DIFF_EVAL:
-      return [
-        `?d ${action.left} ? ${action.right}`,
-        ...state.filter(
-          historyPrompt =>
-            historyPrompt !== `?d ${action.left} ? ${action.right}`
-        ),
-      ]
+
     default:
       return state
   }
