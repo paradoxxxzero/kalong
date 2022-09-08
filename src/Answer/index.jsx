@@ -28,6 +28,7 @@ import {
 import Snippet from '../Snippet'
 import { prettyTime } from '../util'
 import AnswerDispatch from './AnswerDispatch'
+import { Slide } from '@mui/material'
 
 export default memo(function Answer({
   uid,
@@ -40,10 +41,12 @@ export default memo(function Answer({
 }) {
   const dispatch = useDispatch()
   const [expanded, setExpanded] = useState(true)
+  const [actionExpanded, setActionExpanded] = useState(false)
   const frames = useSelector(state => state.frames)
   const currentFrame = frames.find(({ key }) => key === frame)
   const activeFrame = useSelector(state => state.activeFrame)
   const handleExpand = useCallback(() => setExpanded(x => !x), [])
+  const handleActionExpand = useCallback(() => setActionExpanded(x => !x), [])
   const handleCopy = useCallback(() => {
     navigator.clipboard?.writeText(prompt)
   }, [prompt])
@@ -114,35 +117,84 @@ export default memo(function Answer({
         titleTypographyProps={{ variant: 'h5', noWrap: true }}
         action={
           <>
-            <IconButton onClick={handleCopy} size="small">
-              <ContentCopy />
-            </IconButton>
-            {currentFrame ? (
-              <Tooltip
-                title={`${currentFrame.absoluteFilename}:${currentFrame.lineNumber}`}
-              >
-                <IconButton onClick={handleView} size="small">
-                  <Map />
-                </IconButton>
-              </Tooltip>
-            ) : null}
-            <IconButton onClick={handleRefresh} size="small">
-              <Refresh />
-            </IconButton>
             <IconButton
-              onClick={handleWatch}
+              sx={theme => ({
+                transform: `rotate(${actionExpanded ? -90 : 90}deg)`,
+                marginLeft: 'auto',
+                transition: theme.transitions.create('transform'),
+              })}
+              onClick={handleActionExpand}
               size="small"
-              sx={{
-                color:
-                  watching === 'all'
-                    ? 'warning.main'
-                    : watching === 'frame'
-                    ? 'info.main'
-                    : undefined,
-              }}
             >
-              <Visibility />
+              <ExpandMore />
             </IconButton>
+            <Collapse
+              mountOnEnter
+              unmountOnExit
+              in={actionExpanded}
+              sx={{ display: 'inline-flex' }}
+              // direction="up"
+              orientation="horizontal"
+            >
+              <IconButton onClick={handleCopy} size="small">
+                <ContentCopy />
+              </IconButton>
+            </Collapse>
+
+            {currentFrame ? (
+              <Collapse
+                mountOnEnter
+                unmountOnExit
+                in={actionExpanded}
+                sx={{ display: 'inline-flex' }}
+                // direction="up"
+                orientation="horizontal"
+              >
+                <Tooltip
+                  title={`${currentFrame.absoluteFilename}:${currentFrame.lineNumber}`}
+                >
+                  <IconButton onClick={handleView} size="small">
+                    <Map />
+                  </IconButton>
+                </Tooltip>
+              </Collapse>
+            ) : null}
+            <Collapse
+              mountOnEnter
+              unmountOnExit
+              in={actionExpanded}
+              sx={{ display: 'inline-flex' }}
+              // direction="up"
+              orientation="horizontal"
+            >
+              <IconButton onClick={handleRefresh} size="small">
+                <Refresh />
+              </IconButton>
+            </Collapse>
+
+            <Collapse
+              mountOnEnter
+              unmountOnExit
+              in={actionExpanded || watching}
+              sx={{ display: 'inline-flex' }}
+              // direction="up"
+              orientation="horizontal"
+            >
+              <IconButton
+                onClick={handleWatch}
+                size="small"
+                sx={{
+                  color:
+                    watching === 'all'
+                      ? 'warning.main'
+                      : watching === 'frame'
+                      ? 'info.main'
+                      : undefined,
+                }}
+              >
+                <Visibility />
+              </IconButton>
+            </Collapse>
             <IconButton onClick={handleClose} size="large">
               <Close />
             </IconButton>
