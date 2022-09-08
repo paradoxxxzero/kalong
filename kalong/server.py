@@ -100,7 +100,9 @@ async def websocket(request):
 
     log.debug(f"Closing {side}")
     await ws.close()
-    del request.app[side][origin]
+
+    if side in request.app and origin in request.app[side]:
+        del request.app[side][origin]
 
     if not config.detached:
         if origin in request.app[other_side]:
