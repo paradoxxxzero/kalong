@@ -163,7 +163,8 @@ async def communication_loop(frame_, event_, arg_):
                     stop_trace(frame)
                     die()
                 else:
-                    add_step(command, frame)
+                    step_frame = get_frame(frame, data.get("frame"))
+                    add_step(command, step_frame)
                 stop = True
 
             else:

@@ -43,10 +43,10 @@ def start_trace(frame):
 
 
 def stop_trace(frame):
-    log.debug("Stopping trace")
     sys.settrace(None)
     for f in iter_frame(frame):
         f.f_trace = None
+    log.debug("Stopping trace")
 
 
 @atexit.register

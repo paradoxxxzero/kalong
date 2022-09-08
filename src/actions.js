@@ -48,9 +48,10 @@ export const getFile = filename => ({
 })
 
 export const DO_COMMAND = 'DO_COMMAND'
-export const doCommand = command => ({
+export const doCommand = (command, frame) => ({
   type: DO_COMMAND,
   command,
+  frame,
   remote: true,
 })
 

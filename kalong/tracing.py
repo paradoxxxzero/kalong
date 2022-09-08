@@ -5,6 +5,7 @@ from multiprocessing import process
 from pathlib import Path
 
 from .communication import communicate
+from .utils.iterators import iter_frame
 from .stepping import steppings, stop_trace
 from .websockets import die
 
@@ -22,6 +23,16 @@ def trace(origin, frame, event, arg):
     originalFrame = stepping.get("frame")
     lno = stepping.get("lno")
     filename = frame.f_code.co_filename
+
+    # If we are below the original frame
+    if originalFrame in iter_frame(frame.f_back):
+        # And it's not a step into directly on the lower frame
+        if not (
+            type == "stepInto"
+            and originalFrame == frame.f_back
+            and event == "call"
+        ):
+            return
 
     # When we are in _shutdown of thread, program is finished
     if (

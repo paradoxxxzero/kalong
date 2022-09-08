@@ -136,12 +136,16 @@ export default (function TopActions({ mobile }) {
   const frames = useSelector(state => state.frames)
   const running = useSelector(state => state.running)
   const main = useSelector(state => state.main)
+  const activeFrame = useSelector(state => state.activeFrame)
 
   const dispatch = useDispatch()
   const [menuEl, setMenuEl] = useState(null)
   const handleCommand = useCallback(
-    evt => dispatch(doCommand(evt.currentTarget.getAttribute('data-action'))),
-    [dispatch]
+    evt =>
+      dispatch(
+        doCommand(evt.currentTarget.getAttribute('data-action'), activeFrame)
+      ),
+    [activeFrame, dispatch]
   )
 
   useEffect(() => {
@@ -154,12 +158,12 @@ export default (function TopActions({ mobile }) {
       if (!action) {
         return
       }
-      dispatch(doCommand(action.action))
+      dispatch(doCommand(action.action, activeFrame))
       evt.preventDefault()
     }
     window.addEventListener('keydown', handleGlobalActions)
     return () => window.removeEventListener('keydown', handleGlobalActions)
-  }, [running, dispatch])
+  }, [running, dispatch, activeFrame])
 
   const closeMenu = useCallback(() => setMenuEl(null), [])
   const openMenu = useCallback(

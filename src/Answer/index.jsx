@@ -28,7 +28,6 @@ import {
 import Snippet from '../Snippet'
 import { prettyTime } from '../util'
 import AnswerDispatch from './AnswerDispatch'
-import { Slide } from '@mui/material'
 
 export default memo(function Answer({
   uid,
