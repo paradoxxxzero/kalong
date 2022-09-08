@@ -3,6 +3,8 @@ import { highlightTree } from '@lezer/highlight'
 import { python } from '@codemirror/lang-python'
 import { Box } from '@mui/material'
 import React, { forwardRef, useEffect, useState } from 'react'
+import { StreamLanguage } from '@codemirror/language'
+import { diff } from '@codemirror/legacy-modes/mode/diff'
 
 function runmode(textContent, language, callback, options) {
   const tree = language.parser.parse(textContent)
@@ -17,7 +19,7 @@ function runmode(textContent, language, callback, options) {
 }
 
 const pyLang = python().language
-const diffLang = null // TODO: diff().language
+const diffLang = StreamLanguage.define(diff)
 
 export default forwardRef(function Snippet(
   { sx, value = '', mode = 'python', onClick, noBreak, ...props },
