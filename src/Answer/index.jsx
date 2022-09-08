@@ -1,4 +1,4 @@
-import { Close, ExpandMore, RemoveRedEye } from '@mui/icons-material'
+import { Close, ExpandMore, Refresh, RemoveRedEye } from '@mui/icons-material'
 import {
   Card,
   CardContent,
@@ -11,7 +11,7 @@ import {
 } from '@mui/material'
 import React, { memo, useCallback, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { removePromptAnswer, setActiveFrame } from '../actions'
+import { removePromptAnswer, setActiveFrame, setPrompt } from '../actions'
 import Snippet from '../Snippet'
 import { prettyTime } from '../util'
 import AnswerDispatch from './AnswerDispatch'
@@ -30,6 +30,10 @@ export default memo(function Answer({
   const frames = useSelector(state => state.frames)
   const currentFrame = frames.find(({ key }) => key === frame)
   const handleExpand = useCallback(() => setExpanded(x => !x), [])
+  const handleRefresh = useCallback(
+    () => dispatch(setPrompt(uid, prompt, command), frame),
+    [command, dispatch, frame, prompt, uid]
+  )
   const handleView = useCallback(
     () => dispatch(setActiveFrame(frame)),
     [dispatch, frame]
@@ -72,6 +76,9 @@ export default memo(function Answer({
         titleTypographyProps={{ variant: 'h5', noWrap: true }}
         action={
           <>
+            <IconButton onClick={handleRefresh} size="large">
+              <Refresh />
+            </IconButton>
             <Tooltip
               title={
                 currentFrame

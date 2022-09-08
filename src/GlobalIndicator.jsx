@@ -14,6 +14,7 @@ export default function GlobalIndicator({ sx }) {
       elevation={4}
       sx={[
         {
+          display: 'flex',
           alignSelf: 'center',
         },
         ...(Array.isArray(sx) ? sx : [sx]),

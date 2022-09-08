@@ -76,6 +76,15 @@ const activeFrame = (state = null, action) => {
 const scrollback = (state = [], action) => {
   switch (action.type) {
     case SET_PROMPT:
+      // In case of refresh
+      if (state.map(({ key }) => key).includes(action.key)) {
+        return state.map(promptAnswer =>
+          action.key === promptAnswer.key
+            ? { ...promptAnswer, prompt: `${action.prompt}…` }
+            : promptAnswer
+        )
+      }
+
       return [
         ...state,
         { key: action.key, prompt: `${action.prompt}…`, answer: null },

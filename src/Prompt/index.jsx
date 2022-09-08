@@ -39,7 +39,6 @@ import React, {
   useState,
 } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { store } from '..'
 import {
   clearScrollback,
   doCommand,
@@ -53,6 +52,7 @@ import { uid } from '../util'
 import searchReducer, { initialSearch } from './searchReducer'
 import { lexArgs, splitDiff } from './utils'
 import valueReducer, { commandShortcuts, initialValue } from './valueReducer'
+import { store } from '../store'
 
 const jediTypeToCodeMirrorType = {
   module: 'namespace',
@@ -478,7 +478,7 @@ export default (function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
               to.line === cTo.line &&
               to.ch === cTo.ch
             ) {
-              resolve(suggestion.list)
+              resolve(suggestion.list || [])
               unsub()
             }
           })
