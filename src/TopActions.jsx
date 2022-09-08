@@ -86,17 +86,17 @@ const actions = (running, main) =>
       disabled: running,
     },
     {
-      label: 'StopDebugging',
+      label: 'Stop debugging',
       action: 'stop',
       Icon: Eject,
-      key: 'Esc',
+      key: 'Escape',
       disabled: running,
     },
     {
       label: 'Exit program',
       action: 'kill',
       Icon: Close,
-      key: 'Shift+Esc',
+      key: 'Shift+Escape',
       disabled: false,
     },
   ].filter(x => x)
