@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import ExceptionPart from './ExceptionPart'
 
 export default function Exception({ causes, ...props }) {
-  const [expanded, setExpanded] = useState(0)
+  const [expanded, setExpanded] = useState(-1)
   const exceptions = [props, ...(causes || [])]
 
   return (

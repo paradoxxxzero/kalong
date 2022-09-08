@@ -1,4 +1,4 @@
-import { Button, Chip } from '@mui/material'
+import { Button, Chip, IconButton } from '@mui/material'
 import React, { useCallback } from 'react'
 import { useDispatch } from 'react-redux'
 import { requestInspect } from '../actions'
@@ -15,7 +15,8 @@ export default function Inspectable({
   const handleClick = useCallback(() => {
     dispatch(requestInspect(uid(), id))
   }, [dispatch, id])
-  const Component = type === 'chip' ? Chip : Button
+  const Component =
+    type === 'chip' ? Chip : type === 'icon' ? IconButton : Button
   return (
     <Component
       onClick={handleClick}
