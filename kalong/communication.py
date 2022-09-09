@@ -29,8 +29,6 @@ basicConfig(level=config.log_level)
 
 def communicate(frame, event, arg):
     loop = get_loop()
-    if loop.is_running():
-        raise SetFrameError(frame, event, arg)
 
     try:
         loop.run_until_complete(communication_loop(frame, event, arg))

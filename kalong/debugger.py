@@ -29,6 +29,7 @@ from .utils.obj import (
     get_infos,
     obj_cache,
     safe_getattr,
+    safe_repr,
     sync_locals,
 )
 from .errors import SetFrameError
@@ -192,7 +193,7 @@ def serialize_attribute(attr, group):
             attr["signature"] = str(signature(attr["value"]))
         except Exception:
             pass
-    attr["value"] = repr(attr["value"])
+    attr["value"] = safe_repr(attr["value"], "<unrepresentable>", True)
     return attr
 
 
@@ -222,7 +223,8 @@ def serialize_inspect(key):
                     obj,
                     key,
                     f"?! Broken obj: key {key!r} is listed in dir() but "
-                    + f"getattr(obj, {key!r}) raises.",
+                    + f"getattr(obj, {key!r}) raises",
+                    True,
                 ),
             )
             for key in dir(obj)
@@ -260,7 +262,7 @@ def serialize_inspect(key):
         }
     ]
 
-    return {"prompt": repr(obj), "answer": answer}
+    return {"prompt": safe_repr(obj, "<unrepresentable>"), "answer": answer}
 
 
 def serialize_diff_eval(prompt, frame):

@@ -46,7 +46,7 @@ def walk_obj(obj, walked):
     id = obj_cache.register(obj)
     if id in walked:
         # Don't walk circular dependencies
-        return {"type": "obj", "value": repr(obj), "id": id}
+        return {"type": "obj", "value": safe_repr(obj), "id": id}
     walked.add(id)
 
     if any(
@@ -65,7 +65,7 @@ def walk_obj(obj, walked):
             "values": walk_mapping(obj, walked),
             "id": obj_cache.register(obj),
         }
-    return {"type": "obj", "value": repr(obj), "id": id}
+    return {"type": "obj", "value": safe_repr(obj), "id": id}
 
 
 def get_bases(cls):
@@ -166,8 +166,19 @@ def get_code(obj):
                 return code
 
 
-def safe_getattr(obj, key, default):
+def safe_getattr(obj, key, default, include_exc=False):
     try:
         return getattr(obj, key)
-    except Exception:
+    except Exception as e:
+        if include_exc:
+            return f"{default} {e.__class__.__name__}: {e}"
+        return default
+
+
+def safe_repr(obj, default="<unrepresentable>", include_exc=False):
+    try:
+        return repr(obj)
+    except Exception as e:
+        if include_exc:
+            return f"{default} {e.__class__.__name__}: {e}"
         return default
