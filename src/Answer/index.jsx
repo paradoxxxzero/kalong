@@ -79,7 +79,7 @@ export default memo(function Answer({
         display: 'flex',
         flexDirection: 'column',
         opacity: frame === activeFrame ? 1 : 0.75,
-        filter: currentFrame ? 'none' : 'grayscale(100%)',
+        filter: currentFrame ? 'none' : 'grayscale(50%)',
         transition: theme =>
           theme.transitions.create(['opacity', 'box-shadow']),
       }}
