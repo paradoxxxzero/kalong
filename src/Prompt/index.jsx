@@ -260,13 +260,20 @@ export default (function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
         if (prompt.command) {
           valueDispatch({ type: 'remove-command' })
           return true
-        } else if (scrollback.length) {
-          dispatch(removePromptAnswer(scrollback.slice(-1)[0].key))
-          return true
         }
       }
     },
-    [dispatch, prompt.command, scrollback]
+    [prompt.command]
+  )
+
+  const handleRemoveLastAnswer = useCallback(
+    view => {
+      if (scrollback.length) {
+        dispatch(removePromptAnswer(scrollback.slice(-1)[0].key))
+        return true
+      }
+    },
+    [dispatch, scrollback]
   )
 
   const handleRemoveCommand = useCallback(() => {
@@ -515,6 +522,11 @@ export default (function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
           { key: 'ArrowDown', run: handleDown, preventDefault: true },
           { key: 'Enter', run: handleEnter, preventDefault: true },
           { key: 'Backspace', run: handleBackspace, preventDefault: true },
+          {
+            key: 'Shift-Backspace',
+            run: handleRemoveLastAnswer,
+            preventDefault: true,
+          },
           { key: 'Tab', run: handleTabOrComplete, preventDefault: true },
           { key: 'Ctrl-c', run: handleRemoveAllOrCopy, preventDefault: true },
           { key: 'Ctrl-d', run: handleDieIfEmpty, preventDefault: true },
@@ -583,6 +595,7 @@ export default (function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
     handleInsertHistoryArgDown,
     handleInsertHistoryArgUp,
     handleRemoveAllOrCopy,
+    handleRemoveLastAnswer,
     handleSearch,
     handleTabOrComplete,
     handleUp,

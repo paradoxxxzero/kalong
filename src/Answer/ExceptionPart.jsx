@@ -11,7 +11,6 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
-import { red } from '@mui/material/colors'
 import React, { useCallback } from 'react'
 import Snippet from '../Snippet'
 import Inspectable from './Inspectable'
