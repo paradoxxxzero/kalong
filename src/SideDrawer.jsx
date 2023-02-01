@@ -52,6 +52,7 @@ export default function SideDrawer({ rtl, open, mobile, onDrawerClose }) {
             alignItems: 'baseline',
             width: '100%',
             justifyContent: 'space-around',
+            userSelect: 'none',
           }}
         >
           <Link
