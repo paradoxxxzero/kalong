@@ -1,15 +1,18 @@
 import {
-  ArrowDownward,
   ArrowForward,
-  ArrowUpward,
   Close,
   Eject,
   FastForward,
+  MoreHoriz,
   MoreVert,
+  NorthEast,
   Pause,
   PlayArrow,
   Redo,
   SkipNext,
+  South,
+  SouthEast,
+  TrendingDown,
 } from '@mui/icons-material'
 import {
   Box,
@@ -24,82 +27,100 @@ import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { doCommand } from './actions'
 
-const actions = (running, main) =>
-  [
-    running
-      ? main
-        ? {
-            label: 'Pause the program',
-            action: 'pause',
-            Icon: Pause,
-            key: 'F8',
-            disabled: false,
-          }
-        : null
-      : {
-          label: 'Continue the program',
-          action: 'continue',
-          Icon: PlayArrow,
-          key: 'F8',
-          disabled: false,
-        },
-    {
-      label: 'Step to the next instruction',
-      action: 'step',
-      Icon: ArrowForward,
-      key: 'F9',
-      disabled: running,
-    },
-    {
-      label: 'Step Until next line (bypass loops)',
-      action: 'stepUntil',
-      Icon: Redo,
-      key: 'F10',
-      disabled: running,
-    },
-    {
-      label: 'Step Into function call',
-      action: 'stepInto',
-      Icon: ArrowDownward,
-      key: 'F11',
-      disabled: running,
-    },
-    {
-      label: 'Step Out of the current function',
-      action: 'stepOut',
-      Icon: ArrowUpward,
-      key: 'Shift+F11',
-      disabled: running,
-    },
-    {
-      label: 'Trace the program (stop at every exception)',
-      action: 'trace',
-      Icon: SkipNext,
-      key: 'Shift+F12',
-      disabled: running,
-    },
-    {
-      label: 'Run the program',
-      action: 'run',
-      Icon: FastForward,
-      key: 'F12',
-      disabled: running,
-    },
-    {
-      label: 'Stop debugging',
-      action: 'stop',
-      Icon: Eject,
-      key: 'Escape',
-      disabled: running,
-    },
-    {
-      label: 'Exit program',
-      action: 'kill',
-      Icon: Close,
-      key: 'Shift+Escape',
-      disabled: false,
-    },
-  ].filter(x => x)
+const actions = (running, intoType, mobile, main) => [
+  {
+    label: 'Pause the program',
+    action: 'pause',
+    Icon: Pause,
+    key: 'F8',
+    disabled: false,
+    hidden: !running || !main,
+  },
+  {
+    label: 'Continue the program',
+    action: 'continue',
+    Icon: PlayArrow,
+    key: 'F8',
+    disabled: false,
+    hidden: running,
+  },
+  {
+    label: 'Step to the next instruction',
+    action: 'step',
+    Icon: ArrowForward,
+    key: 'F9',
+    disabled: running,
+  },
+  {
+    label: 'Step Until next line (bypass loops)',
+    action: 'stepUntil',
+    Icon: Redo,
+    key: 'F10',
+    disabled: running,
+  },
+  {
+    label: 'Step Into function call',
+    action: 'stepInto',
+    Icon: TrendingDown,
+    key: 'F11',
+    disabled: running,
+    hidden: !mobile && intoType !== '',
+    menu: 'stepInto',
+  },
+  {
+    label: 'Step Into function call (all)',
+    action: 'stepIntoAll',
+    Icon: South,
+    key: 'Ctrl+F11',
+    disabled: running,
+    hidden: !mobile && intoType !== 'all',
+    menu: 'stepInto',
+  },
+  {
+    label: 'Step Into function call (public only)',
+    action: 'stepIntoPublic',
+    Icon: SouthEast,
+    key: 'Alt+F11',
+    disabled: running,
+    hidden: !mobile && intoType !== 'public',
+    menu: 'stepInto',
+  },
+  {
+    label: 'Step Out of the current function',
+    action: 'stepOut',
+    Icon: NorthEast,
+    key: 'Shift+F11',
+    disabled: running,
+  },
+  {
+    label: 'Trace the program (stop at every exception)',
+    action: 'trace',
+    Icon: SkipNext,
+    key: 'Shift+F12',
+    disabled: running,
+  },
+  {
+    label: 'Run the program',
+    action: 'run',
+    Icon: FastForward,
+    key: 'F12',
+    disabled: running,
+  },
+  {
+    label: 'Stop debugging',
+    action: 'stop',
+    Icon: Eject,
+    key: 'Escape',
+    disabled: running,
+  },
+  {
+    label: 'Exit program',
+    action: 'kill',
+    Icon: Close,
+    key: 'Shift+Escape',
+    disabled: false,
+  },
+]
 
 const MobileItem = ({
   action: { label, action, disabled, Icon },
@@ -116,18 +137,31 @@ const MobileItem = ({
 )
 
 const ActionButton = ({
-  action: { key, label, action, disabled, Icon },
+  action: { key, label, action, disabled, menu, Icon },
   handleCommand,
+  handleMenu,
 }) => (
   <Tooltip title={`${label} [${key}]`}>
     <IconButton
       color="inherit"
       onClick={handleCommand}
+      onContextMenu={menu && handleMenu}
       disabled={disabled}
       data-action={action}
       size="large"
     >
       <Icon />
+      {menu && (
+        <MoreHoriz
+          fontSize="small"
+          sx={{
+            position: 'absolute',
+            top: '1.5em',
+            left: '1.75em',
+            width: '0.6em',
+          }}
+        />
+      )}
     </IconButton>
   </Tooltip>
 )
@@ -137,6 +171,7 @@ export default (function TopActions({ mobile }) {
   const running = useSelector(state => state.running)
   const main = useSelector(state => state.main)
   const activeFrame = useSelector(state => state.activeFrame)
+  const [intoType, setIntoType] = useState('')
 
   const dispatch = useDispatch()
   const [menuEl, setMenuEl] = useState(null)
@@ -147,6 +182,12 @@ export default (function TopActions({ mobile }) {
       ),
     [activeFrame, dispatch]
   )
+  const handleMenu = useCallback(evt => {
+    setIntoType(intoType =>
+      intoType === '' ? 'all' : intoType === 'all' ? 'public' : ''
+    )
+    evt.preventDefault()
+  }, [])
 
   useEffect(() => {
     const handleGlobalActions = evt => {
@@ -154,7 +195,15 @@ export default (function TopActions({ mobile }) {
       if (evt.shiftKey) {
         code = `Shift+${code}`
       }
-      const action = actions(running).find(({ key }) => code === key)
+      if (evt.altKey) {
+        code = `Alt+${code}`
+      }
+      if (evt.ctrlKey) {
+        code = `Ctrl+${code}`
+      }
+      const action = actions(running).find(
+        ({ key, visible, disabled }) => visible && !disabled && code === key
+      )
       if (!action) {
         return
       }
@@ -177,9 +226,17 @@ export default (function TopActions({ mobile }) {
   })
 
   const Action = mobile ? MobileItem : ActionButton
-  const actionItems = actions(running, main).map(action => (
-    <Action key={action.action} action={action} handleCommand={handleCommand} />
-  ))
+  const actionItems = actions(running, intoType, mobile, main).map(
+    action =>
+      !action.hidden && (
+        <Action
+          key={action.action}
+          action={action}
+          handleCommand={handleCommand}
+          handleMenu={handleMenu}
+        />
+      )
+  )
 
   return (
     <>

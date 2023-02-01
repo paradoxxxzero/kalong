@@ -23,6 +23,11 @@ def trace(origin, frame, event, arg):
     originalFrame = stepping.get("frame")
     lno = stepping.get("lno")
     filename = frame.f_code.co_filename
+    into_type = None
+
+    if type.startswith("stepInto"):
+        into_type = type.split("stepInto")[1].lower() or "skipcore"
+        type = "stepInto"
 
     # If we are below the original frame
     if originalFrame in iter_frame(frame.f_back):
@@ -68,8 +73,15 @@ def trace(origin, frame, event, arg):
         return
 
     # Don't trace under frames if we are not stepping 'into'
-    if event == "call" and type != "stepInto":
-        return
+    if event == "call":
+        if type != "stepInto":
+            return
+        # or if we are stepping into public methods only
+        if into_type == "public" and frame.f_code.co_name.startswith("_"):
+            return
+        # or if we are not all and stepping into core methods
+        if into_type == "skipcore" and frame.f_code.co_name.startswith("__"):
+            return
 
     if (
         # Trace: This is an exception: stop
