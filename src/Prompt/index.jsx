@@ -190,14 +190,18 @@ export default (function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
     }
   }, [activeFrame, dispatch])
 
-  const handleChange = useCallback((newValue, viewUpdate) => {
-    if (viewUpdate.selectionSet) {
-      valueDispatch({
-        type: 'new-value',
-        value: newValue,
-      })
-    }
-  }, [])
+  const handleChange = useCallback(
+    (newValue, viewUpdate) => {
+      scrollToBottom()
+      if (viewUpdate.selectionSet) {
+        valueDispatch({
+          type: 'new-value',
+          value: newValue,
+        })
+      }
+    },
+    [scrollToBottom]
+  )
 
   const handleCommand = useMemo(
     () =>
@@ -685,10 +689,10 @@ export default (function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
                 basicSetup={false}
                 theme="light"
                 onChange={handleChange}
+                onCreateEditor={scrollToBottom}
                 height="auto"
                 extensions={extensions}
                 width="100%"
-                onUpdate={scrollToBottom}
               />
               {search.value !== null && (
                 <Box
