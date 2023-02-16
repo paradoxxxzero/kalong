@@ -203,10 +203,29 @@ export default memo(function Answer({
       {!!(answer && answer.length) && (
         <>
           <Divider />
-          <Collapse in={expanded} timeout="auto" unmountOnExit>
+          <Collapse
+            in={expanded}
+            timeout="auto"
+            unmountOnExit
+            sx={{
+              position: 'relative',
+              '&::after': {
+                content: '""',
+                pointerEvents: 'none',
+                position: 'absolute',
+                top: 0,
+                left: '-100%',
+                width: '300%',
+                height: '100%',
+                boxShadow: '0 0 20px 10px #fff inset',
+              },
+            }}
+          >
             <CardContent
               sx={{
                 display: 'flex',
+                maxHeight: '50vh',
+                overflow: 'auto',
               }}
             >
               <Typography
