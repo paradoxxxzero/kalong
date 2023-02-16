@@ -60,7 +60,12 @@ async def communication_loop(frame_, event_, arg_):
     arg = arg_
 
     ws, existing = await websocket_state()
-    await ws.send_json({"type": "PAUSE"})
+    try:
+        await ws.send_json({"type": "PAUSE"})
+    except ConnectionResetError:
+        log.info("Connection was reset")
+        stop_trace(frame)
+        return
 
     if existing:
         # If the socket is already opened we need to update client state
@@ -173,7 +178,10 @@ async def communication_loop(frame_, event_, arg_):
 
             log.debug(f"Got {data} answering with {response}")
             response["local"] = True
-            await ws.send_json(response)
+            try:
+                await ws.send_json(response)
+            except ConnectionResetError:
+                break
 
             if stop:
                 break
