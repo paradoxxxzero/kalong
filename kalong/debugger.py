@@ -172,6 +172,8 @@ def attribute_classifier(attr):
     value = attr["value"]
     if key.startswith("__") and key.endswith("__"):
         return "__core__"
+    if key.startswith("_"):
+        return "_private"
     if ismodule(value):
         return "module"
     if isclass(value):
