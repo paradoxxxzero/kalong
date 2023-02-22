@@ -78,16 +78,12 @@ export default function valueReducer(state, action) {
   })()
 
   if (newState.value) {
-    const commandMatch = newState.value.match(/^\?(\S+)\s(.*)/)
+    const commandMatch = newState.value.match(/^\?(\S+)(.*)/)
     if (commandMatch) {
       const [, cmd, expr] = commandMatch
-      const fullCommand = commandShortcuts[cmd] || cmd
-      const command = Object.values(commandShortcuts).includes(fullCommand)
-        ? fullCommand
-        : null
-      if (command) {
+      if (Object.values(commandShortcuts).includes(cmd)) {
         newState.value = expr
-        newState.command = command
+        newState.command = cmd
       }
     }
     if (

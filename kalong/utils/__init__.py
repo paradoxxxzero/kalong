@@ -123,8 +123,10 @@ def universal_get(item, key):
             return item.__class__.__getitem__(item, int(key))
         except IndexError:
             return "___void___"
-
-    return getattr(item, str(key), "___void___")
+    try:
+        return getattr(item, str(key), "___void___")
+    except Exception as e:
+        return e
 
 
 def universal_travel(item, path):

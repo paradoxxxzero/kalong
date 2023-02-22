@@ -1,4 +1,5 @@
 import { VERSION } from '..'
+import { diffSeparator, tableSeparator } from './valueReducer'
 
 const Kbd = ({ title, children }) => (
   <kbd
@@ -6,7 +7,7 @@ const Kbd = ({ title, children }) => (
       display: 'inline-block',
       padding: '0.2em 0.4em',
       fontSize: '0.85em',
-      fontFamily: 'monospace',
+      fontFamily: '"Fira Code", monospace',
       lineHeight: 1.5,
       color: '#444',
       verticalAlign: 'middle',
@@ -29,18 +30,20 @@ const ArrowUp = () => <Kbd title="ArrowUp">↑</Kbd>
 const ArrowDown = () => <Kbd title="ArrowDown">↓</Kbd>
 const PageUp = () => <Kbd title="PageUp">⇞</Kbd>
 const PageDown = () => <Kbd title="PageDown">⇟</Kbd>
+const Space = () => <Kbd title="Space">⎵</Kbd>
 const Tab = () => <Kbd title="Tab">⭾</Kbd>
 const Key = ({ chr }) => <Kbd title={chr}>{chr}</Kbd>
 
 const Command = ({ children }) => (
   <code
     style={{
-      fontFamily: 'monospace',
+      fontFamily: '"Fira Code", monospace',
       display: 'inline-block',
       padding: '0.2em 0.4em',
       lineHeight: 1.5,
-      color: '#222',
+      color: 'black',
       verticalAlign: 'middle',
+      whiteSpace: 'nowrap',
     }}
   >
     {children}
@@ -124,7 +127,7 @@ export default function Help() {
         <Item
           shortcut={
             <Shortcut>
-              <Ctrl /> + <Key chr=" " />
+              <Ctrl /> + <Space />
             </Shortcut>
           }
         >
@@ -231,30 +234,35 @@ export default function Help() {
         <Item
           shortcut={
             <>
-              <Command>?diff &lt;value1&gt; ? &lt;value2&gt;</Command>
+              <Command>?diff &lt;v1&gt; ? &lt;v2&gt;</Command>
               <Shortcut>
                 <Alt /> + <Key chr="d" />
               </Shortcut>
             </>
           }
         >
-          Show the diff between two values
+          Show the diff between two values repr: <Command>&lt;v1&gt;</Command>,{' '}
+          <Command>&lt;v2&gt;</Command>
+          <br />
+          The '?' separator will be replaced by the separator: {diffSeparator}
         </Item>
         <Item
           shortcut={
             <>
-              <Command>
-                ?table &lt;value&gt; ? &lt;column, column,...&gt;
-              </Command>
+              <Command>?table &lt;it&gt; ? &lt;p1&gt;, &lt;p2&gt;..</Command>
               <Shortcut>
                 <Alt /> + <Key chr="t" />
               </Shortcut>
             </>
           }
         >
-          View the &lt;column&gt; values for each &lt;value&gt; iteration. Works
-          for dict keys, list indexes and object attributes and path. (i.e
-          &lt;column&gt; can be attr.0.key)
+          Make a table iterating <Command>&lt;it&gt;</Command> and listing{' '}
+          <Command>&lt;pn&gt;</Command> paths on it. A path contain one or more
+          dict key, list index or object attribute name separated by dots.{' '}
+          <br />
+          (i.e attr.0.key)
+          <br />
+          The '?' separator will be replaced by the separator: {tableSeparator}
         </Item>
       </ItemGroup>
       <p>
@@ -262,7 +270,8 @@ export default function Help() {
       </p>
       <ItemGroup>
         <Item shortcut={<Command>_</Command>}>
-          Last result (__ if _ is in scope)
+          Last result (<Command>__</Command> if <Command>_</Command> is in
+          scope)
         </Item>
         <Item shortcut={<Command>__kalong_current_frame__</Command>}>
           Current debugged frame
