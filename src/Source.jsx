@@ -23,6 +23,9 @@ const styleOverrides = EditorView.theme({
   '&,& .cm-content': {
     fontFamily: '"Fira Code", monospace',
   },
+  '& .cm-cursor': {
+    display: 'none !important',
+  },
 })
 
 const baseExtensions = [
@@ -111,7 +114,6 @@ export default (function Source({ currentFile, className }) {
     <CodeMirror
       ref={sourceRef}
       style={{ flex: 1 }}
-      editable={false}
       basicSetup={false}
       theme={oneDark}
       height="100%"

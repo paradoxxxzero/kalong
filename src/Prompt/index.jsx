@@ -173,6 +173,9 @@ export default (function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
         if (view.hasFocus) {
           return
         }
+        if (document.activeElement.tagName === 'INPUT') {
+          return
+        }
         // Check if key is a printable char
         if (key.length === 1 || key === 'Spacebar') {
           view.dispatch(
@@ -458,7 +461,6 @@ export default (function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
 
   const autocomplete = useCallback(
     async context => {
-      debugger
       let word = context.matchBefore(/[\w?]*/)
       if (word.from === word.to && !context.explicit) return null
       const lineCurrent = context.state.doc.lineAt(
