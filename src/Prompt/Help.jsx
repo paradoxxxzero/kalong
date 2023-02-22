@@ -124,6 +124,15 @@ export default function Help() {
         <Item
           shortcut={
             <Shortcut>
+              <Ctrl /> + <Key chr=" " />
+            </Shortcut>
+          }
+        >
+          Complete (with info)
+        </Item>
+        <Item
+          shortcut={
+            <Shortcut>
               <Ctrl /> + <Key chr="c" />
             </Shortcut>
           }
@@ -234,14 +243,18 @@ export default function Help() {
         <Item
           shortcut={
             <>
-              <Command>?table &lt;value&gt; ? &lt;colums&gt;</Command>
+              <Command>
+                ?table &lt;value&gt; ? &lt;column, column,...&gt;
+              </Command>
               <Shortcut>
                 <Alt /> + <Key chr="t" />
               </Shortcut>
             </>
           }
         >
-          View the iterable value columns properties as a table
+          View the &lt;column&gt; values for each &lt;value&gt; iteration. Works
+          for dict keys, list indexes and object attributes and path. (i.e
+          &lt;column&gt; can be attr.0.key)
         </Item>
       </ItemGroup>
       <p>

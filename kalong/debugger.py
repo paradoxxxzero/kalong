@@ -21,7 +21,7 @@ from pprint import pformat
 
 from jedi import Interpreter
 
-from .utils import cutter_mock, discompile
+from .utils import cutter_mock, discompile, universal_travel
 from .utils.io import capture_display, capture_exception, capture_std
 from .utils.iterators import iter_cause, iter_stack, iter_frame
 from .utils.obj import (
@@ -42,6 +42,7 @@ except ImportError:
 
 log = logging.getLogger(__name__)
 diff_separator = "≏"
+table_separator = "⌅"
 
 
 def get_title(frame, event, arg):
@@ -337,7 +338,6 @@ def serialize_suggestion(prompt, from_, to, cursor, frame):
         completions = [
             {
                 "text": comp.name_with_symbols,
-                "description": comp.description,
                 "docstring": comp.docstring(),
                 "type": comp.type,
                 "base": comp.name_with_symbols[
@@ -355,3 +355,43 @@ def serialize_suggestion(prompt, from_, to, cursor, frame):
         return answer
 
     return answer
+
+
+def serialize_table(prompt, frame):
+    valueStr, columns = (s.strip() for s in prompt.split(table_separator))
+    columns = [c.strip() for c in columns.split(",")]
+
+    try:
+        valueKey = get_id_from_expression(valueStr, frame)
+    except Exception:
+        return {
+            "prompt": valueStr,
+            "answer": [serialize_exception(*sys.exc_info())],
+        }
+
+    value = obj_cache.get(valueKey)
+
+    answer = [
+        {
+            "type": "table",
+            "columns": columns,
+            "rows": [
+                {
+                    column: {
+                        "value": None
+                        if value == "___void___"
+                        else safe_repr(value, "<unrepresentable>", True),
+                        "id": obj_cache.register(value),
+                    }
+                    for column in columns
+                    for value in [universal_travel(row, column)]
+                }
+                for row in value
+            ],
+        }
+    ]
+
+    return {
+        "prompt": f"{valueStr} {table_separator} {', '.join(columns)}",
+        "answer": answer,
+    }

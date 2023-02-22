@@ -37,15 +37,12 @@ class C:
 
 
 def fun(skip=False, gen_catched_exception=False, l=0):
-    _ = 12
     a = 4
     b = 9
     c = C()
     c.a = 1
     c.b = 2 + c.a
     breakpoint()
-    if _ > 12:
-        raise Exception("This is a test")
     print(a + b)
     print(c, "%r" % c)
     if skip:

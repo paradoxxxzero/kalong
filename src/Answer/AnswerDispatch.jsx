@@ -9,12 +9,14 @@ import Mapping from './Mapping'
 import Obj from './Obj'
 import Out from './Out'
 import Raw from './Raw'
+import Table from './Table'
 
 const TYPES = {
   out: Out,
   err: Err,
   obj: Obj,
   diff: Diff,
+  table: Table,
   inspect: Inspect,
   iterable: Iterable,
   mapping: Mapping,

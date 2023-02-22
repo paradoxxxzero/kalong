@@ -16,6 +16,7 @@ from .debugger import (
     serialize_inspect,
     serialize_inspect_eval,
     serialize_suggestion,
+    serialize_table,
 )
 from .loops import get_loop
 from .stepping import add_step, clear_step, stop_trace
@@ -106,6 +107,8 @@ async def communication_loop(frame_, event_, arg_):
                         if data.get("command") == "inspect"
                         else serialize_diff_eval
                         if data.get("command") == "diff"
+                        else serialize_table
+                        if data.get("command") == "table"
                         else serialize_answer
                     )
                     response = {

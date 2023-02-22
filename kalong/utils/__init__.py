@@ -112,3 +112,25 @@ def cutter_mock(text, cursor):
         new_text.append("".join(new_line))
 
     return "\n".join(new_text), cursor
+
+
+def universal_get(item, key):
+    if isinstance(item, dict):
+        return item.get(key, "___void___")
+
+    if hasattr(item, "__getitem__") and key.isdigit():
+        try:
+            return item.__class__.__getitem__(item, int(key))
+        except IndexError:
+            return "___void___"
+
+    return getattr(item, str(key), "___void___")
+
+
+def universal_travel(item, path):
+    for key in path.split("."):
+        item = universal_get(item, key)
+        if item == "___void___":
+            return "___void___"
+
+    return item

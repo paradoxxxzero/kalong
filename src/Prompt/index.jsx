@@ -458,7 +458,8 @@ export default (function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
 
   const autocomplete = useCallback(
     async context => {
-      let word = context.matchBefore(/\w*/)
+      debugger
+      let word = context.matchBefore(/[\w?]*/)
       if (word.from === word.to && !context.explicit) return null
       const lineCurrent = context.state.doc.lineAt(
         context.state.selection.main.head
@@ -517,10 +518,9 @@ export default (function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
       ])
       return {
         from: word.from,
-        options: suggestions.map(({ text, description, docstring, type }) => ({
+        options: suggestions.map(({ text, docstring, type }) => ({
           label: text,
-          // detail: description,
-          info: docstring,
+          info: context.explicit && docstring,
           type: jediTypeToCodeMirrorType[type] || type,
         })),
       }
