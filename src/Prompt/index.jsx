@@ -17,7 +17,7 @@ import {
   syntaxHighlighting,
 } from '@codemirror/language'
 import { lintKeymap } from '@codemirror/lint'
-import { highlightSelectionMatches, searchKeymap } from '@codemirror/search'
+import { highlightSelectionMatches } from '@codemirror/search'
 import { EditorState, Prec } from '@codemirror/state'
 import {
   drawSelection,
@@ -52,6 +52,7 @@ import { uid } from '../util'
 import searchReducer, { initialSearch } from './searchReducer'
 import { lexArgs } from './utils'
 import valueReducer, { commandShortcuts, initialValue } from './valueReducer'
+import Help from './Help'
 
 const jediTypeToCodeMirrorType = {
   module: 'namespace',
@@ -130,7 +131,6 @@ const baseExtensions = [
   keymap.of([
     ...closeBracketsKeymap,
     ...defaultKeymap,
-    ...searchKeymap,
     ...historyKeymap,
     ...foldKeymap,
     ...completionKeymap,
@@ -203,16 +203,6 @@ export default (function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
     [scrollToBottom]
   )
 
-  const handleCommand = useMemo(
-    () =>
-      Object.entries(commandShortcuts).reduce((functions, [key, command]) => {
-        functions[key] = () =>
-          valueDispatch({ type: 'toggle-command', command })
-        return functions
-      }, {}),
-    [valueDispatch]
-  )
-
   const handleEnter = useCallback(
     view => {
       if (view.state && completionStatus(view.state) === 'active') {
@@ -229,6 +219,45 @@ export default (function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
     },
     [activeFrame, dispatch, prompt.command, prompt.value]
   )
+
+  const handleCommand = useMemo(
+    () =>
+      Object.entries(commandShortcuts).reduce((functions, [key, command]) => {
+        functions[key] = () =>
+          valueDispatch({ type: 'toggle-command', command })
+
+        return functions
+      }, {}),
+    [valueDispatch]
+  )
+
+  useEffect(() => {
+    if (prompt.command === 'help') {
+      const key = uid()
+      dispatch({
+        type: 'SET_PROMPT',
+        key,
+        frame: null,
+        ...prompt,
+      })
+
+      dispatch({
+        type: 'SET_ANSWER',
+        key,
+        frame: null,
+        duration: 0,
+        ...prompt,
+        answer: [
+          {
+            type: 'raw',
+            value: <Help />,
+          },
+        ],
+      })
+
+      valueDispatch({ type: 'reset' })
+    }
+  }, [dispatch, prompt])
 
   const handleUp = useCallback(
     view => {
@@ -579,8 +608,11 @@ export default (function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
             run: handleInsertHistoryArgDown,
             preventDefault: true,
           },
-          { key: 'Alt-i', run: handleCommand.i, preventDefault: true },
-          { key: 'Alt-d', run: handleCommand.d, preventDefault: true },
+          ...Object.entries(handleCommand).map(([key, cmd]) => ({
+            key: `Alt-${key}`,
+            run: cmd,
+            preventDefault: true,
+          })),
         ])
       ),
       autocompletion({ override: [autocomplete] }),
@@ -591,8 +623,7 @@ export default (function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
     autocomplete,
     handleBackspace,
     handleClearScreen,
-    handleCommand.d,
-    handleCommand.i,
+    handleCommand,
     handleDieIfEmpty,
     handleDown,
     handleEnter,

@@ -1,7 +1,10 @@
-import { splitDiff } from './utils'
+import { split } from './utils'
+
 export const commandShortcuts = {
+  h: 'help',
   i: 'inspect',
   d: 'diff',
+  t: 'table',
 }
 
 export const commandShortcutsReverse = Object.fromEntries(
@@ -9,6 +12,7 @@ export const commandShortcutsReverse = Object.fromEntries(
 )
 
 export const diffSeparator = '≏'
+export const tableSeparator = '⌅'
 
 export default function valueReducer(state, action) {
   const newState = (() => {
@@ -90,9 +94,17 @@ export default function valueReducer(state, action) {
       newState.command === 'diff' &&
       !newState.value.includes(diffSeparator)
     ) {
-      const [left, right] = splitDiff(newState.value)
+      const [left, right] = split(newState.value)
       if (right) {
         newState.value = `${left} ${diffSeparator} ${right}`
+      }
+    } else if (
+      newState.command === 'table' &&
+      !newState.value.includes(tableSeparator)
+    ) {
+      const [left, right] = split(newState.value)
+      if (right) {
+        newState.value = `${left} ${tableSeparator} ${right}`
       }
     }
   }

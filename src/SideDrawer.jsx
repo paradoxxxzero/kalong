@@ -4,6 +4,7 @@ import Drawer from '@mui/material/Drawer'
 import Typography from '@mui/material/Typography'
 import React from 'react'
 import Frames from './Frames'
+import { VERSION } from '.'
 
 const drawerWidth = 240
 
@@ -109,7 +110,7 @@ export default function SideDrawer({ rtl, open, mobile, onDrawerClose }) {
             underline="hover"
           >
             <Typography variant="subtitle1" sx={{ fontSize: '1.25em' }}>
-              v0.4.2
+              v{VERSION}
             </Typography>
           </Link>
         </Box>

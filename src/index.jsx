@@ -9,15 +9,15 @@ store.subscribe(() => {
   localStorage.setItem('history', JSON.stringify(store.getState().history))
 })
 
-const container = document.getElementById('root')
-const root = createRoot(container)
-
-const renderRoot = () => {
-  root.render(
+if (
+  process.env.NODE_ENV === 'production' ||
+  !document.getElementById('root').innerHTML
+) {
+  createRoot(document.getElementById('root')).render(
     <Provider store={store}>
       <ThemedApp />
     </Provider>
   )
 }
 
-renderRoot()
+export const VERSION = '0.4.2'

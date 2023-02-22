@@ -76,7 +76,7 @@ export const lexArgs = (str, i) => {
   return args
 }
 
-export const splitDiff = str => {
+export const split = str => {
   const it = { str, i: 0 }
   const left = consumeUntil(it, '?')
   return [left.trim(), str.slice(it.i + 1).trim()]

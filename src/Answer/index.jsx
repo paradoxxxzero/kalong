@@ -243,7 +243,7 @@ export default memo(function Answer({
                   <AnswerDispatch key={i} {...props} />
                 ))}
               </Typography>
-              {duration && <Snippet value={prettyTime(duration)} />}
+              {duration ? <Snippet value={prettyTime(duration)} /> : null}
             </CardContent>
           </Collapse>
         </>

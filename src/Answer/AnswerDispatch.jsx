@@ -8,6 +8,7 @@ import Iterable from './Iterable'
 import Mapping from './Mapping'
 import Obj from './Obj'
 import Out from './Out'
+import Raw from './Raw'
 
 const TYPES = {
   out: Out,
@@ -18,6 +19,7 @@ const TYPES = {
   iterable: Iterable,
   mapping: Mapping,
   exception: Exception,
+  raw: Raw,
 }
 
 export default function AnswerDispatch({ type, ...props }) {

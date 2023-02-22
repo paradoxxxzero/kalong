@@ -172,6 +172,9 @@ const running = (state = false, action) => {
 const history = (state = [], action) => {
   switch (action.type) {
     case SET_PROMPT:
+      if (action.command === 'help') {
+        return state
+      }
       const prompt = action.command
         ? `?${commandShortcutsReverse[action.command]} ${action.prompt}`
         : action.prompt
