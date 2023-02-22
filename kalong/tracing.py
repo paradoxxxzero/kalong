@@ -107,6 +107,10 @@ def trace(origin, frame, event, arg):
             )
         )
     ):
+        if event == "return":
+            frame.f_locals["__kalong_return_value__"] = arg
+        elif event == "exception":
+            frame.f_locals["__kalong_exception__"] = arg
         # Enter the websocket communication loop that pauses the execution
         communicate(frame, event, arg)
 

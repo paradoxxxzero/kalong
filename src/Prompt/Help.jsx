@@ -244,6 +244,23 @@ export default function Help() {
           View the iterable value columns properties as a table
         </Item>
       </ItemGroup>
+      <p>
+        <strong>Special values</strong>
+      </p>
+      <ItemGroup>
+        <Item shortcut={<Command>_</Command>}>
+          Last result (__ if _ is in scope)
+        </Item>
+        <Item shortcut={<Command>__kalong_current_frame__</Command>}>
+          Current debugged frame
+        </Item>
+        <Item shortcut={<Command>__kalong_return_value__</Command>}>
+          While returning from a function, the return value
+        </Item>
+        <Item shortcut={<Command>__kalong_exception__</Command>}>
+          While in exception, the exception tuple
+        </Item>
+      </ItemGroup>
     </aside>
   )
 }

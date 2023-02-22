@@ -109,12 +109,16 @@ def serialize_answer(prompt, frame):
     f_globals = dict(frame.f_globals)
     f_locals = dict(frame.f_locals)
     f_globals.update(f_locals)
-    f_locals["_current_frame"] = frame
+    f_locals["__kalong_current_frame__"] = frame
     f_locals["cut"] = cut
+    last_key = ""
+    if "__kalong_last_value__" in frame.f_globals:
+        last_key = "_" if "_" not in f_locals else "__"
+        f_locals[last_key] = frame.f_globals["__kalong_last_value__"]
 
-    with capture_exception(answer), capture_display(answer), capture_std(
+    with capture_exception(answer), capture_display(
         answer
-    ):
+    ) as out, capture_std(answer):
         compiled_code = None
         try:
             compiled_code = compile(prompt, "<stdin>", "single")
@@ -138,9 +142,13 @@ def serialize_answer(prompt, frame):
             except Exception:
                 # handle ex
                 sys.excepthook(*sys.exc_info())
-            del f_locals["_current_frame"]
+            del f_locals["__kalong_current_frame__"]
             del f_locals["cut"]
+            if last_key:
+                del f_locals[last_key]
             sync_locals(frame, f_locals)
+            if out.obj:
+                frame.f_globals["__kalong_last_value__"] = out.obj
         duration = int((time.time() - start) * 1000 * 1000 * 1000)
 
     return {"prompt": prompt, "answer": answer, "duration": duration}
