@@ -1,4 +1,6 @@
-import { Button, Chip, IconButton } from '@mui/material'
+import Button from '@mui/material/Button'
+import Chip from '@mui/material/Chip'
+import IconButton from '@mui/material/IconButton'
 import React, { useCallback } from 'react'
 import { useDispatch } from 'react-redux'
 import { requestInspect } from '../actions'

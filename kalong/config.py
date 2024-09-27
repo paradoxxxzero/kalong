@@ -24,17 +24,14 @@ class Config:
         parser.add_argument(
             "--server",
             action="store_true",
-            help="Launch the kalong server. "
-            "This option is used by kalong itself",
+            help="Launch the kalong server. " "This option is used by kalong itself",
         )
         parser.add_argument(
             "--protocol",
             default=self.protocol,
             help="Protocol for contacting kalong server",
         )
-        parser.add_argument(
-            "--host", default=self.host, help="Host of kalong server"
-        )
+        parser.add_argument("--host", default=self.host, help="Host of kalong server")
         parser.add_argument(
             "--port", type=int, default=self.port, help="Port of kalong server"
         )
@@ -63,6 +60,11 @@ class Config:
             type=int,
             help="Pid of a running process in which a debugger will be "
             "injected with gdb. This needs a working gdb and ptrace enabled",
+        )
+        parser.add_argument(
+            "--break-at-start",
+            action="store_true",
+            help="Break at the start of the python file",
         )
         parser.add_argument(
             "command",

@@ -10,6 +10,7 @@ store.subscribe(() => {
 })
 
 if (
+  // eslint-disable-next-line no-undef
   process.env.NODE_ENV === 'production' ||
   !document.getElementById('root').innerHTML
 ) {

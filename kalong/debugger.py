@@ -21,9 +21,10 @@ from pprint import pformat
 
 from jedi import Interpreter
 
+from .errors import SetFrameError
 from .utils import cutter_mock, discompile, universal_travel
 from .utils.io import capture_display, capture_exception, capture_std
-from .utils.iterators import iter_cause, iter_stack, iter_frame
+from .utils.iterators import force_iterable, iter_cause, iter_frame, iter_stack
 from .utils.obj import (
     get_code,
     get_infos,
@@ -32,7 +33,6 @@ from .utils.obj import (
     safe_repr,
     sync_locals,
 )
-from .errors import SetFrameError
 
 try:
     from cutter import cut
@@ -89,7 +89,11 @@ def serialize_frames(current_frame, current_tb):
         line = linecache.getline(filename, lno, frame.f_globals)
         line = line and line.strip()
         startlnos = dis.findlinestarts(code)
-        lastlineno = list(startlnos)[-1][1]
+        lnos = list(startlnos)
+        lastlineno = None
+        if lnos:
+            lastlineno = lnos[-1][1]
+
         yield {
             "key": id(frame),
             "absoluteFilename": str(fn),
@@ -117,9 +121,7 @@ def serialize_answer(prompt, frame):
         last_key = "_" if "_" not in f_locals else "__"
         f_locals[last_key] = frame.f_globals["__kalong_last_value__"]
 
-    with capture_exception(answer), capture_display(
-        answer
-    ) as out, capture_std(answer):
+    with capture_exception(answer), capture_display(answer) as out, capture_std(answer):
         compiled_code = None
         try:
             compiled_code = compile(prompt, "<stdin>", "single")
@@ -148,18 +150,18 @@ def serialize_answer(prompt, frame):
             if last_key:
                 del f_locals[last_key]
             sync_locals(frame, f_locals)
-            if out.obj:
+            if out.obj is not None:
                 frame.f_globals["__kalong_last_value__"] = out.obj
         duration = int((time.time() - start) * 1000 * 1000 * 1000)
 
     return {"prompt": prompt, "answer": answer, "duration": duration}
 
 
-def serialize_exception(type_, value, tb):
+def serialize_exception(type_, value, tb, subtype="root"):
     return {
         "type": "exception",
         "id": obj_cache.register(value),
-        "subtype": "root",
+        "subtype": subtype,
         "name": type_.__name__,
         "description": str(value),
         "traceback": list(serialize_frames(None, tb)),
@@ -358,8 +360,12 @@ def serialize_suggestion(prompt, from_, to, cursor, frame):
 
 
 def serialize_table(prompt, frame):
-    valueStr, columns = (s.strip() for s in prompt.split(table_separator))
-    columns = [c.strip() for c in columns.split(",")]
+    if table_separator in prompt:
+        valueStr, columns = (s.strip() for s in prompt.split(table_separator))
+        columns = [c.strip() for c in columns.split(",")]
+    else:
+        valueStr = prompt.strip()
+        columns = None
 
     try:
         valueKey = get_id_from_expression(valueStr, frame)
@@ -370,6 +376,19 @@ def serialize_table(prompt, frame):
         }
 
     value = obj_cache.get(valueKey)
+    values = list(force_iterable(value, True))
+    if not columns:
+        if all(isinstance(value, dict) for value in values):
+            columns = list({column for value in values for column in value.keys()})
+        else:
+            columns = list(
+                {
+                    column
+                    for value in values
+                    for column in dir(value)
+                    if not column.startswith("__")
+                }
+            )
 
     answer = [
         {
@@ -386,7 +405,7 @@ def serialize_table(prompt, frame):
                     for column in columns
                     for value in [universal_travel(row, column)]
                 }
-                for row in value
+                for row in values
             ],
         }
     ]

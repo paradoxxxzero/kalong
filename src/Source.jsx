@@ -50,7 +50,7 @@ const baseExtensions = [
   python(),
 ]
 
-export default (function Source({ currentFile, className }) {
+export default (function Source({ currentFile }) {
   const dispatch = useDispatch()
   const files = useSelector(state => state.files)
   const {

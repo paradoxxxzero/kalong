@@ -1,22 +1,22 @@
 # This file does some random operation on a list
 
 
-def modify_list(ll):
-    ll[1] = 7
-    ll.insert(0, 3)
-    return ll
+def modify_list(arg):
+    arg[1] = 7
+    arg.insert(0, 3)
+    return arg
 
 
 breakpoint()
-l = []
-l.append(3)
-l += [8, 12]
-l = modify_list(l)
+var = []
+var.append(3)
+var += [8, 12]
+var = modify_list(var)
 
-for i, e in enumerate(l[:]):
+for i, e in enumerate(var[:]):
     if i > 2:
-        l[i] = i
+        var[i] = i
     else:
-        l[i] = e * i
+        var[i] = e * i
 
-print(l, sum(l))
+print(var, sum(var))

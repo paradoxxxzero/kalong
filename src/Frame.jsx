@@ -1,11 +1,8 @@
-import { Star } from '@mui/icons-material'
-import {
-  ListItemButton,
-  ListItemSecondaryAction,
-  Tooltip,
-  Typography,
-} from '@mui/material'
+import Star from '@mui/icons-material/Star'
+import ListItemButton from '@mui/material/ListItemButton'
 import ListItemText from '@mui/material/ListItemText'
+import Tooltip from '@mui/material/Tooltip'
+import Typography from '@mui/material/Typography'
 import React, { memo, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { setActiveFrame } from './actions'
@@ -41,16 +38,16 @@ export default memo(function Frame({ frame, last }) {
             </Tooltip>
           </>
         }
+        secondaryAction={
+          frame.active && (
+            <Tooltip title="Current Frame">
+              <div>
+                <Star fontSize="small" />
+              </div>
+            </Tooltip>
+          )
+        }
       />
-      <ListItemSecondaryAction>
-        {frame.active && (
-          <Tooltip title="Current Frame">
-            <div>
-              <Star fontSize="small" />
-            </div>
-          </Tooltip>
-        )}
-      </ListItemSecondaryAction>
     </ListItemButton>
   )
 })

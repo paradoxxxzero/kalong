@@ -41,7 +41,9 @@ export default function websocketMiddleware(store) {
       try {
         closing = true
         ws.close()
-      } catch (e) {}
+      } catch (e) {
+        console.error(e)
+      }
     }
   })
 

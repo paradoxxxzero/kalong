@@ -1,10 +1,11 @@
-import { Box, Typography } from '@mui/material'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
 import React, { useCallback, useRef } from 'react'
 import { useSelector } from 'react-redux'
 import Answer from './Answer'
 import Prompt from './Prompt'
 
-export default (function Terminal({ className }) {
+export default (function Terminal() {
   const scrollback = useSelector(state => state.scrollback)
   const scroller = useRef()
   const handleScrollUp = useCallback(() => {

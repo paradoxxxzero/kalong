@@ -1,4 +1,5 @@
-import { Box, Link } from '@mui/material'
+import Box from '@mui/material/Box'
+import Link from '@mui/material/Link'
 import Divider from '@mui/material/Divider'
 import Drawer from '@mui/material/Drawer'
 import Typography from '@mui/material/Typography'

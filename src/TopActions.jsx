@@ -1,27 +1,24 @@
-import {
-  ArrowForward,
-  Close,
-  Eject,
-  FastForward,
-  MoreHoriz,
-  MoreVert,
-  NorthEast,
-  Pause,
-  PlayArrow,
-  Redo,
-  SkipNext,
-  South,
-  SouthEast,
-  TrendingDown,
-} from '@mui/icons-material'
-import {
-  Box,
-  IconButton,
-  ListItemIcon,
-  Menu,
-  MenuItem,
-  Tooltip,
-} from '@mui/material'
+import ArrowForward from '@mui/icons-material/ArrowForward'
+import Close from '@mui/icons-material/Close'
+import Eject from '@mui/icons-material/Eject'
+import FastForward from '@mui/icons-material/FastForward'
+import MoreHoriz from '@mui/icons-material/MoreHoriz'
+import MoreVert from '@mui/icons-material/MoreVert'
+import NorthEast from '@mui/icons-material/NorthEast'
+import Pause from '@mui/icons-material/Pause'
+import PlayArrow from '@mui/icons-material/PlayArrow'
+import Redo from '@mui/icons-material/Redo'
+import SkipNext from '@mui/icons-material/SkipNext'
+import South from '@mui/icons-material/South'
+import SouthEast from '@mui/icons-material/SouthEast'
+import TrendingDown from '@mui/icons-material/TrendingDown'
+
+import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
+import ListItemIcon from '@mui/material/ListItemIcon'
+import Menu from '@mui/material/Menu'
+import MenuItem from '@mui/material/MenuItem'
+import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -202,7 +199,7 @@ export default (function TopActions({ mobile }) {
         code = `Ctrl+${code}`
       }
       const action = actions(running).find(
-        ({ key, visible, disabled }) => visible && !disabled && code === key
+        ({ key, hidden, disabled }) => !hidden && !disabled && code === key
       )
       if (!action) {
         return

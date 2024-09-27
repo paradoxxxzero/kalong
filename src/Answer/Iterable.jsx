@@ -1,12 +1,13 @@
-import {
-  ExpandLess,
-  ExpandMore,
-  MoreHoriz,
-  MoreVert,
-  UnfoldLess,
-  UnfoldMore,
-} from '@mui/icons-material'
-import { Box, Button, IconButton, Typography } from '@mui/material'
+import ExpandLess from '@mui/icons-material/ExpandLess'
+import ExpandMore from '@mui/icons-material/ExpandMore'
+import MoreHoriz from '@mui/icons-material/MoreHoriz'
+import MoreVert from '@mui/icons-material/MoreVert'
+import UnfoldLess from '@mui/icons-material/UnfoldLess'
+import UnfoldMore from '@mui/icons-material/UnfoldMore'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import IconButton from '@mui/material/IconButton'
+import Typography from '@mui/material/Typography'
 import React, { useCallback, useState } from 'react'
 import Snippet from '../Snippet'
 import AnswerDispatch from './AnswerDispatch'

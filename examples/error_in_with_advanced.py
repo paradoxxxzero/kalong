@@ -34,4 +34,4 @@ with trace():
 with trace(full=True):
     grandparent()
 
-print('The end')
+print("The end")

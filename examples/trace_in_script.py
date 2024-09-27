@@ -6,7 +6,7 @@ def fun1(a):
     return c + 1
 
 
-def fun2(l):
+def fun2(unused_var):
     breakpoint()
     a = 2
     e = fun1(a)
@@ -19,4 +19,4 @@ def main():
 
 main()
 breakpoint()
-print('The end')
+print("The end")

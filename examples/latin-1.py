@@ -1,6 +1,6 @@
 # -*- coding: latin-1 -*-
 
-a = '���'
+a = "���"
 print(a)
 
 breakpoint()

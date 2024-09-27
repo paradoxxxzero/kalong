@@ -1,4 +1,6 @@
-import { CircularProgress, Paper, Tooltip } from '@mui/material'
+import CircularProgress from '@mui/material/CircularProgress'
+import Paper from '@mui/material/Paper'
+import Tooltip from '@mui/material/Tooltip'
 import { pink, red } from '@mui/material/colors'
 import React from 'react'
 import { useSelector } from 'react-redux'

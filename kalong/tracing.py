@@ -5,8 +5,8 @@ from multiprocessing import process
 from pathlib import Path
 
 from .communication import communicate
-from .utils.iterators import iter_frame
 from .stepping import steppings, stop_trace
+from .utils.iterators import iter_frame
 from .websockets import die
 
 log = logging.getLogger(__name__)
@@ -33,9 +33,7 @@ def trace(origin, frame, event, arg):
     if originalFrame in iter_frame(frame.f_back):
         # And it's not a step into directly on the lower frame
         if not (
-            type == "stepInto"
-            and originalFrame == frame.f_back
-            and event == "call"
+            type == "stepInto" and originalFrame == frame.f_back and event == "call"
         ):
             return
 
@@ -93,10 +91,7 @@ def trace(origin, frame, event, arg):
         # StepInto: Stepping normally in new frame as well
         or type == "stepInto"
         # StepUntil: Stepping only if line number is greater than previously
-        or (
-            type == "stepUntil"
-            and (frame != originalFrame or frame.f_lineno > lno)
-        )
+        or (type == "stepUntil" and (frame != originalFrame or frame.f_lineno > lno))
         # StepOut: Stepping only if we are returning or in the parent frame
         or (
             type == "stepOut"

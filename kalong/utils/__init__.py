@@ -35,9 +35,7 @@ def current_origin():
 def parse_origin(origin):
     match = ORIGIN_RE.search(origin)
     if not match:
-        raise ValueError(
-            f"Invalid origin format {origin} must match {ORIGIN_RE}"
-        )
+        raise ValueError(f"Invalid origin format {origin} must match {ORIGIN_RE}")
     fqdn, pid, ident = match.groups()
 
     return fqdn, int(pid), int(ident)

@@ -1,22 +1,20 @@
-import {
-  Close,
-  ContentCopy,
-  ExpandMore,
-  Map,
-  Refresh,
-  Visibility,
-} from '@mui/icons-material'
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  Chip,
-  Collapse,
-  Divider,
-  IconButton,
-  Tooltip,
-  Typography,
-} from '@mui/material'
+import Close from '@mui/icons-material/Close'
+import ContentCopy from '@mui/icons-material/ContentCopy'
+import ExpandMore from '@mui/icons-material/ExpandMore'
+import Map from '@mui/icons-material/Map'
+import Refresh from '@mui/icons-material/Refresh'
+import Visibility from '@mui/icons-material/Visibility'
+
+import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
+import CardHeader from '@mui/material/CardHeader'
+import Chip from '@mui/material/Chip'
+import Collapse from '@mui/material/Collapse'
+import Divider from '@mui/material/Divider'
+import IconButton from '@mui/material/IconButton'
+import Tooltip from '@mui/material/Tooltip'
+import Typography from '@mui/material/Typography'
+
 import React, { memo, useCallback, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
@@ -187,8 +185,8 @@ export default memo(function Answer({
                     watching === 'all'
                       ? 'warning.main'
                       : watching === 'frame'
-                      ? 'info.main'
-                      : undefined,
+                        ? 'info.main'
+                        : undefined,
                 }}
               >
                 <Visibility />
@@ -239,7 +237,6 @@ export default memo(function Answer({
                 component="div"
               >
                 {answer.map((props, i) => (
-                  // eslint-disable-next-line react/no-array-index-key
                   <AnswerDispatch key={i} {...props} />
                 ))}
               </Typography>

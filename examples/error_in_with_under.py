@@ -1,6 +1,3 @@
-from kalong import trace
-
-
 def catched_exception(i):
     try:
         return i / 0

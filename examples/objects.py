@@ -3,7 +3,7 @@ class A(object):
         self.n = n
 
     def __repr__(self):
-        return '<A object with n=%d>' % self.n
+        return "<A object with n=%d>" % self.n
 
 
 def create_a(n):

@@ -1,8 +1,9 @@
-import { ChevronLeft, ChevronRight } from '@mui/icons-material'
-import { Tooltip } from '@mui/material'
+import ChevronLeft from '@mui/icons-material/ChevronLeft'
+import ChevronRight from '@mui/icons-material/ChevronRight'
 import AppBar from '@mui/material/AppBar'
 import IconButton from '@mui/material/IconButton'
 import Toolbar from '@mui/material/Toolbar'
+import Tooltip from '@mui/material/Tooltip'
 import React from 'react'
 import TopActions from './TopActions'
 

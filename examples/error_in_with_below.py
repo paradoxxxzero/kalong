@@ -1,6 +1,3 @@
-from kalong import trace
-
-
 def catched_exception(below):
     try:
         return below / 0
@@ -28,4 +25,3 @@ def uninteresting_function_catching(below):
     except ZeroDivisionError:
         b = 2
     return b
-

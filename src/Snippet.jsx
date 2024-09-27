@@ -1,12 +1,12 @@
 import { defaultHighlightStyle } from '@codemirror/language'
 import { highlightTree } from '@lezer/highlight'
 import { python } from '@codemirror/lang-python'
-import { Box } from '@mui/material'
+import Box from '@mui/material/Box'
 import React, { forwardRef, useEffect, useState } from 'react'
 import { StreamLanguage } from '@codemirror/language'
 import { diff } from '@codemirror/legacy-modes/mode/diff'
 
-function runmode(textContent, language, callback, options) {
+function runmode(textContent, language, callback) {
   const tree = language.parser.parse(textContent)
   let pos = 0
   highlightTree(tree, defaultHighlightStyle, (from, to, classes) => {

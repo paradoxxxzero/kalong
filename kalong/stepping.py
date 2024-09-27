@@ -8,7 +8,7 @@ from functools import partial
 from pathlib import Path
 
 from .loops import clean_loops
-from .utils import current_origin, USER_SIGNAL
+from .utils import USER_SIGNAL, current_origin
 from .utils.iterators import iter_frame
 from .websockets import clean_websockets
 

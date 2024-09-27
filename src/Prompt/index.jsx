@@ -27,8 +27,13 @@ import {
   keymap,
   rectangularSelection,
 } from '@codemirror/view'
-import { ExpandMore } from '@mui/icons-material'
-import { Box, Card, CardHeader, Chip, Grow, IconButton } from '@mui/material'
+import ExpandMore from '@mui/icons-material/ExpandMore'
+import Box from '@mui/material/Box'
+import Card from '@mui/material/Card'
+import CardHeader from '@mui/material/CardHeader'
+import Chip from '@mui/material/Chip'
+import Grow from '@mui/material/Grow'
+import IconButton from '@mui/material/IconButton'
 import CodeMirror from '@uiw/react-codemirror'
 import React, {
   useCallback,
@@ -302,15 +307,12 @@ export default (function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
     [prompt.command]
   )
 
-  const handleRemoveLastAnswer = useCallback(
-    view => {
-      if (scrollback.length) {
-        dispatch(removePromptAnswer(scrollback.slice(-1)[0].key))
-        return true
-      }
-    },
-    [dispatch, scrollback]
-  )
+  const handleRemoveLastAnswer = useCallback(() => {
+    if (scrollback.length) {
+      dispatch(removePromptAnswer(scrollback.slice(-1)[0].key))
+      return true
+    }
+  }, [dispatch, scrollback])
 
   const handleRemoveCommand = useCallback(() => {
     valueDispatch({ type: 'remove-command' })
@@ -384,11 +386,11 @@ export default (function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
             ? 0
             : prompt.index
           : prompt.index === -1
-          ? history.length - 1
-          : prompt.index
+            ? history.length - 1
+            : prompt.index
         : options.reverse
-        ? search.index + 1
-        : search.index - 1
+          ? search.index + 1
+          : search.index - 1
 
       searchDispatch({
         type: 'search',
@@ -496,7 +498,7 @@ export default (function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
       const suggestions = await Promise.race([
         new Promise(resolve => setTimeout(() => resolve([]), 5000)),
         new Promise(resolve => {
-          const unsub = store.subscribe((...args) => {
+          const unsub = store.subscribe(() => {
             const {
               suggestions: {
                 prompt: cPrompt,

@@ -5,11 +5,7 @@ import webbrowser
 from threading import Lock
 
 from aiohttp import ClientSession
-from aiohttp.client_exceptions import (
-    ClientConnectorError,
-    ClientOSError,
-    ServerDisconnectedError,
-)
+from aiohttp.client_exceptions import ClientConnectorError
 
 from .errors import NoServerFoundError
 from .forking import forkserver
@@ -40,9 +36,7 @@ async def websocket_state():
 
     with fork_lock:
         try:
-            ws = await sessions[origin].ws_connect(
-                url("back"), **websocket_options
-            )
+            ws = await sessions[origin].ws_connect(url("back"), **websocket_options)
             log.info("Found existing kalong server")
         except ClientConnectorError:
             # If there are no server available, fork one
@@ -63,8 +57,7 @@ async def websocket_state():
         # webbrowser.open should be in the mutex too, it's not thread safe
         if os.getenv("KALONG_NO_BROWSER") or not webbrowser.open(url("front")):
             log.warn(
-                "Please open your browser to the following url: "
-                f'{url("front")}'
+                "Please open your browser to the following url: " f'{url("front")}'
             )
 
     websockets[origin] = ws
@@ -105,8 +98,6 @@ async def close_all(closeables):
 
 
 def clean_websockets():
-    log.info(
-        f"Cleaning at exit {len(websockets)} ws and {len(sessions)} sessions"
-    )
+    log.info(f"Cleaning at exit {len(websockets)} ws and {len(sessions)} sessions")
     asyncio.run(close_all(websockets))
     asyncio.run(close_all(sessions))

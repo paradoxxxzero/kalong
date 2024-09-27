@@ -1,15 +1,14 @@
-import { OpenInNew } from '@mui/icons-material'
-import {
-  Box,
-  Chip,
-  Link,
-  Tab,
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
-  Tabs,
-} from '@mui/material'
+import OpenInNew from '@mui/icons-material/OpenInNew'
+import Box from '@mui/material/Box'
+import Chip from '@mui/material/Chip'
+import Link from '@mui/material/Link'
+import Tab from '@mui/material/Tab'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableRow from '@mui/material/TableRow'
+import Tabs from '@mui/material/Tabs'
+
 import React, { useCallback, useState } from 'react'
 import SwipeableViews from 'react-swipeable-views'
 import Snippet from '../Snippet'

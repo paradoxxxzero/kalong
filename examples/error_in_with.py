@@ -25,4 +25,4 @@ with trace(full=True):
     print(d + a)
 
 
-print('The end')
+print("The end")

@@ -49,9 +49,7 @@ def walk_obj(obj, walked):
         return {"type": "obj", "value": safe_repr(obj), "id": id}
     walked.add(id)
 
-    if any(
-        [isinstance(obj, list), isinstance(obj, set), isinstance(obj, tuple)]
-    ):
+    if any([isinstance(obj, list), isinstance(obj, set), isinstance(obj, tuple)]):
         return {
             "type": "iterable",
             "subtype": type(obj).__name__,
@@ -77,15 +75,13 @@ def get_bases(cls):
 
 
 def has_mixins(bases):
-    return len(bases["bases"]) > 1 or any(
-        has_mixins(base) for base in bases["bases"]
-    )
+    return len(bases["bases"]) > 1 or any(has_mixins(base) for base in bases["bases"])
 
 
 def get_infos(obj):
     infos = {}
     infos["type"] = type(obj).__name__
-    cls = obj if type(obj) == type else type(obj)
+    cls = obj if type(obj) is type else type(obj)
     try:
         infos["signature"] = obj.__name__ + str(signature(obj))
     except Exception:
@@ -94,7 +90,7 @@ def get_infos(obj):
     infos["fqn"] = get_fqn(obj)
     if infos["fqn"]:
         infos["online_doc"] = get_online_doc(infos["fqn"])
-    elif type(obj) != type:
+    elif type(obj) is not type:
         type_fqn = get_fqn(type(obj))
         if type_fqn:
             infos["online_doc"] = get_online_doc(type_fqn)
@@ -143,13 +139,9 @@ def sync_locals(frame, f_locals):
     """
     try:
         frame.f_locals.clear()
-        ctypes.pythonapi.PyFrame_LocalsToFast(
-            ctypes.py_object(frame), ctypes.c_int(1)
-        )
+        ctypes.pythonapi.PyFrame_LocalsToFast(ctypes.py_object(frame), ctypes.c_int(1))
         frame.f_locals.update(**f_locals)
-        ctypes.pythonapi.PyFrame_LocalsToFast(
-            ctypes.py_object(frame), ctypes.c_int(0)
-        )
+        ctypes.pythonapi.PyFrame_LocalsToFast(ctypes.py_object(frame), ctypes.c_int(0))
     except Exception:
         pass
 

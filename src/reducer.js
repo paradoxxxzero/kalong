@@ -171,7 +171,7 @@ const running = (state = false, action) => {
 
 const history = (state = [], action) => {
   switch (action.type) {
-    case SET_PROMPT:
+    case SET_PROMPT: {
       if (action.command === 'help') {
         return state
       }
@@ -182,6 +182,7 @@ const history = (state = [], action) => {
         prompt,
         ...state.filter(historyPrompt => historyPrompt !== prompt),
       ]
+    }
 
     default:
       return state

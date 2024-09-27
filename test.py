@@ -36,7 +36,7 @@ class C:
         self._store[name] = value
 
 
-def fun(skip=False, gen_catched_exception=False, l=0):
+def fun(skip=False, gen_catched_exception=False, level=0):
     a = 4
     b = 9
     c = C()
@@ -53,9 +53,9 @@ def fun(skip=False, gen_catched_exception=False, l=0):
     if gen_catched_exception:
         _protected(subfun, b, a)
     print(c * d)
-    if l < 2:
+    if level < 2:
         print("Going deeper")
-        fun(l=l + 1)
+        fun(level=level + 1)
     return (a - b) / (c * d)
 
 

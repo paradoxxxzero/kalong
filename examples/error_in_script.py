@@ -12,7 +12,7 @@ def with_trace_fun():
     print(c)
     d = divide_by_zero(c)
     print(d)
-    print('The end')
+    print("The end")
 
 
 kalong.start_trace()

@@ -1,4 +1,4 @@
-import { Box } from '@mui/material'
+import Box from '@mui/material/Box'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import React from 'react'
 import { useSelector } from 'react-redux'

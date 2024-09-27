@@ -1,4 +1,4 @@
-import { Box } from '@mui/material'
+import Box from '@mui/material/Box'
 import React from 'react'
 import Inspectable from './Inspectable'
 
@@ -8,7 +8,7 @@ const arrowThickness = '3px'
 export default function ClassBases({
   cls: { id, name, bases },
   first,
-  last,
+  // last,
   root,
 }) {
   return (

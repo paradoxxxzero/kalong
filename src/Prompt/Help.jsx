@@ -244,7 +244,8 @@ export default function Help() {
           Show the diff between two values repr: <Command>&lt;v1&gt;</Command>,{' '}
           <Command>&lt;v2&gt;</Command>
           <br />
-          The '?' separator will be replaced by the separator: {diffSeparator}
+          The &apos;?&apos; separator will be replaced by the separator:{' '}
+          {diffSeparator}
         </Item>
         <Item
           shortcut={
@@ -262,7 +263,8 @@ export default function Help() {
           <br />
           (i.e attr.0.key)
           <br />
-          The '?' separator will be replaced by the separator: {tableSeparator}
+          The &apos;?&apos; separator will be replaced by the separator:{' '}
+          {tableSeparator}
         </Item>
       </ItemGroup>
       <p>

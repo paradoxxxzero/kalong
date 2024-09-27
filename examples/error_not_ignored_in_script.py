@@ -16,7 +16,7 @@ def with_trace_fun():
         d = -1
 
     print(d)
-    print('The end')
+    print("The end")
 
 
 kalong.start_trace(full=True)

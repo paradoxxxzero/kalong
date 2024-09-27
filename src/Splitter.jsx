@@ -1,4 +1,4 @@
-import { Box } from '@mui/material'
+import Box from '@mui/material/Box'
 import ClickAwayListener from '@mui/material/ClickAwayListener'
 import React, { useCallback, useRef, useState } from 'react'
 
@@ -15,7 +15,7 @@ const computeRelativePosition = (event, element) => {
   }
 }
 
-export default function Splitter({ children, className, vertical }) {
+export default function Splitter({ children, vertical }) {
   const [ratio, setRatio] = useState(50)
   const [origin, setOrigin] = useState(null)
   const splitter = useRef()

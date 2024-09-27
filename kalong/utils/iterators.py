@@ -31,3 +31,17 @@ def iter_cause(exc):
             yield exc, False
         else:
             exc = None
+
+
+def force_iterable(value, dict_as_not_iterable=False):
+    if value is None:
+        return ()
+    if isinstance(value, dict):
+        if dict_as_not_iterable:
+            return (value,)
+    if isinstance(value, str):
+        return (value,)
+    try:
+        return iter(value)
+    except TypeError:
+        return (value,)

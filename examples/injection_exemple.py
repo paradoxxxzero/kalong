@@ -1,7 +1,7 @@
 import os
 from time import sleep
 
-print(f'Run: python -m kalong --inject {os.getpid()}')
+print(f"Run: python -m kalong --inject {os.getpid()}")
 
 i = 1000
 
