@@ -30,9 +30,16 @@ log = logging.getLogger(__name__)
 basicConfig(level=config.log_level)
 
 
+def exception_handler(loop, context):
+    exception = context["exception"]
+    message = context["message"]
+    logging.error(f"Task failed, msg={message}, exception={exception}")
+
+
 def communicate(frame, event, arg):
     loop = get_loop()
 
+    loop.set_exception_handler(exception_handler)
     try:
         loop.run_until_complete(communication_loop(frame, event, arg))
     except asyncio.CancelledError:
@@ -193,7 +200,8 @@ async def communication_loop(frame_, event_, arg_):
             except ConnectionResetError:
                 break
 
-            if response.get("stop"):
+            stop = response.get("stop", False)
+            if stop:
                 break
 
         elif msg.type == WSMsgType.ERROR:

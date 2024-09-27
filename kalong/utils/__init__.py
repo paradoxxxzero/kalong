@@ -134,3 +134,14 @@ def universal_travel(item, path):
             return "___void___"
 
     return item
+
+
+def dedent(code):
+    lines = code.split("\n")
+    if not lines:
+        return code
+    indent = min(
+        [len(line) - len(line.lstrip()) for line in lines if line.strip()],
+        default=0,
+    )
+    return "\n".join(line[indent:] for line in lines)

@@ -1,6 +1,8 @@
 import Star from '@mui/icons-material/Star'
+import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemText from '@mui/material/ListItemText'
+import IconButton from '@mui/material/IconButton'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import React, { memo, useCallback } from 'react'
@@ -16,38 +18,42 @@ export default memo(function Frame({ frame, last }) {
   }, [dispatch, frame.key])
 
   return (
-    <ListItemButton
-      divider={!last}
-      selected={frame.key === activeFrame}
-      onClick={handleClick}
+    <ListItem
+      secondaryAction={
+        frame.active && (
+          <Tooltip title="Current Frame">
+            <IconButton edge="end" aria-label="comments" onClick={handleClick}>
+              <Star fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        )
+      }
+      disablePadding
     >
-      <ListItemText
-        primary={frame.function}
-        secondary={
-          <>
-            <Snippet value={frame.lineSource} />
-            <Tooltip title={frame.absoluteFilename}>
-              <Typography
-                variant="body2"
-                display="block"
-                component="span"
-                noWrap
-              >
-                {frame.filename}:{frame.lineNumber}
-              </Typography>
-            </Tooltip>
-          </>
-        }
-        secondaryAction={
-          frame.active && (
-            <Tooltip title="Current Frame">
-              <div>
-                <Star fontSize="small" />
-              </div>
-            </Tooltip>
-          )
-        }
-      />
-    </ListItemButton>
+      <ListItemButton
+        divider={!last}
+        selected={frame.key === activeFrame}
+        onClick={handleClick}
+      >
+        <ListItemText
+          primary={frame.function}
+          secondary={
+            <>
+              <Snippet value={frame.lineSource} />
+              <Tooltip title={frame.absoluteFilename}>
+                <Typography
+                  variant="body2"
+                  display="block"
+                  component="span"
+                  noWrap
+                >
+                  {frame.filename}:{frame.lineNumber}
+                </Typography>
+              </Tooltip>
+            </>
+          }
+        />
+      </ListItemButton>
+    </ListItem>
   )
 })

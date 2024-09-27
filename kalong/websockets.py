@@ -56,7 +56,7 @@ async def websocket_state():
 
         # webbrowser.open should be in the mutex too, it's not thread safe
         if os.getenv("KALONG_NO_BROWSER") or not webbrowser.open(url("front")):
-            log.warn(
+            log.warning(
                 "Please open your browser to the following url: " f'{url("front")}'
             )
 

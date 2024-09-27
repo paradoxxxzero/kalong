@@ -2,6 +2,7 @@ import { defaultHighlightStyle } from '@codemirror/language'
 import { highlightTree } from '@lezer/highlight'
 import { python } from '@codemirror/lang-python'
 import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
 import React, { forwardRef, useEffect, useState } from 'react'
 import { StreamLanguage } from '@codemirror/language'
 import { diff } from '@codemirror/legacy-modes/mode/diff'
@@ -33,6 +34,31 @@ export default forwardRef(function Snippet(
     }
     setChunks([])
     runmode(value, lang, (text, cls, from) => {
+      if (noBreak && text.includes('\n')) {
+        text = (
+          <>
+            {text.split('\n').map((line, i, all) => (
+              <React.Fragment key={i}>
+                {line}
+                {i < all.length - 1 ? (
+                  <Typography
+                    component="span"
+                    sx={{
+                      fontSize: '0.75em',
+                      pl: 0.25,
+                      pr: 1,
+                      color: 'info.main',
+                      verticalAlign: 'bottom',
+                    }}
+                  >
+                    ⏎
+                  </Typography>
+                ) : null}
+              </React.Fragment>
+            ))}
+          </>
+        )
+      }
       setChunks(chunks => [...chunks, [text, cls, from]])
     })
   }, [mode, value])

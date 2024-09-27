@@ -22,7 +22,7 @@ from pprint import pformat
 from jedi import Interpreter
 
 from .errors import SetFrameError
-from .utils import cutter_mock, discompile, universal_travel
+from .utils import cutter_mock, dedent, discompile, universal_travel
 from .utils.io import capture_display, capture_exception, capture_std
 from .utils.iterators import force_iterable, iter_cause, iter_frame, iter_stack
 from .utils.obj import (
@@ -66,7 +66,7 @@ def get_frame(frame, key):
     for f in iter_frame(frame):
         if id(f) == key:
             return f
-    log.warn(f"Frame {key} not found")
+    log.warning(f"Frame {key} not found")
     return frame
 
 
@@ -108,7 +108,6 @@ def serialize_frames(current_frame, current_tb):
 
 
 def serialize_answer(prompt, frame):
-    prompt = prompt.strip()
     duration = 0
     answer = []
     f_globals = dict(frame.f_globals)
@@ -124,11 +123,13 @@ def serialize_answer(prompt, frame):
     with capture_exception(answer), capture_display(answer) as out, capture_std(answer):
         compiled_code = None
         try:
-            compiled_code = compile(prompt, "<stdin>", "single")
+            compiled_code = compile(prompt.strip(), "<stdin>", "single")
+            prompt = prompt.strip()
         except SetFrameError:
             raise
         except Exception:
             try:
+                prompt = dedent(prompt)
                 compiled_code = compile(prompt, "<stdin>", "exec")
             except SetFrameError:
                 raise

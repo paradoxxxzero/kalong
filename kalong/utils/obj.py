@@ -1,4 +1,5 @@
 import ctypes
+import warnings
 from inspect import (
     getcomments,
     getmodule,
@@ -138,10 +139,15 @@ def sync_locals(frame, f_locals):
     the fast local slots.
     """
     try:
-        frame.f_locals.clear()
-        ctypes.pythonapi.PyFrame_LocalsToFast(ctypes.py_object(frame), ctypes.c_int(1))
-        frame.f_locals.update(**f_locals)
-        ctypes.pythonapi.PyFrame_LocalsToFast(ctypes.py_object(frame), ctypes.c_int(0))
+        with warnings.catch_warnings(action="ignore"):
+            frame.f_locals.clear()
+            ctypes.pythonapi.PyFrame_LocalsToFast(
+                ctypes.py_object(frame), ctypes.c_int(1)
+            )
+            frame.f_locals.update(**f_locals)
+            ctypes.pythonapi.PyFrame_LocalsToFast(
+                ctypes.py_object(frame), ctypes.c_int(0)
+            )
     except Exception:
         pass
 
