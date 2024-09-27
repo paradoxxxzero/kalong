@@ -34,11 +34,15 @@ def break_above(level):
     start_trace(frame)
 
 
-def start_trace(break_=False, full=False):
+def start_trace(break_=False, full=False, skip_frames=None):
     from .stepping import add_step, start_trace
 
     frame = sys._getframe().f_back
-    add_step("stepInto" if break_ else ("trace" if full else "continue"), frame)
+    add_step(
+        "stepInto" if break_ else ("trace" if full else "continue"),
+        frame,
+        skip_frames,
+    )
     start_trace(frame)
 
 
@@ -50,12 +54,12 @@ def stop_trace():
 
 
 class trace:
-    def __init__(self, break_=False, full=False):
-        self.break_ = break_
-        self.full = full
+    def __init__(self, **kwargs):
+        self.kwargs = kwargs
 
     def __enter__(self):
-        start_trace(self.break_, self.full)
+        stop_trace()
+        start_trace(**self.kwargs)
 
     def __exit__(self, *args):
         stop_trace()

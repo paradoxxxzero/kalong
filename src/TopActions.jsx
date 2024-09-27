@@ -166,6 +166,8 @@ export default (function TopActions({ mobile }) {
   const title = useSelector(state => state.title)
   const frames = useSelector(state => state.frames)
   const running = useSelector(state => state.running)
+  const recursionLevel = useSelector(state => state.recursionLevel)
+
   const main = useSelector(state => state.main)
   const activeFrame = useSelector(state => state.activeFrame)
   const [intoType, setIntoType] = useState('')
@@ -238,7 +240,9 @@ export default (function TopActions({ mobile }) {
   return (
     <>
       <Typography variant="h6" color="inherit" noWrap>
+        {recursionLevel ? `${'('.repeat(recursionLevel)} ` : ''}
         {title}
+        {recursionLevel ? ` ${')'.repeat(recursionLevel)}` : ''}
       </Typography>
       {!!frames.length && (
         <>

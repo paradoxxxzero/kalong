@@ -1,5 +1,6 @@
 import CircularProgress from '@mui/material/CircularProgress'
 import Paper from '@mui/material/Paper'
+import Box from '@mui/material/Box'
 import Tooltip from '@mui/material/Tooltip'
 import { pink, red } from '@mui/material/colors'
 import React from 'react'
@@ -37,7 +38,7 @@ export default function GlobalIndicator({ sx }) {
           })}
           variant={full ? 'determinate' : undefined}
           value={full ? 100 : undefined}
-        />
+        ></CircularProgress>
       </Tooltip>
     </Paper>
   )

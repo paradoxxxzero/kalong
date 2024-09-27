@@ -151,6 +151,7 @@ export default (function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
   const history = useSelector(state => state.history)
   const scrollback = useSelector(state => state.scrollback)
   const activeFrame = useSelector(state => state.activeFrame)
+  const recursionLevel = useSelector(state => state.recursionLevel)
 
   const dispatch = useDispatch()
 
@@ -165,7 +166,7 @@ export default (function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
       const selection = getSelection().toString()
       if (selection) {
         const key = uid()
-        dispatch(setPrompt(key, selection, null, activeFrame))
+        dispatch(setPrompt(key, selection, null, activeFrame, recursionLevel))
       }
     }
     const handleGlobalFocus = ({ key, target }) => {
@@ -196,7 +197,7 @@ export default (function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
       window.removeEventListener('keydown', handleGlobalEval)
       window.removeEventListener('keyup', handleGlobalFocus)
     }
-  }, [activeFrame, dispatch])
+  }, [activeFrame, dispatch, recursionLevel])
 
   const handleChange = useCallback(
     (newValue, viewUpdate) => {
@@ -220,12 +221,20 @@ export default (function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
         return true
       }
       const key = uid()
-      dispatch(setPrompt(key, prompt.value, prompt.command, activeFrame))
+      dispatch(
+        setPrompt(
+          key,
+          prompt.value,
+          prompt.command,
+          activeFrame,
+          recursionLevel
+        )
+      )
 
       valueDispatch({ type: 'reset' })
       return true
     },
-    [activeFrame, dispatch, prompt.command, prompt.value]
+    [activeFrame, dispatch, prompt.command, prompt.value, recursionLevel]
   )
 
   const handleCommand = useMemo(
@@ -549,7 +558,9 @@ export default (function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
   )
 
   const grow =
-    scrollback.length === 0 || scrollback.slice(-1)[0].answer !== null
+    scrollback.length === 0 ||
+    scrollback.slice(-1)[0].answer !== null ||
+    recursionLevel > 0
 
   const extensions = useMemo(() => {
     return [
@@ -694,7 +705,7 @@ export default (function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
       unmountOnExit
       onEntered={handleEntered}
     >
-      <Card raised sx={{ m: 1 }}>
+      <Card raised sx={{ m: 1, ml: 1 + recursionLevel * 4 }}>
         <CardHeader
           avatar={
             <>

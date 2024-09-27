@@ -69,12 +69,13 @@ export const setActiveFrame = key => ({
 })
 
 export const SET_PROMPT = 'SET_PROMPT'
-export const setPrompt = (key, prompt, command, frame) => ({
+export const setPrompt = (key, prompt, command, frame, level = 0) => ({
   type: SET_PROMPT,
   key,
   prompt,
   command,
   frame,
+  level,
   remote: true,
 })
 

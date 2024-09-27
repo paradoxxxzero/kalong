@@ -21,7 +21,9 @@ def trace(origin, frame, event, arg):
 
     type = stepping.get("type")
     originalFrame = stepping.get("frame")
+    baseFrame = stepping.get("base_frame", originalFrame)
     lno = stepping.get("lno")
+    skip_frames = stepping.get("skip_frames")
     filename = frame.f_code.co_filename
     into_type = None
 
@@ -29,13 +31,8 @@ def trace(origin, frame, event, arg):
         into_type = type.split("stepInto")[1].lower() or "skipcore"
         type = "stepInto"
 
-    # If we are below the original frame
-    if originalFrame in iter_frame(frame.f_back):
-        # And it's not a step into directly on the lower frame
-        if not (
-            type == "stepInto" and originalFrame == frame.f_back and event == "call"
-        ):
-            return
+    parent_frames = list(iter_frame(frame))
+    below = parent_frames.index(baseFrame) if baseFrame in parent_frames else -1
 
     # When we are in _shutdown of thread, program is finished
     if (
@@ -80,6 +77,12 @@ def trace(origin, frame, event, arg):
         # or if we are not all and stepping into core methods
         if into_type == "skipcore" and frame.f_code.co_name.startswith("__"):
             return
+
+    if skip_frames and (
+        (event in ["call", "line"] and below - 1 < skip_frames)
+        or (event == "return" and below - 1 < skip_frames)
+    ):
+        return sys.gettrace()
 
     if (
         # Trace: This is an exception: stop

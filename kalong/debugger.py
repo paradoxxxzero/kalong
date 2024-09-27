@@ -107,7 +107,42 @@ def serialize_frames(current_frame, current_tb):
         }
 
 
-def serialize_answer(prompt, frame):
+def serialize_answer_recursive(prompt, frame):
+    return serialize_answer(prompt, frame, True)
+
+
+def _rec_exec(code, globals, locals):
+    from .stepping import start_trace, steppings, stop_trace
+    from .utils import current_origin
+
+    frame = sys._getframe()
+    stop_trace(frame)
+
+    origin = current_origin()
+    steppings[origin] = {
+        "type": "stepInto",
+        "frame": frame,
+        "lno": frame.f_lineno,
+        "skip_frames": 1,  # Skip exec frame
+        "_parent": steppings.get(origin),
+    }
+
+    start_trace(frame)
+    try:
+        exec(code, globals, locals)
+    finally:
+        parent = steppings[origin].get("_parent")
+        if parent:
+            steppings[origin] = parent
+        else:
+            stop_trace(frame)
+
+
+def rec_exec(code, globals, locals):
+    sys.call_tracing(_rec_exec, (code, globals, locals))
+
+
+def serialize_answer(prompt, frame, recursive=False):
     duration = 0
     answer = []
     f_globals = dict(frame.f_globals)
@@ -140,22 +175,29 @@ def serialize_answer(prompt, frame):
         start = time.time()
         if compiled_code is not None:
             try:
-                exec(compiled_code, f_globals, f_locals)
+                (rec_exec if recursive else exec)(compiled_code, f_globals, f_locals)
             except SetFrameError:
                 raise
             except Exception:
                 # handle ex
                 sys.excepthook(*sys.exc_info())
-            del f_locals["__kalong_current_frame__"]
-            del f_locals["cut"]
-            if last_key:
+            if "__kalong_current_frame__" in f_locals:
+                del f_locals["__kalong_current_frame__"]
+            if "cut" in f_locals:
+                del f_locals["cut"]
+            if last_key and last_key in f_locals:
                 del f_locals[last_key]
             sync_locals(frame, f_locals)
             if out.obj is not None:
                 frame.f_globals["__kalong_last_value__"] = out.obj
         duration = int((time.time() - start) * 1000 * 1000 * 1000)
 
-    return {"prompt": prompt, "answer": answer, "duration": duration}
+    return {
+        "prompt": prompt,
+        "answer": answer,
+        "duration": duration,
+        "recursive": recursive,
+    }
 
 
 def serialize_exception(type_, value, tb, subtype="root"):

@@ -18,9 +18,27 @@ steppings = {}
 kalong_dir = str(Path(__file__).resolve().parent)
 
 
-def add_step(type, frame):
+def add_step(type, frame, skip_frames=None):
     origin = current_origin()
-    steppings[origin] = {"type": type, "frame": frame, "lno": frame.f_lineno}
+    current = steppings.get(origin)
+    steppings[origin] = {
+        "type": type,
+        "frame": frame,
+        "lno": frame.f_lineno,
+    }
+    if skip_frames is not None:
+        steppings[origin]["skip_frames"] = skip_frames
+    if current:
+        # Keep parent stepping in case of recursive debugging
+        if "_parent" in current:
+            steppings[origin]["_parent"] = current["_parent"]
+        if "skip_frames" in current:
+            steppings[origin]["skip_frames"] = current["skip_frames"]
+        # Keep base frame for skip_frames
+        if "base_frame" not in current:
+            steppings[origin]["base_frame"] = current["frame"]
+        else:
+            steppings[origin]["base_frame"] = current["base_frame"]
 
 
 def clear_step():

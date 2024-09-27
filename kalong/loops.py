@@ -22,13 +22,13 @@ def get_loop():
     origin = current_origin()
     try:
         loop = asyncio.get_running_loop()
-        if origin not in loops or loops[origin] != loop:
+        if origin not in loops or loop.is_running():
             if nest_asyncio:
                 nest_asyncio.apply(loop)
             else:
                 raise ImportError(
                     "If you want to use kalong in an asyncio environment "
-                    "please install nest_asyncio"
+                    "or use recursive debugging please install nest_asyncio"
                 )
     except RuntimeError:
         pass

@@ -12,6 +12,7 @@ from .debugger import (
     get_frame,
     get_title,
     serialize_answer,
+    serialize_answer_recursive,
     serialize_diff_eval,
     serialize_exception,
     serialize_frames,
@@ -89,6 +90,8 @@ async def handle_message(ws, data, frame, event, arg):
                 if data.get("command") == "diff"
                 else serialize_table
                 if data.get("command") == "table"
+                else serialize_answer_recursive
+                if data.get("command") == "recursive_debug"
                 else serialize_answer
             )
             response = {
@@ -195,12 +198,17 @@ async def communication_loop(frame_, event_, arg_):
             log.debug(f"Got {data} answering with {response}")
             response["local"] = True
 
+            if response.pop("recursive", False):
+                await ws.send_json({"type": "PAUSE", "recursive": True})
+                await init(ws, frame, event, arg)
+
+            stop = response.pop("stop", False)
+
             try:
                 await ws.send_json(response)
             except ConnectionResetError:
                 break
 
-            stop = response.get("stop", False)
             if stop:
                 break
 

@@ -5,6 +5,7 @@ export const commandShortcuts = {
   i: 'inspect',
   d: 'diff',
   t: 'table',
+  r: 'recursive_debug',
 }
 
 export const commandShortcutsReverse = Object.fromEntries(

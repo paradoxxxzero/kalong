@@ -34,6 +34,7 @@ export default memo(function Answer({
   prompt,
   command,
   frame,
+  level,
   watching,
 }) {
   const dispatch = useDispatch()
@@ -74,6 +75,7 @@ export default memo(function Answer({
     <Card
       sx={{
         m: 1,
+        ml: 1 + level * 4,
         display: 'flex',
         flexDirection: 'column',
         opacity: frame === activeFrame ? 1 : 0.75,

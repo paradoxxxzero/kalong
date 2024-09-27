@@ -82,7 +82,9 @@ const scrollback = (state = [], action) => {
         {
           key: action.key,
           prompt: `${action.prompt}…`,
+          command: action.command,
           frame: action.frame,
+          level: action.level,
           answer: null,
         },
       ]
@@ -155,6 +157,23 @@ const loadingLevel = (state = 0, action) => {
     return state - 1
   }
   return state
+}
+
+const recursionLevel = (state = 0, action) => {
+  switch (action.type) {
+    case SET_PROMPT:
+      if (action.command === 'recursive_debug') {
+        return state + 1
+      }
+      return state
+    case PAUSE:
+      if (action.recursive) {
+        return state - 1
+      }
+      return state
+    default:
+      return state
+  }
 }
 
 const running = (state = false, action) => {
@@ -235,6 +254,7 @@ export default combineReducers({
   theme,
   connection,
   loadingLevel,
+  recursionLevel,
   running,
   main,
 })
