@@ -20,7 +20,6 @@ import {
   SET_TITLE,
   SET_WATCHING,
 } from './actions'
-import { commandShortcutsReverse } from './Prompt/valueReducer'
 
 const config = (state = {}, action) => {
   switch (action.type) {
@@ -195,7 +194,7 @@ const history = (state = [], action) => {
         return state
       }
       const prompt = action.command
-        ? `?${commandShortcutsReverse[action.command]} ${action.prompt}`
+        ? `?${action.command} ${action.prompt}`
         : action.prompt
       return [
         prompt,

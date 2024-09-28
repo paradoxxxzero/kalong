@@ -234,6 +234,18 @@ export default function Help() {
         <Item
           shortcut={
             <>
+              <Command>?recursive_debug &lt;expression&gt;</Command>
+              <Shortcut>
+                <Alt /> + <Key chr="r" />
+              </Shortcut>
+            </>
+          }
+        >
+          Step into expression using recursive debugging
+        </Item>
+        <Item
+          shortcut={
+            <>
               <Command>?diff &lt;v1&gt; ? &lt;v2&gt;</Command>
               <Shortcut>
                 <Alt /> + <Key chr="d" />

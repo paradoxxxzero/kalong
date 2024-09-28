@@ -8,10 +8,6 @@ export const commandShortcuts = {
   r: 'recursive_debug',
 }
 
-export const commandShortcutsReverse = Object.fromEntries(
-  Object.entries(commandShortcuts).map(([k, v]) => [v, k])
-)
-
 export const diffSeparator = '≏'
 export const tableSeparator = '⌅'
 
@@ -82,9 +78,9 @@ export default function valueReducer(state, action) {
     const commandMatch = newState.value.match(/^\?(\S+)(.*)/)
     if (commandMatch) {
       const [, cmd, expr] = commandMatch
-      if (Object.keys(commandShortcuts).includes(cmd)) {
+      if (Object.values(commandShortcuts).includes(cmd)) {
         newState.value = expr.trim()
-        newState.command = commandShortcuts[cmd]
+        newState.command = cmd
       }
     }
     if (
