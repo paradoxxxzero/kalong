@@ -8,7 +8,6 @@ authors = [
   { name="Florian Mounier", email="paradoxxx.zero@gmail.com"},
 ]
 license = "GPL-3.0-or-later"
-include = ["kalong/static/**/*"]
 homepage = "https://github.com/paradoxxxzero/kalong"
 keywords = ['debugger']
 classifiers = [
@@ -46,3 +45,12 @@ build-backend = "hatchling.build"
 
 [tool.hatch.version]
 path = "kalong/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+include = ["kalong"]
+artifacts = ["kalong/static/*"]
+
+
+[tool.hatch.build.targets.wheel]
+include = ["kalong"]
+artifacts = ["kalong/static/*"]
