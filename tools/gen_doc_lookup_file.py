@@ -25,4 +25,4 @@ for uri in uris:
 
 
 with open(out, "w") as f:
-    json.dump(lookup, f)
+    json.dump(lookup, f, indent=2)
