@@ -62,6 +62,7 @@ async def init(ws, frame, event, arg):
 
 
 async def handle_message(ws, data, frame, event, arg):
+    tb = arg[2] if event == "exception" else None
     if data["type"] == "HELLO":
         await init(ws, frame, event, arg)
         response = {
@@ -101,7 +102,7 @@ async def handle_message(ws, data, frame, event, arg):
                 "frame": data.get("frame"),
                 **eval_fun(
                     data["prompt"],
-                    get_frame(frame, data.get("frame")),
+                    get_frame(frame, data.get("frame"), tb),
                 ),
             }
         except SetFrameError as e:
@@ -137,7 +138,7 @@ async def handle_message(ws, data, frame, event, arg):
                 data["from"],
                 data["to"],
                 data["cursor"],
-                get_frame(frame, data.get("frame")),
+                get_frame(frame, data.get("frame"), tb),
             ),
         }
 
@@ -152,7 +153,7 @@ async def handle_message(ws, data, frame, event, arg):
             stop_trace(frame)
             die()
         else:
-            step_frame = get_frame(frame, data.get("frame"))
+            step_frame = get_frame(frame, data.get("frame"), tb)
             add_step(command, step_frame)
         response["stop"] = True
 
@@ -189,7 +190,7 @@ async def communication_loop(frame_, event_, arg_):
                 log.error(f"Error handling message {data}", exc_info=e)
                 response = {
                     "type": "SET_ANSWER",
-                    "prompt": data["prompt"].strip(),
+                    "prompt": data.get("prompt", "?").strip(),
                     "key": data["key"],
                     "command": data.get("command"),
                     "frame": data.get("frame"),

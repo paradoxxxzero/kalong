@@ -24,7 +24,7 @@ from jedi import Interpreter
 from .errors import SetFrameError
 from .utils import cutter_mock, dedent, discompile, universal_travel
 from .utils.io import capture_display, capture_exception, capture_std
-from .utils.iterators import force_iterable, iter_cause, iter_frame, iter_stack
+from .utils.iterators import force_iterable, iter_cause, iter_stack
 from .utils.obj import (
     get_code,
     get_infos,
@@ -59,11 +59,11 @@ def get_title(frame, event, arg):
     return "???"
 
 
-def get_frame(frame, key):
+def get_frame(frame, key, tb=None):
     if not key:
         return frame
 
-    for f in iter_frame(frame):
+    for f, _lno in iter_stack(frame, tb):
         if id(f) == key:
             return f
     log.warning(f"Frame {key} not found")
