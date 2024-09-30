@@ -30,7 +30,7 @@ const actions = (running, intoType, mobile, main) => [
     action: 'pause',
     Icon: Pause,
     key: 'F8',
-    disabled: false,
+    disabled: !running || !main,
     hidden: !running || !main,
   },
   {
@@ -38,7 +38,7 @@ const actions = (running, intoType, mobile, main) => [
     action: 'continue',
     Icon: PlayArrow,
     key: 'F8',
-    disabled: false,
+    disabled: running,
     hidden: running,
   },
   {
@@ -201,7 +201,7 @@ export default (function TopActions({ mobile }) {
         code = `Ctrl+${code}`
       }
       const action = actions(running).find(
-        ({ key, hidden, disabled }) => !hidden && !disabled && code === key
+        ({ key, disabled }) => !disabled && code === key
       )
       if (!action) {
         return
