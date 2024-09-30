@@ -482,12 +482,14 @@ dependencies = [
     { name = "aiohttp" },
     { name = "cutter" },
     { name = "jedi" },
-    { name = "nest-asyncio" },
 ]
 
 [package.optional-dependencies]
 disassembly = [
     { name = "uncompyle6" },
+]
+recursive = [
+    { name = "nest-asyncio" },
 ]
 
 [package.dev-dependencies]
@@ -501,7 +503,7 @@ requires-dist = [
     { name = "aiohttp", specifier = ">=3.10.6" },
     { name = "cutter", specifier = ">=0.5.0" },
     { name = "jedi", specifier = ">=0.19.1" },
-    { name = "nest-asyncio", specifier = ">=1.6.0" },
+    { name = "nest-asyncio", marker = "extra == 'recursive'", specifier = ">=1.6.0" },
     { name = "uncompyle6", marker = "extra == 'disassembly'", specifier = ">=3.9.2" },
 ]
 
