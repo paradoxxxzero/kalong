@@ -1,5 +1,4 @@
 import ctypes
-import warnings
 from inspect import (
     getcomments,
     getmodule,
@@ -138,16 +137,9 @@ def sync_locals(frame, f_locals):
     This is a cpython hack to synchronize new locals back into
     the fast local slots.
     """
+    frame.f_locals.update(**f_locals)
     try:
-        with warnings.catch_warnings(action="ignore"):
-            frame.f_locals.clear()
-            ctypes.pythonapi.PyFrame_LocalsToFast(
-                ctypes.py_object(frame), ctypes.c_int(1)
-            )
-            frame.f_locals.update(**f_locals)
-            ctypes.pythonapi.PyFrame_LocalsToFast(
-                ctypes.py_object(frame), ctypes.c_int(0)
-            )
+        ctypes.pythonapi.PyFrame_LocalsToFast(ctypes.py_object(frame), ctypes.c_int(0))
     except Exception:
         pass
 
