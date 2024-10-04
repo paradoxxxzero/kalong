@@ -26,6 +26,7 @@ def trace(origin, frame, event, arg):
     skip_frames = stepping.get("skip_frames")
     filename = frame.f_code.co_filename
     into_type = None
+    pending = None
 
     if type.startswith("stepInto"):
         into_type = type.split("stepInto")[1].lower() or "skipcore"
@@ -52,8 +53,21 @@ def trace(origin, frame, event, arg):
     # If we are continuing, don't trace anything but current frame
     if type == "continue":
         if frame == originalFrame:
+            if stepping.get("condition"):
+                # Check the condition
+                response = stepping["condition"]()
+                answers = response["answer"]
+                # Break if answer is truthy
+                break_ = len(answers) > 0 and (
+                    any(answer.get("truthiness", True) for answer in answers)
+                )
+                if not break_:
+                    # Continue tracing current frame
+                    return sys.gettrace()
+                pending = response
+
             # Continue tracing current frame
-            if event != "exception":
+            elif event != "exception":
                 return sys.gettrace()
         else:
             # Stop tracing if below
@@ -110,6 +124,6 @@ def trace(origin, frame, event, arg):
         elif event == "exception":
             frame.f_locals["__kalong_exception__"] = arg
         # Enter the websocket communication loop that pauses the execution
-        communicate(frame, event, arg)
+        communicate(frame, event, arg, pending)
 
     return sys.gettrace()

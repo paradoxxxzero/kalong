@@ -193,9 +193,10 @@ const history = (state = [], action) => {
       if (action.command === 'help') {
         return state
       }
-      const prompt = action.command
-        ? `?${action.command} ${action.prompt}`
-        : action.prompt
+      const prompt =
+        action.command && action.command !== 'condition'
+          ? `?${action.command} ${action.prompt}`
+          : action.prompt
       return [
         prompt,
         ...state.filter(historyPrompt => historyPrompt !== prompt),

@@ -90,6 +90,9 @@ class Config:
             if value:
                 setattr(self, name, type(name)(value))
 
+        if os.getenv("KALONG_PORT") and not os.getenv("KALONG_FRONT_PORT"):
+            self.front_port = self.port
+
     def get_args_for_server(self):
         yield "--server"
 

@@ -1,6 +1,6 @@
 import sys
 
-from .obj import walk_obj
+from .obj import safe_bool, walk_obj
 
 
 class FakeSTD(object):
@@ -29,7 +29,9 @@ class capture_display(object):
 
     def hook(self, obj):
         if obj is not None:
-            self.answer.append(walk_obj(obj, set()))
+            answer = walk_obj(obj, set())
+            answer["truthiness"] = safe_bool(obj)
+            self.answer.append(answer)
         self.obj = obj
 
 

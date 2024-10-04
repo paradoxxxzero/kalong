@@ -18,7 +18,7 @@ steppings = {}
 kalong_dir = str(Path(__file__).resolve().parent)
 
 
-def add_step(type, frame, skip_frames=None):
+def add_step(type, frame, skip_frames=None, condition=None):
     origin = current_origin()
     current = steppings.get(origin)
     steppings[origin] = {
@@ -26,6 +26,8 @@ def add_step(type, frame, skip_frames=None):
         "frame": frame,
         "lno": frame.f_lineno,
     }
+    if condition:
+        steppings[origin]["condition"] = condition
     if skip_frames is not None:
         steppings[origin]["skip_frames"] = skip_frames
     if current:

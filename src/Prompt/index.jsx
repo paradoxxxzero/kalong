@@ -59,6 +59,8 @@ import { lexArgs } from './utils'
 import valueReducer, { commandShortcuts, initialValue } from './valueReducer'
 import Help from './Help'
 
+export const promptBus = new EventTarget()
+
 const jediTypeToCodeMirrorType = {
   module: 'namespace',
   class: 'class',
@@ -144,7 +146,7 @@ const baseExtensions = [
   python(),
 ]
 
-export default (function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
+export default function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
   const code = useRef()
   const searchCode = useRef()
 
@@ -211,6 +213,22 @@ export default (function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
     },
     [scrollToBottom]
   )
+
+  const ready = !!prompt.value && !prompt.command
+  useEffect(() => {
+    promptBus.dispatchEvent(new CustomEvent('state', { detail: { ready } }))
+  }, [ready])
+
+  useEffect(() => {
+    const handleCondition = () => {
+      const key = uid()
+      dispatch(
+        setPrompt(key, prompt.value, 'condition', activeFrame, recursionLevel)
+      )
+    }
+    promptBus.addEventListener('condition', handleCondition)
+    return () => promptBus.removeEventListener('condition', handleCondition)
+  }, [activeFrame, dispatch, prompt.value, recursionLevel])
 
   const handleEnter = useCallback(
     view => {
@@ -299,8 +317,11 @@ export default (function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
   )
 
   const handleEntered = useCallback(() => {
-    if (code.current) {
+    scrollToBottom()
+    if (code.current?.view) {
       code.current.view.focus()
+      const len = code.current.view.state.doc.length
+      code.current.view.dispatch({ selection: { anchor: len, head: len } })
     }
   }, [code])
 
@@ -773,4 +794,4 @@ export default (function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
       </Card>
     </Grow>
   )
-})
+}

@@ -32,17 +32,15 @@ basicConfig(level=config.log_level)
 
 
 def exception_handler(loop, context):
-    exception = context["exception"]
-    message = context["message"]
-    logging.error(f"Task failed, msg={message}, exception={exception}")
+    logging.error(f"Loop exit: {context}")
 
 
-def communicate(frame, event, arg):
+def communicate(frame, event, arg, pending=None):
     loop = get_loop()
 
     loop.set_exception_handler(exception_handler)
     try:
-        loop.run_until_complete(communication_loop(frame, event, arg))
+        loop.run_until_complete(communication_loop(frame, event, arg, pending))
     except asyncio.CancelledError:
         log.info("Loop got cancelled")
         die()
@@ -84,6 +82,7 @@ async def handle_message(ws, data, frame, event, arg):
 
     elif data["type"] == "SET_PROMPT" or data["type"] == "REFRESH_PROMPT":
         try:
+            step_frame = get_frame(frame, data.get("frame"), tb)
             eval_fun = (
                 serialize_inspect_eval
                 if data.get("command") == "inspect"
@@ -95,16 +94,27 @@ async def handle_message(ws, data, frame, event, arg):
                 if data.get("command") == "recursive_debug"
                 else serialize_answer
             )
-            response = {
-                "type": "SET_ANSWER",
-                "key": data["key"],
-                "command": data.get("command"),
-                "frame": data.get("frame"),
-                **eval_fun(
-                    data["prompt"],
-                    get_frame(frame, data.get("frame"), tb),
-                ),
-            }
+
+            def get_response():
+                return {
+                    "type": "SET_ANSWER",
+                    "key": data["key"],
+                    "command": data.get("command"),
+                    "frame": data.get("frame"),
+                    **eval_fun(data["prompt"], step_frame),
+                }
+
+            if data.get("command") == "condition":
+                add_step("continue", step_frame, condition=get_response)
+                response = {
+                    "type": "DO_COMMAND",
+                    "command": "continue",
+                    "frame": data.get("frame"),
+                    "stop": True,
+                }
+            else:
+                response = get_response()
+
         except SetFrameError as e:
             frame = e.frame
             event = e.event
@@ -162,7 +172,7 @@ async def handle_message(ws, data, frame, event, arg):
     return response
 
 
-async def communication_loop(frame_, event_, arg_):
+async def communication_loop(frame_, event_, arg_, pending=None):
     frame = frame_
     event = event_
     arg = arg_
@@ -178,6 +188,9 @@ async def communication_loop(frame_, event_, arg_):
     if existing:
         # If the socket is already opened we need to update client state
         await init(ws, frame, event, arg)
+        if pending:
+            # Start by sending pending message
+            await ws.send_json(pending)
         # Otherwise if it's new, just wait for HELLO to answer current state
 
     stop = False

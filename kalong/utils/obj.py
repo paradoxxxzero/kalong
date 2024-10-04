@@ -172,3 +172,10 @@ def safe_repr(obj, default="<unrepresentable>", include_exc=False):
         if include_exc:
             return f"{default} {e.__class__.__name__}: {e}"
         return default
+
+
+def safe_bool(obj):
+    try:
+        return bool(obj)
+    except Exception:
+        return False

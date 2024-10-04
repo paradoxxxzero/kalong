@@ -12,6 +12,7 @@ import SkipNext from '@mui/icons-material/SkipNext'
 import South from '@mui/icons-material/South'
 import SouthEast from '@mui/icons-material/SouthEast'
 import TrendingDown from '@mui/icons-material/TrendingDown'
+import SlowMotionVideo from '@mui/icons-material/SlowMotionVideo'
 
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
@@ -23,8 +24,9 @@ import Typography from '@mui/material/Typography'
 import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { doCommand } from './actions'
+import { promptBus } from './Prompt'
 
-const actions = (running, intoType, mobile, main) => [
+const actions = (running, main, promptReady) => [
   {
     label: 'Pause the program',
     action: 'pause',
@@ -40,6 +42,16 @@ const actions = (running, intoType, mobile, main) => [
     key: 'F8',
     disabled: running,
     hidden: running,
+    menu: 'continue',
+  },
+  {
+    label: 'Continue till condition',
+    action: 'continueCondition',
+    key: 'Alt+F8',
+    Icon: SlowMotionVideo,
+    disabled: running,
+    hidden: running || !promptReady,
+    menu: 'continue',
   },
   {
     label: 'Step to the next instruction',
@@ -61,7 +73,6 @@ const actions = (running, intoType, mobile, main) => [
     Icon: TrendingDown,
     key: 'F11',
     disabled: running,
-    hidden: !mobile && intoType !== '',
     menu: 'stepInto',
   },
   {
@@ -70,7 +81,6 @@ const actions = (running, intoType, mobile, main) => [
     Icon: South,
     key: 'Ctrl+F11',
     disabled: running,
-    hidden: !mobile && intoType !== 'all',
     menu: 'stepInto',
   },
   {
@@ -79,7 +89,6 @@ const actions = (running, intoType, mobile, main) => [
     Icon: SouthEast,
     key: 'Alt+F11',
     disabled: running,
-    hidden: !mobile && intoType !== 'public',
     menu: 'stepInto',
   },
   {
@@ -134,7 +143,7 @@ const MobileItem = ({
 )
 
 const ActionButton = ({
-  action: { key, label, action, disabled, menu, Icon },
+  action: { key, label, action, disabled, Icon },
   handleCommand,
   handleMenu,
 }) => (
@@ -142,13 +151,13 @@ const ActionButton = ({
     <IconButton
       color="inherit"
       onClick={handleCommand}
-      onContextMenu={menu && handleMenu}
+      onContextMenu={handleMenu}
       disabled={disabled}
       data-action={action}
       size="large"
     >
       <Icon />
-      {menu && (
+      {handleMenu && (
         <MoreHoriz
           fontSize="small"
           sx={{
@@ -170,23 +179,73 @@ export default (function TopActions({ mobile }) {
 
   const main = useSelector(state => state.main)
   const activeFrame = useSelector(state => state.activeFrame)
-  const [intoType, setIntoType] = useState('')
+  const [menuItems, setMenuItems] = useState({
+    stepInto: 'stepInto',
+    continue: 'continue',
+  })
+  const [promptReady, setPromptReady] = useState(false)
+
+  useEffect(() => {
+    const promptStateHandler = ({ detail }) => {
+      setPromptReady(detail.ready)
+    }
+
+    promptBus.addEventListener('state', promptStateHandler)
+    return () => promptBus.removeEventListener('state', promptStateHandler)
+  }, [])
+
+  const currentActions = actions(running, main, promptReady)
+  const menuActions = currentActions.reduce((acc, action) => {
+    if (action.menu && !action.hidden) {
+      if (!acc[action.menu]) {
+        acc[action.menu] = []
+      }
+      acc[action.menu].push(action.action)
+    }
+    return acc
+  }, {})
+
+  useEffect(() => {
+    const newMenuItems = {}
+    Object.entries(menuActions).forEach(([menu, actions]) => {
+      if (menuItems[menu] && !actions.includes(menuItems[menu])) {
+        newMenuItems[menu] = actions[0]
+      }
+    })
+    if (Object.keys(newMenuItems).length) {
+      setMenuItems(menuItems => ({ ...menuItems, ...newMenuItems }))
+    }
+  }, [menuActions, menuItems])
 
   const dispatch = useDispatch()
   const [menuEl, setMenuEl] = useState(null)
   const handleCommand = useCallback(
-    evt =>
-      dispatch(
-        doCommand(evt.currentTarget.getAttribute('data-action'), activeFrame)
-      ),
+    evt => {
+      const action = evt.currentTarget.getAttribute('data-action')
+      if (action === 'continueCondition') {
+        // Delegate to the prompt
+        promptBus.dispatchEvent(new CustomEvent('condition'))
+      } else {
+        dispatch(doCommand(action, activeFrame))
+      }
+    },
     [activeFrame, dispatch]
   )
-  const handleMenu = useCallback(evt => {
-    setIntoType(intoType =>
-      intoType === '' ? 'all' : intoType === 'all' ? 'public' : ''
-    )
+  const nextMenuItem = (item, current) => {
+    const typeTypes = menuActions[item]
+    const currentIndex = typeTypes.findIndex(action => action === current)
+    return typeTypes[(currentIndex + 1) % typeTypes.length]
+  }
+
+  const handleMenu = item => evt => {
+    setMenuItems(menuItems => {
+      return {
+        ...menuItems,
+        [item]: nextMenuItem(item, menuItems[item]),
+      }
+    })
     evt.preventDefault()
-  }, [])
+  }
 
   useEffect(() => {
     const handleGlobalActions = evt => {
@@ -225,14 +284,19 @@ export default (function TopActions({ mobile }) {
   })
 
   const Action = mobile ? MobileItem : ActionButton
-  const actionItems = actions(running, intoType, mobile, main).map(
+  const actionItems = currentActions.map(
     action =>
-      !action.hidden && (
+      !action.hidden &&
+      (mobile || !action.menu || menuItems[action.menu] === action.action) && (
         <Action
           key={action.action}
           action={action}
           handleCommand={handleCommand}
-          handleMenu={handleMenu}
+          handleMenu={
+            action.menu && menuActions[action.menu].length > 1
+              ? handleMenu(action.menu)
+              : undefined
+          }
         />
       )
   )
@@ -250,7 +314,7 @@ export default (function TopActions({ mobile }) {
           {mobile ? (
             <>
               <IconButton onClick={openMenu} size="large">
-                <MoreVert />
+                <MoreVert color="inherit" />
               </IconButton>
               <Menu anchorEl={menuEl} open={!!menuEl} onClose={closeMenu}>
                 {actionItems}

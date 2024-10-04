@@ -109,6 +109,10 @@ async def websocket(request):
     return ws
 
 
+def exception_handler(loop, context):
+    logging.error(f"Loop exit: {context}")
+
+
 def serve():
     app = web.Application()
     app["front"] = {}
@@ -116,4 +120,6 @@ def serve():
     app.on_shutdown.append(shutdown)
     app.router.add_get(r"/{side:(front|back)}/{origin}", websocket)
     app.router.add_static("/assets/", Path(__file__).parent / "static" / "assets")
-    web.run_app(app, host=config.host, port=config.port, print=False)
+    loop = asyncio.get_event_loop()
+    loop.set_exception_handler(exception_handler)
+    web.run_app(app, host=config.host, port=config.port, print=False, loop=loop)
