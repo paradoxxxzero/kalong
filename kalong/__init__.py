@@ -1,6 +1,6 @@
 """A new take on debugging"""
 
-__version__ = "0.5.1"
+__version__ = "0.5.2"
 import os
 import sys
 from pathlib import Path
