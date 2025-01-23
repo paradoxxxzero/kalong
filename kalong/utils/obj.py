@@ -137,7 +137,8 @@ def sync_locals(frame, f_locals):
     This is a cpython hack to synchronize new locals back into
     the fast local slots.
     """
-    frame.f_locals.update(**f_locals)
+    for key, value in f_locals.items():
+        frame.f_locals[key] = value
     try:
         ctypes.pythonapi.PyFrame_LocalsToFast(ctypes.py_object(frame), ctypes.c_int(0))
     except Exception:
