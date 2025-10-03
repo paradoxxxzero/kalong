@@ -1,6 +1,6 @@
 import ExpandMore from '@mui/icons-material/ExpandMore'
 import Warning from '@mui/icons-material/Warning'
-import Grid from '@mui/material/Grid2'
+import { Grid } from '@mui/material'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'

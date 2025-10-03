@@ -1,6 +1,8 @@
-import createTheme from '@mui/material/styles/createTheme'
-import StyledEngineProvider from '@mui/material/StyledEngineProvider'
-import ThemeProvider from '@mui/material/styles/ThemeProvider'
+import {
+  createTheme,
+  StyledEngineProvider,
+  ThemeProvider,
+} from '@mui/material/styles'
 import {
   blue,
   deepOrange,

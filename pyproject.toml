@@ -4,9 +4,7 @@ dynamic = ["version"]
 description = "A new take on python debugging"
 requires-python = ">=3.8"
 readme = "README.md"
-authors = [
-  { name="Florian Mounier", email="paradoxxx.zero@gmail.com"},
-]
+authors = [{ name = "Florian Mounier", email = "paradoxxx.zero@gmail.com" }]
 license = "GPL-3.0-or-later"
 homepage = "https://github.com/paradoxxxzero/kalong"
 keywords = ['debugger']
@@ -18,28 +16,17 @@ classifiers = [
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3",
 ]
-dependencies = [
-    "aiohttp>=3.10.6",
-    "cutter>=0.5.0",
-    "jedi>=0.19.1",
-]
+dependencies = ["aiohttp>=3.10.6", "cutter>=0.5.0", "jedi>=0.19.1"]
 
 [project.scripts]
 kalong = "kalong:main"
 
 [project.optional-dependencies]
-disassembly = [
-    "uncompyle6>=3.9.2",
-]
-recursive = [
-    "nest-asyncio>=1.6.0",
-]
+disassembly = ["uncompyle6>=3.9.2"]
+recursive = ["nest-asyncio>=1.6.0"]
 
-[tool.uv]
-dev-dependencies = [
-    "pre-commit>=3.5.0",
-    "sphinx>=7.1.2",
-]
+[dependency-groups]
+dev = ["pre-commit>=3.5.0", "sphinx>=7.1.2"]
 
 [build-system]
 requires = ["hatchling"]
