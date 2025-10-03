@@ -30,6 +30,8 @@ async def websocket_state():
     # Here we get the magic cookie of our current thread in current pid
     origin = current_origin()
     if origin in websockets:
+        log.debug(f"Found existing websocket {origin}")
+
         return websockets[origin], True
 
     sessions[origin] = sessions.get(origin, ClientSession())
@@ -57,7 +59,7 @@ async def websocket_state():
         # webbrowser.open should be in the mutex too, it's not thread safe
         if os.getenv("KALONG_NO_BROWSER") or not webbrowser.open(url("front")):
             log.warning(
-                "Please open your browser to the following url: " f'{url("front")}'
+                f"Please open your browser to the following url: {url('front')}"
             )
 
     websockets[origin] = ws
@@ -66,26 +68,25 @@ async def websocket_state():
 
 async def close_websocket():
     origin = current_origin()
-    try:
-        if origin in websockets:
-            await websockets[origin].close()
-    finally:
-        if origin in websockets:
-            del websockets[origin]
-        if origin in sessions:
-            try:
-                await sessions[origin].close()
-            finally:
-                del sessions[origin]
+    log.debug(f"Closing websocket {origin}")
+    ws = websockets.pop(origin, None)
+    session = sessions.pop(origin, None)
+
+    if ws:
+        await ws.close()
+    if session:
+        await session.close()
 
 
 def die():
     log.info("Dying, closing socket.")
     loop = get_loop()
-    if loop.is_running():
-        loop.create_task(close_websocket())
-    else:
-        loop.run_until_complete(close_websocket())
+    loop.run_until_complete(close_websocket())
+
+
+async def adie():
+    log.info("Dying asynchronously, closing socket.")
+    await close_websocket()
 
 
 async def close_all(closeables):

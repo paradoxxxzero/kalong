@@ -49,7 +49,7 @@ def close_loop():
     try:
         loops[origin].close()
     finally:
-        del loops[origin]
+        loops.pop(origin, None)
 
 
 def clean_loops():

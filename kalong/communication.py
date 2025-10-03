@@ -25,7 +25,7 @@ from .errors import SetFrameError
 from .loops import get_loop
 from .stepping import add_step, clear_step, stop_trace
 from .utils import basicConfig, get_file_from_code
-from .websockets import die, websocket_state
+from .websockets import adie, die, websocket_state
 
 log = logging.getLogger(__name__)
 basicConfig(level=config.log_level)
@@ -161,7 +161,7 @@ async def handle_message(ws, data, frame, event, arg):
         elif command == "stop":
             clear_step()
             stop_trace(frame)
-            die()
+            await adie()
         else:
             step_frame = get_frame(frame, data.get("frame"), tb)
             add_step(command, step_frame)
@@ -194,42 +194,46 @@ async def communication_loop(frame_, event_, arg_, pending=None):
         # Otherwise if it's new, just wait for HELLO to answer current state
 
     stop = False
-    async for msg in ws:
-        if msg.type == WSMsgType.TEXT:
-            data = json.loads(msg.data)
-            try:
-                response = await handle_message(ws, data, frame, event, arg)
-            except Exception as e:
-                log.error(f"Error handling message {data}", exc_info=e)
-                response = {
-                    "type": "SET_ANSWER",
-                    "prompt": data.get("prompt", "?").strip(),
-                    "key": data["key"],
-                    "command": data.get("command"),
-                    "frame": data.get("frame"),
-                    "answer": [serialize_exception(*sys.exc_info(), "internal")],
-                }
-            log.debug(f"Got {data} answering with {response}")
-            response["local"] = True
+    try:
+        async for msg in ws:
+            if msg.type == WSMsgType.TEXT:
+                data = json.loads(msg.data)
+                try:
+                    response = await handle_message(ws, data, frame, event, arg)
+                except Exception as e:
+                    log.error(f"Error handling message {data}", exc_info=e)
+                    response = {
+                        "type": "SET_ANSWER",
+                        "prompt": data.get("prompt", "?").strip(),
+                        "key": data.get("key"),
+                        "command": data.get("command"),
+                        "frame": data.get("frame"),
+                        "answer": [serialize_exception(*sys.exc_info(), "internal")],
+                    }
+                log.debug(f"Got {data} answering with {response}")
+                response["local"] = True
 
-            if response.pop("recursive", False):
-                await ws.send_json({"type": "PAUSE", "recursive": True})
-                await init(ws, frame, event, arg)
+                if response.pop("recursive", False):
+                    await ws.send_json({"type": "PAUSE", "recursive": True})
+                    await init(ws, frame, event, arg)
 
-            stop = response.pop("stop", False)
+                stop = response.pop("stop", False)
 
-            try:
-                await ws.send_json(response)
-            except ConnectionResetError:
+                try:
+                    await ws.send_json(response)
+                except ConnectionResetError:
+                    break
+
+                if stop:
+                    break
+
+            elif msg.type == WSMsgType.ERROR:
+                log.error("WebSocket closed", exc_info=ws.exception())
                 break
-
-            if stop:
-                break
-
-        elif msg.type == WSMsgType.ERROR:
-            log.error("WebSocket closed", exc_info=ws.exception())
-            break
+    except asyncio.CancelledError:
+        log.error("WebSocket communication cancelled")
 
     # Browser exited, stopping debug if we are not stepping
     if not stop:
         stop_trace(frame)
+        await adie()
