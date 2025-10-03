@@ -25,7 +25,7 @@ export default function Main() {
     >
       <Box sx={theme => theme.mixins.toolbar} />
       <Splitter vertical={vertical}>
-        {currentFile && <Source currentFile={currentFile} />}
+        {currentFile ? <Source currentFile={currentFile} /> : null}
         <Terminal />
       </Splitter>
     </Box>

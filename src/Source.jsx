@@ -50,7 +50,7 @@ const baseExtensions = [
   python(),
 ]
 
-export default (function Source({ currentFile }) {
+export default function Source({ currentFile }) {
   const dispatch = useDispatch()
   const files = useSelector(state => state.files)
   const {
@@ -118,7 +118,7 @@ export default (function Source({ currentFile }) {
       theme={oneDark}
       height="100%"
       extensions={extensions}
-      value={source}
+      value={source || ''}
     />
   )
-})
+}
