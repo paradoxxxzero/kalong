@@ -7,9 +7,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint src --fix",
-    "shell": "poetry run python -m kalong",
-    "start": "concurrently --kill-others \"yarn dev\" \"wait-port 59998 && uv run kalong --front-port=59998 --detached ${FILE:-test.py}\"",
-    "pypublish": "yarn build && poetry publish --build"
+    "shell": "uv run python -m kalong",
+    "start": "concurrently --kill-others \"yarn dev\" \"wait-port 59998 && uv run kalong --front-port=59998 --detached ${FILE:-test.py}\""
   },
   "license": "GPL-3.0-or-later",
   "private": true,
