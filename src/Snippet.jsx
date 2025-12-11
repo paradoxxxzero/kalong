@@ -8,6 +8,11 @@ import { StreamLanguage } from '@codemirror/language'
 import { diff } from '@codemirror/legacy-modes/mode/diff'
 
 function runmode(textContent, language, callback) {
+  if (textContent?.length > 100000) {
+    // Avoid processing extremely large snippets
+    callback(textContent, null, 0, textContent.length)
+    return
+  }
   const tree = language.parser.parse(textContent)
   let pos = 0
   highlightTree(tree, defaultHighlightStyle, (from, to, classes) => {
@@ -61,7 +66,7 @@ export default forwardRef(function Snippet(
       }
       setChunks(chunks => [...chunks, [text, cls, from]])
     })
-  }, [mode, value])
+  }, [mode, value, noBreak])
   return (
     <Box
       ref={ref}
