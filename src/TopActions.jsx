@@ -116,14 +116,14 @@ const actions = (running, main, promptReady) => [
     label: 'Stop debugging',
     action: 'stop',
     Icon: Eject,
-    key: 'Escape',
+    key: 'Shift+Escape',
     disabled: running,
   },
   {
     label: 'Exit program',
     action: 'kill',
     Icon: Close,
-    key: 'Shift+Escape',
+    key: 'Ctrl+Escape',
     disabled: false,
   },
 ]
