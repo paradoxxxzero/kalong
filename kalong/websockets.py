@@ -2,6 +2,7 @@ import asyncio
 import logging
 import os
 import webbrowser
+import socket
 from threading import Lock
 
 from aiohttp import ClientSession
@@ -56,8 +57,16 @@ async def websocket_state():
             else:
                 raise NoServerFoundError()
 
+        if os.getenv("KALONG_URLSOCKET"):
+            try:
+                sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+                sock.connect(os.getenv("KALONG_URLSOCKET"))
+                sock.send(url("front"))
+                sock.shutdown(socket.SHUT_WR)
+            finally:
+                sock.close()
         # webbrowser.open should be in the mutex too, it's not thread safe
-        if os.getenv("KALONG_NO_BROWSER") or not webbrowser.open(url("front")):
+        elif os.getenv("KALONG_NO_BROWSER") or not webbrowser.open(url("front")):
             log.warning(
                 f"Please open your browser to the following url: {url('front')}"
             )

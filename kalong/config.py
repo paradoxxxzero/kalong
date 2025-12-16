@@ -12,6 +12,9 @@ defaults = {
     "detached": False,
     "command": [],
     "inject": None,
+    "urlsocket": False,
+    "proxy": False,
+    "proxy_port": 80,
 }
 
 
@@ -24,7 +27,7 @@ class Config:
         parser.add_argument(
             "--server",
             action="store_true",
-            help="Launch the kalong server. " "This option is used by kalong itself",
+            help="Launch the kalong server. This option is used by kalong itself",
         )
         parser.add_argument(
             "--protocol",
@@ -65,6 +68,21 @@ class Config:
             "--break-at-start",
             action="store_true",
             help="Break at the start of the python file",
+        )
+        parser.add_argument(
+            "--urlsocket",
+            type=str,
+            help="Path of the socket into which to feed the url for docker browser opening",
+        )
+        parser.add_argument(
+            "--proxy",
+            type=str,
+            help="Url of proxy",
+        )
+        parser.add_argument(
+            "--proxy-port",
+            type=str,
+            help="Port of proxy",
         )
         parser.add_argument(
             "command",
