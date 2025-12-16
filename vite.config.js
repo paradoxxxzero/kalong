@@ -11,4 +11,5 @@ export default defineConfig({
   build: {
     outDir: 'kalong/static',
   },
+  envPrefix: 'KALONG_',
 })

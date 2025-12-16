@@ -29,6 +29,25 @@ def maybe_bail(app):
         )
 
 
+def index():
+    index.__content__ = getattr(index, "__content__", None)
+    if not index.__content__:
+        with open(Path(__file__).parent / "static" / "index.html", "rb") as f:
+            index.__content__ = f.read()
+        if config.ws_port != config.port or config.ws_host != config.host:
+            index.__content__ = index.__content__.replace(
+                b"</body>",
+                f"""
+            <script>
+                window.KALONG_WS_HOST = "{config.ws_host}";
+                window.KALONG_WS_PORT = {config.ws_port};
+            </script>
+        </body>
+        """.encode(),
+            )
+    return web.Response(body=index.__content__, content_type="text/html")
+
+
 async def shutdown(app):
     log.info("App shutdown, closing remaining websockets.")
     await asyncio.gather(
@@ -60,7 +79,7 @@ async def websocket(request):
     state = ws.can_prepare(request)
     if not state.ok:
         log.debug(f"Sending {side} app for {origin}")
-        return web.FileResponse(Path(__file__).parent / "static" / "index.html")
+        return index()
 
     await ws.prepare(request)
 

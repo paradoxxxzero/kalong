@@ -9,6 +9,8 @@ defaults = {
     "port": 59999,
     "front_host": "localhost",
     "front_port": 59999,
+    "ws_host": "localhost",
+    "ws_port": 59999,
     "log": "warn",
     "detached": False,
     "command": [],
@@ -33,18 +35,38 @@ class Config:
             default=self.protocol,
             help="Protocol for contacting kalong server",
         )
-        parser.add_argument("--host", default=self.host, help="Host of kalong server")
         parser.add_argument(
-            "--port", type=int, default=self.port, help="Port of kalong server"
+            "--host",
+            default=self.host,
+            help="Host of kalong server",
+        )
+        parser.add_argument(
+            "--port",
+            type=int,
+            default=self.port,
+            help="Port of kalong server",
         )
         parser.add_argument(
             "--front-host",
+            default=self.front_host,
             help="Host of kalong frontend, defaults to host option",
         )
         parser.add_argument(
             "--front-port",
             type=int,
+            default=self.front_port,
             help="Port of kalong frontend, defaults to port option",
+        )
+        parser.add_argument(
+            "--ws-host",
+            default=self.ws_host,
+            help="Host of kalong websocket server, defaults to host option",
+        )
+        parser.add_argument(
+            "--ws-port",
+            type=int,
+            default=self.ws_port,
+            help="Port of kalong websocket server, defaults to port option",
         )
         parser.add_argument(
             "--log",
@@ -87,6 +109,10 @@ class Config:
             args.front_host = args.host
         if not args.front_port:
             args.front_port = args.port
+        if not args.ws_host:
+            args.ws_host = args.host
+        if not args.ws_port:
+            args.ws_port = args.port
         return args
 
     def from_args(self):
@@ -99,10 +125,14 @@ class Config:
             if value:
                 setattr(self, name, type(name)(value))
 
-        if os.getenv("KALONG_FRONT_HOST") and not os.getenv("KALONG_HOST"):
-            self.host = self.front_host
+        if os.getenv("KALONG_HOST") and not os.getenv("KALONG_FRONT_HOST"):
+            self.front_host = self.host
         if os.getenv("KALONG_PORT") and not os.getenv("KALONG_FRONT_PORT"):
             self.front_port = self.port
+        if os.getenv("KALONG_HOST") and not os.getenv("KALONG_WS_HOST"):
+            self.ws_host = self.host
+        if os.getenv("KALONG_PORT") and not os.getenv("KALONG_WS_PORT"):
+            self.ws_port = self.port
 
     def get_args_for_server(self):
         yield "--server"

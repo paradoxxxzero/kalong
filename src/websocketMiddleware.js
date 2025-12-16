@@ -4,16 +4,17 @@ export default function websocketMiddleware(store) {
   let closing = false
   const verbose = ['debug', 'info'].includes(store.getState().config.log)
   const queue = []
-  const connect = () =>
-    new WebSocket(
-      `${window.location.protocol.replace(
-        'http',
-        'ws'
-      )}//${window.location.host.replace(59998, 59999)}${
-        window.location.pathname
-      }`
-      // TODO: remove the 59998 dev hack
-    )
+  const connect = () => {
+    const url = new URL(window.location.href)
+    url.protocol = url.protocol === 'http:' ? 'ws:' : 'wss:'
+    if (window.KALONG_WS_HOST || import.meta.env.KALONG_WS_HOST) {
+      url.hostname = window.KALONG_WS_HOST || import.meta.env.KALONG_WS_HOST
+    }
+    if (window.KALONG_WS_PORT || import.meta.env.KALONG_WS_PORT) {
+      url.port = window.KALONG_WS_PORT || import.meta.env.KALONG_WS_PORT
+    }
+    return new WebSocket(url)
+  }
   let ws = (window.ws = connect())
   ws.onopen = () => {
     store.dispatch(setConnectionState('open'))
