@@ -58,12 +58,10 @@ USER_SIGNAL = signal.SIGILL if sys.platform == "win32" else signal.SIGUSR1
 
 def url(side):
     origin = current_origin()
-    overriden_port = config.port
-    if side == "front":
-        overriden_port = config.front_port if not config.proxy else config.proxy_port
+    host = config.front_host if side == "front" else config.host
+    port = config.front_port if side == "front" else config.port
     protocol = config.protocol
-    host = config.proxy if side == "front" and config.proxy else config.host
-    return f"{protocol}://{host}:{overriden_port}/{side}/{origin}"
+    return f"{protocol}://{host}:{port}/{side}/{origin}"
 
 
 def human_readable_side(side):

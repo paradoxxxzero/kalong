@@ -7,14 +7,13 @@ defaults = {
     "protocol": "http",
     "host": "localhost",
     "port": 59999,
+    "front_host": "localhost",
     "front_port": 59999,
     "log": "warn",
     "detached": False,
     "command": [],
     "inject": None,
     "urlsocket": False,
-    "proxy": False,
-    "proxy_port": 80,
 }
 
 
@@ -38,14 +37,14 @@ class Config:
         parser.add_argument(
             "--port", type=int, default=self.port, help="Port of kalong server"
         )
-        front_port_default = (
-            {"default": self.port} if self.port != self.front_port else {}
+        parser.add_argument(
+            "--front-host",
+            help="Host of kalong frontend, defaults to host option",
         )
         parser.add_argument(
             "--front-port",
             type=int,
             help="Port of kalong frontend, defaults to port option",
-            **front_port_default,
         )
         parser.add_argument(
             "--log",
@@ -75,16 +74,6 @@ class Config:
             help="Path of the socket into which to feed the url for docker browser opening",
         )
         parser.add_argument(
-            "--proxy",
-            type=str,
-            help="Url of proxy",
-        )
-        parser.add_argument(
-            "--proxy-port",
-            type=str,
-            help="Port of proxy",
-        )
-        parser.add_argument(
             "command",
             nargs=REMAINDER,
             help="A python file to trace with kalong and its arguments or "
@@ -94,6 +83,8 @@ class Config:
 
     def parse_args(self):
         args = self.get_parser().parse_args()
+        if not args.front_host:
+            args.front_host = args.host
         if not args.front_port:
             args.front_port = args.port
         return args
@@ -108,6 +99,8 @@ class Config:
             if value:
                 setattr(self, name, type(name)(value))
 
+        if os.getenv("KALONG_FRONT_HOST") and not os.getenv("KALONG_HOST"):
+            self.host = self.front_host
         if os.getenv("KALONG_PORT") and not os.getenv("KALONG_FRONT_PORT"):
             self.front_port = self.port
 
