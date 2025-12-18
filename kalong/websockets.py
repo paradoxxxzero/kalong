@@ -61,7 +61,7 @@ async def websocket_state():
             try:
                 sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
                 sock.connect(os.getenv("KALONG_URLSOCKET"))
-                sock.send(url("front"))
+                sock.send(url("front").encode("utf-8"))
                 sock.shutdown(socket.SHUT_WR)
             finally:
                 sock.close()
