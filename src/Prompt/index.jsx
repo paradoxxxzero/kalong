@@ -321,7 +321,11 @@ export default function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
     if (code.current?.view) {
       code.current.view.focus()
       const len = code.current.view.state.doc.length
-      code.current.view.dispatch({ selection: { anchor: len, head: len } })
+      try {
+        code.current.view.dispatch({ selection: { anchor: len, head: len } })
+      } catch (error) {
+        console.error(error)
+      }
     }
   }, [code])
 
@@ -462,16 +466,24 @@ export default function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
       const insert = historyArgs[historyIndex]
 
       if (insert) {
-        view.dispatch(view.state.replaceSelection(insert))
-        view.dispatch({
-          selection: {
-            anchor: view.state.selection.main.head - insert.length,
-            head: view.state.selection.main.head,
-          },
-        })
+        try {
+          view.dispatch(view.state.replaceSelection(insert))
+          view.dispatch({
+            selection: {
+              anchor: view.state.selection.main.head - insert.length,
+              head: view.state.selection.main.head,
+            },
+          })
+        } catch (error) {
+          console.error(error)
+        }
         setHistoryInsert(historyIndex)
       } else {
-        view.dispatch(view.state.replaceSelection(''))
+        try {
+          view.dispatch(view.state.replaceSelection(''))
+        } catch (error) {
+          console.error(error)
+        }
       }
     },
     [history, historyInsert, setHistoryInsert]
@@ -714,7 +726,11 @@ export default function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
   useEffect(() => {
     if (code.current?.view && prompt.passive) {
       const { view } = code.current
-      view.dispatch({ selection: { anchor: prompt.value.length } })
+      try {
+        view.dispatch({ selection: { anchor: prompt.value.length } })
+      } catch (error) {
+        console.error(error)
+      }
     }
   }, [prompt.value, prompt.passive])
 
