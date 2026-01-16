@@ -138,6 +138,7 @@ def serve():
     app = web.Application()
     app["front"] = {}
     app["back"] = {}
+    log.warning(f"serving at http://{config.host}:{config.port}/")
     app.on_shutdown.append(shutdown)
     app.router.add_get(r"/{side:(front|back)}/{origin}", websocket)
     app.router.add_static("/assets/", Path(__file__).parent / "static" / "assets")

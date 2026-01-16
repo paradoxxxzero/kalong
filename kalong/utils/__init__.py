@@ -56,6 +56,14 @@ class fake_argv:
 USER_SIGNAL = signal.SIGILL if sys.platform == "win32" else signal.SIGUSR1
 
 
+def url_proxy(side):
+    origin = current_origin()
+    host = config.front_host if side == "front" else config.host
+    port = config.front_port if side == "front" else config.port
+    protocol = config.protocol
+    return f"{protocol}://{host}:{port}/proxy/{side}/{origin}"
+
+
 def url(side):
     origin = current_origin()
     host = config.front_host if side == "front" else config.host

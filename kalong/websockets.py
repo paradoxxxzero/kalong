@@ -11,7 +11,7 @@ from aiohttp.client_exceptions import ClientConnectorError
 from .errors import NoServerFoundError
 from .forking import forkserver
 from .loops import get_loop
-from .utils import current_origin, url
+from .utils import current_origin, url, url_proxy
 
 log = logging.getLogger(__name__)
 fork_lock = Lock()
@@ -61,7 +61,7 @@ async def websocket_state():
             try:
                 sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
                 sock.connect(os.getenv("KALONG_URLSOCKET"))
-                sock.send(url("front").encode("utf-8"))
+                sock.send(url_proxy("front").encode("utf-8"))
                 sock.shutdown(socket.SHUT_WR)
             finally:
                 sock.close()
