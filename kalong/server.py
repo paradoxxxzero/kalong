@@ -141,6 +141,9 @@ def serve():
     app.on_shutdown.append(shutdown)
     app.router.add_get(r"/{side:(front|back)}/{origin}", websocket)
     app.router.add_static("/assets/", Path(__file__).parent / "static" / "assets")
-    loop = asyncio.get_event_loop()
+    try:
+        loop = asyncio.get_event_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
     loop.set_exception_handler(exception_handler)
     web.run_app(app, host=config.host, port=config.port, print=False, loop=loop)
