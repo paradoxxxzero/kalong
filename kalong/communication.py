@@ -137,7 +137,7 @@ async def handle_message(ws, data, frame, event, arg):
             "type": "SET_ANSWER",
             "key": data["key"],
             "command": data.get("command"),
-            **serialize_inspect(data["id"]),
+            **serialize_inspect(data["id"], frame),
         }
 
     elif data["type"] == "REQUEST_SUGGESTION":

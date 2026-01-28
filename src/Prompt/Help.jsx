@@ -1,3 +1,4 @@
+import { Box } from '@mui/material'
 import { VERSION } from '..'
 import { diffSeparator, tableSeparator } from './valueReducer'
 
@@ -35,19 +36,20 @@ const Tab = () => <Kbd title="Tab">⭾</Kbd>
 const Key = ({ chr }) => <Kbd title={chr}>{chr}</Kbd>
 
 const Command = ({ children }) => (
-  <code
-    style={{
+  <Box
+    component="code"
+    sx={theme => ({
       fontFamily: '"Fira Code", monospace',
       display: 'inline-block',
       padding: '0.2em 0.4em',
       lineHeight: 1.5,
-      color: 'black',
+      color: theme.vars.palette.text.primary,
       verticalAlign: 'middle',
       whiteSpace: 'nowrap',
-    }}
+    })}
   >
     {children}
-  </code>
+  </Box>
 )
 
 const ItemGroup = ({ children }) => (
@@ -57,21 +59,21 @@ const ItemGroup = ({ children }) => (
 )
 
 const Item = ({ shortcut, children }) => (
-  <div
-    style={{
+  <Box
+    sx={theme => ({
       display: 'flex',
       margin: '0.25em',
       padding: '0.5em',
       alignItems: 'center',
       justifyContent: 'space-between',
-      background: '#f7f7f9',
-    }}
+      background: theme.vars.palette.background.paper,
+    })}
   >
     <div style={{ display: 'flex', flexDirection: 'column' }}>{shortcut}</div>
     <div style={{ fontSize: '1.2em', marginLeft: '1em', textAlign: 'right' }}>
       {children}
     </div>
-  </div>
+  </Box>
 )
 
 const Shortcut = ({ children }) => (

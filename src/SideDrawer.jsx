@@ -3,13 +3,29 @@ import Link from '@mui/material/Link'
 import Divider from '@mui/material/Divider'
 import Drawer from '@mui/material/Drawer'
 import Typography from '@mui/material/Typography'
-import React from 'react'
 import Frames from './Frames'
-import { VERSION } from '.'
+import { useColorScheme } from '@mui/material/styles'
+import { IconButton, Tooltip } from '@mui/material'
 
+import DarkModeIcon from '@mui/icons-material/DarkMode'
+import LightModeIcon from '@mui/icons-material/LightMode'
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
+
+import DensityLargeIcon from '@mui/icons-material/DensityLarge'
+import DensityMediumIcon from '@mui/icons-material/DensityMedium'
+import DensitySmallIcon from '@mui/icons-material/DensitySmall'
+import { setSpacing } from './actions'
+import { useDispatch, useSelector } from 'react-redux'
 const drawerWidth = 240
 
 export default function SideDrawer({ rtl, open, mobile, onDrawerClose }) {
+  const { mode, setMode } = useColorScheme()
+  const dispatch = useDispatch()
+  const spacing = useSelector(state => state.spacing)
+
+  if (!mode) {
+    return null
+  }
   return (
     <Drawer
       sx={theme => ({
@@ -51,7 +67,6 @@ export default function SideDrawer({ rtl, open, mobile, onDrawerClose }) {
           sx={{
             p: 1,
             display: 'flex',
-            alignItems: 'baseline',
             width: '100%',
             justifyContent: 'space-around',
             userSelect: 'none',
@@ -59,61 +74,81 @@ export default function SideDrawer({ rtl, open, mobile, onDrawerClose }) {
         >
           <Link
             href="http://github.com/paradoxxxzero/kalong/"
-            underline="hover"
+            underline="none"
+            sx={{ flex: 1 }}
           >
             <Typography
               variant="h1"
               sx={{
-                fontSize: '2.25em',
-                '&:hover span': {
-                  display: 'inline-block',
-                  '&.K': {
-                    transform:
-                      'rotate3d(0, 0, 1, -90deg) translate(-8.5px, 0px)',
-                    textDecoration: 'none',
-                  },
-                  '&.o': {
-                    transform: 'rotate3d(0, 1, 0, 180deg)',
-                    textDecoration: 'underline',
-                  },
-                  transformOrigin: 'center',
-                },
+                fontFamily: '"Fira Code", monospace',
+                fontSize: '5em',
+                lineHeight: '0.7em',
+                textAlign: 'center',
+                transform: 'rotate(-90deg)',
               }}
             >
-              <Box
-                component="span"
-                className="K"
-                sx={{
-                  transform: 'rotate3d(0, 1, 0, 0deg)',
-                  transition: 'transform 500ms',
-                  marginLeft: '-1px',
-                }}
-              >
-                K
-              </Box>
-              al
-              <Box
-                component="span"
-                className="o"
-                sx={{
-                  transform: 'rotate3d(0, 1, 0, 0deg)',
-                  transition: 'transform 500ms',
-                  marginLeft: '-1px',
-                }}
-              >
-                o
-              </Box>
-              ng
+              K
             </Typography>
           </Link>
-          <Link
-            href="http://github.com/paradoxxxzero/kalong/releases"
-            underline="hover"
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+            }}
           >
-            <Typography variant="subtitle1" sx={{ fontSize: '1.25em' }}>
-              v{VERSION}
-            </Typography>
-          </Link>
+            <IconButton
+              size="small"
+              onClick={() => setMode(mode !== 'dark' ? 'dark' : 'light')}
+              onContextMenu={evt => {
+                setMode('system')
+                evt.preventDefault()
+              }}
+            >
+              {mode === 'system' ? (
+                <DarkModeIcon />
+              ) : mode === 'light' ? (
+                <Tooltip title="Switch to Dark Mode. (Right-click to let the system choose)">
+                  <DarkModeIcon />
+                </Tooltip>
+              ) : (
+                <Tooltip title="Switch to Light Mode (Right-click to let the system choose)">
+                  <LightModeIcon />
+                </Tooltip>
+              )}
+              {mode !== 'system' && (
+                <MoreHorizIcon
+                  fontSize="small"
+                  sx={{
+                    position: 'absolute',
+                    top: '1.1em',
+                    left: '1em',
+                    width: '0.6em',
+                  }}
+                />
+              )}
+            </IconButton>
+            <IconButton
+              size="small"
+              onClick={() => {
+                const newspacing =
+                  spacing === 'comfortable'
+                    ? 'compact'
+                    : spacing === 'compact'
+                      ? 'spacious'
+                      : 'comfortable'
+
+                dispatch(setSpacing(newspacing))
+              }}
+            >
+              {spacing === 'comfortable' ? (
+                <DensityLargeIcon />
+              ) : spacing === 'compact' ? (
+                <DensityMediumIcon />
+              ) : (
+                <DensitySmallIcon />
+              )}
+            </IconButton>
+          </Box>
         </Box>
       </Box>
       <Divider />

@@ -24,7 +24,7 @@ from jedi import Interpreter
 from .errors import SetFrameError
 from .utils import cutter_mock, dedent, discompile, universal_travel
 from .utils.io import capture_display, capture_exception, capture_std
-from .utils.iterators import force_iterable, iter_cause, iter_stack
+from .utils.iterators import force_iterable, iter_cause, iter_frame, iter_stack
 from .utils.obj import (
     get_code,
     get_infos,
@@ -265,10 +265,10 @@ def serialize_inspect_eval(prompt, frame):
             "prompt": prompt,
             "answer": [serialize_exception(*sys.exc_info())],
         }
-    return serialize_inspect(key)
+    return serialize_inspect(key, frame)
 
 
-def serialize_inspect(key):
+def serialize_inspect(key, frame):
     obj = obj_cache.get(key)
     attributes = [
         {"key": key, "value": value, "id": obj_cache.register(value)}
@@ -317,8 +317,17 @@ def serialize_inspect(key):
             "source": source,
         }
     ]
+    for frame_ in iter_frame(frame):
+        if obj in frame_.f_locals.values():
+            break
+    else:
+        frame_ = None
 
-    return {"prompt": safe_repr(obj, "<unrepresentable>"), "answer": answer}
+    return {
+        "prompt": safe_repr(obj, "<unrepresentable>"),
+        "answer": answer,
+        "frame": id(frame_),
+    }
 
 
 def serialize_diff_eval(prompt, frame):

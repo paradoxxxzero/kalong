@@ -86,7 +86,6 @@ export default function Splitter({ children, vertical }) {
       <ClickAwayListener onClickAway={handleTouchEnd}>
         <Box
           sx={theme => ({
-            backgroundColor: theme.palette.text.primary,
             minWidth: '6px',
             minHeight: '6px',
             userSelect: 'none',
@@ -98,7 +97,7 @@ export default function Splitter({ children, vertical }) {
             '&::before': {
               display: 'block',
               content: "''",
-              background: theme.palette.background.paper,
+              background: theme.vars.palette.primary.main,
               borderRadius: '15%',
               width: vertical ? 0.5 : 0.05,
               height: vertical ? 0.05 : 0.5,

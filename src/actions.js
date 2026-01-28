@@ -28,6 +28,12 @@ export const setTheme = theme => ({
   theme,
 })
 
+export const SET_SPACING = 'SET_SPACING'
+export const setSpacing = spacing => ({
+  type: SET_SPACING,
+  spacing,
+})
+
 export const GET_FRAMES = 'GET_FRAMES'
 export const getFrames = () => ({
   type: GET_FRAMES,

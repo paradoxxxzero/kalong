@@ -18,19 +18,25 @@ export default function App() {
   const mobile = useMediaQuery(theme.breakpoints.down('md'))
   const dispatch = useDispatch()
   const running = useSelector(state => state.running)
-  const frames = useSelector(state => state.frames)
+  const activeFrame = useSelector(state => state.activeFrame)
   const [open, setOpen] = useState(!mobile)
+  const [prevMobile, setPrevMobile] = useState(mobile)
+  const [prevActiveFrame, setPrevActiveFrame] = useState(activeFrame)
+  if (prevMobile !== mobile) {
+    setPrevMobile(mobile)
+    setOpen(!mobile)
+  }
+  if (prevActiveFrame !== activeFrame) {
+    setPrevActiveFrame(activeFrame)
+    if (mobile) {
+      setOpen(false)
+    }
+  }
 
   useEffect(() => {
     dispatch(hello())
   }, [dispatch])
 
-  useEffect(
-    () => {
-      setOpen(!mobile && !!frames.length)
-    },
-    [mobile, frames] // only set if value has changed i.e. resize
-  )
   const openDrawer = useCallback(() => setOpen(true), [])
   const closeDrawer = useCallback(() => setOpen(false), [])
   return (

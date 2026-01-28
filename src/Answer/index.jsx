@@ -90,6 +90,17 @@ export default memo(function Answer({
             minWidth: 0,
           },
         }}
+        slotProps={{
+          root: {
+            sx: theme => ({
+              padding: theme.spacing(2),
+            }),
+          },
+          title: {
+            variant: 'h5',
+            noWrap: true,
+          },
+        }}
         avatar={
           <>
             <IconButton
@@ -113,7 +124,6 @@ export default memo(function Answer({
             <Snippet sx={{ p: 0.5 }} value={prompt} noBreak />
           </Tooltip>
         }
-        titleTypographyProps={{ variant: 'h5', noWrap: true }}
         action={
           <>
             <IconButton
@@ -217,16 +227,19 @@ export default memo(function Answer({
                 left: '-100%',
                 width: '300%',
                 height: '100%',
-                boxShadow: '0 0 20px 10px #fff inset',
               },
             }}
           >
             <CardContent
-              sx={{
+              sx={theme => ({
                 display: 'flex',
                 maxHeight: '50vh',
                 overflow: 'auto',
-              }}
+                padding: theme.spacing(2),
+                '&:last-child': {
+                  paddingBottom: theme.spacing(3),
+                },
+              })}
             >
               <Typography
                 variant="body1"

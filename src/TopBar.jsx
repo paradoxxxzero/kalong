@@ -6,6 +6,7 @@ import Toolbar from '@mui/material/Toolbar'
 import Tooltip from '@mui/material/Tooltip'
 import React from 'react'
 import TopActions from './TopActions'
+import { useColorScheme } from '@mui/material/styles'
 
 const drawerWidth = 240
 
@@ -16,10 +17,10 @@ export default function TopBar({
   onDrawerOpen,
   onDrawerClose,
 }) {
+  const { colorScheme } = useColorScheme()
   return (
     <AppBar
       sx={theme => ({
-        zIndex: theme.zIndex.drawer + 2,
         transition: `${theme.transitions.create(['margin', 'width'], {
           easing: theme.transitions.easing.sharp,
           duration:
@@ -35,7 +36,15 @@ export default function TopBar({
       })}
       position="fixed"
     >
-      <Toolbar>
+      <Toolbar
+        sx={theme =>
+          colorScheme === 'dark'
+            ? {
+                color: theme.vars.palette.primary.main,
+              }
+            : undefined
+        }
+      >
         <Tooltip title={`${open ? 'Close' : 'Open'} the call stack`}>
           <IconButton
             color="inherit"

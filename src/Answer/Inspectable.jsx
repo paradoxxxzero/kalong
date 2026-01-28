@@ -28,7 +28,7 @@ export default function Inspectable({
               minWidth: 'auto',
               textTransform: 'none',
               padding: 0,
-              backgroundColor: 'rgba(0, 0, 0, 0.02)',
+              backgroundColor: 'rgba(0, 0, 0, 0.05)',
               display: 'inline',
             }
           : {},

@@ -16,7 +16,11 @@ classifiers = [
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3",
 ]
-dependencies = ["aiohttp>=3.10.6", "cutter>=0.5.0", "jedi>=0.19.1"]
+dependencies = [
+    "aiohttp>=3.10.6",
+    "cutter>=0.5.0",
+    "jedi>=0.19.1",
+]
 
 [project.scripts]
 kalong = "kalong:main"

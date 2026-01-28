@@ -18,6 +18,8 @@
     "@codemirror/legacy-modes": "^6.5.2",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
+    "@fsegurai/codemirror-theme-material-dark": "^6.2.3",
+    "@fsegurai/codemirror-theme-material-light": "^6.2.3",
     "@lezer/highlight": "^1.2.3",
     "@mui/icons-material": "^7.3.7",
     "@mui/material": "^7.3.7",

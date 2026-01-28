@@ -20,9 +20,9 @@ import { lintKeymap } from '@codemirror/lint'
 import { highlightSelectionMatches } from '@codemirror/search'
 import { EditorState, Prec } from '@codemirror/state'
 import {
+  EditorView,
   drawSelection,
   dropCursor,
-  EditorView,
   highlightSpecialChars,
   keymap,
   rectangularSelection,
@@ -47,9 +47,9 @@ import { useDispatch, useSelector } from 'react-redux'
 import {
   clearScrollback,
   doCommand,
+  removePromptAnswer,
   requestSuggestion,
   setPrompt,
-  removePromptAnswer,
 } from '../actions'
 import { lineWrappingHarder } from '../extensions'
 import { store } from '../store'
@@ -58,6 +58,9 @@ import searchReducer, { initialSearch } from './searchReducer'
 import { lexArgs } from './utils'
 import valueReducer, { commandShortcuts, initialValue } from './valueReducer'
 import Help from './Help'
+import { useColorScheme } from '@mui/material'
+import { materialDark } from '@fsegurai/codemirror-theme-material-dark'
+import { materialLight } from '@fsegurai/codemirror-theme-material-light'
 
 export const promptBus = new EventTarget()
 
@@ -94,14 +97,23 @@ const getHighlighter = re => ({
 })
 
 const styleOverrides = EditorView.theme({
-  '&,& .cm-content, & .cm-tooltip.cm-tooltip-autocomplete > ul ': {
+  '&,& .cm-content': {
     fontFamily: '"Fira Code", monospace',
+    fontSize: '1.5rem',
+  },
+  '& .cm-tooltip.cm-tooltip-autocomplete > ul': {
+    fontFamily: '"Fira Code", monospace',
+    fontSize: '1rem',
+  },
+  '& .cm-line': {
+    lineHeight: '1.4 !important',
+  },
+  '&.cm-editor': {
+    background: 'transparent',
   },
   '&.cm-editor.cm-focused': {
     outline: 'none',
-  },
-  '& .cm-tooltip': {
-    fontSize: '0.75em',
+    boxShadow: 'none',
   },
 })
 
@@ -154,6 +166,8 @@ export default function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
   const scrollback = useSelector(state => state.scrollback)
   const activeFrame = useSelector(state => state.activeFrame)
   const recursionLevel = useSelector(state => state.recursionLevel)
+
+  const { colorScheme } = useColorScheme()
 
   const dispatch = useDispatch()
 
@@ -232,10 +246,10 @@ export default function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
 
   const handleEnter = useCallback(
     view => {
-      if (view.state && completionStatus(view.state) === 'active') {
-        return false
-      }
-      if (!prompt.value) {
+      if (
+        (completionStatus(view.state) === 'active' && acceptCompletion(view)) ||
+        !prompt.value
+      ) {
         return true
       }
       const key = uid()
@@ -770,7 +784,7 @@ export default function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
                 ref={code}
                 value={prompt.value}
                 basicSetup={false}
-                theme="light"
+                theme={colorScheme === 'light' ? materialLight : materialDark}
                 onChange={handleChange}
                 onCreateEditor={scrollToBottom}
                 height="auto"
@@ -795,6 +809,9 @@ export default function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
                     ref={searchCode}
                     value={search.value}
                     height="auto"
+                    theme={
+                      colorScheme === 'light' ? materialLight : materialDark
+                    }
                     autoFocus
                     basicSetup={false}
                     extensions={searchExtensions}
@@ -805,7 +822,16 @@ export default function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
               )}
             </>
           }
-          titleTypographyProps={{ variant: 'h5' }}
+          slotProps={{
+            root: {
+              sx: theme => ({
+                padding: theme.spacing(2),
+              }),
+            },
+            title: {
+              variant: 'h5',
+            },
+          }}
         />
       </Card>
     </Grow>

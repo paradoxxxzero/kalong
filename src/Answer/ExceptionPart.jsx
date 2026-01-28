@@ -34,6 +34,9 @@ export default function Exception({
       onChange={handleExpand}
       elevation={0}
       disableGutters
+      sx={{
+        background: 'transparent',
+      }}
     >
       <AccordionSummary
         expandIcon={<ExpandMore />}

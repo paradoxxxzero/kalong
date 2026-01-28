@@ -1,4 +1,3 @@
-import { defaultHighlightStyle } from '@codemirror/language'
 import { highlightTree } from '@lezer/highlight'
 import { python } from '@codemirror/lang-python'
 import Box from '@mui/material/Box'
@@ -6,8 +5,11 @@ import Typography from '@mui/material/Typography'
 import React, { forwardRef, useEffect, useState } from 'react'
 import { StreamLanguage } from '@codemirror/language'
 import { diff } from '@codemirror/legacy-modes/mode/diff'
+import { useColorScheme } from '@mui/material'
+import { materialDark } from '@fsegurai/codemirror-theme-material-dark'
+import { materialLight } from '@fsegurai/codemirror-theme-material-light'
 
-function runmode(textContent, language, callback) {
+function runmode(textContent, language, colorScheme, callback) {
   if (textContent?.length > 100000) {
     // Avoid processing extremely large snippets
     callback(textContent, null, 0, textContent.length)
@@ -15,11 +17,15 @@ function runmode(textContent, language, callback) {
   }
   const tree = language.parser.parse(textContent)
   let pos = 0
-  highlightTree(tree, defaultHighlightStyle, (from, to, classes) => {
-    from > pos && callback(textContent.slice(pos, from), null, pos, from)
-    callback(textContent.slice(from, to), classes, from, to)
-    pos = to
-  })
+  highlightTree(
+    tree,
+    (colorScheme == 'dark' ? materialDark : materialLight)[1][2].value,
+    (from, to, classes) => {
+      from > pos && callback(textContent.slice(pos, from), null, pos, from)
+      callback(textContent.slice(from, to), classes, from, to)
+      pos = to
+    }
+  )
   pos !== tree.length &&
     callback(textContent.slice(pos, tree.length), null, pos, tree.length)
 }
@@ -31,6 +37,7 @@ export default forwardRef(function Snippet(
   { sx, value = '', mode = 'python', onClick, noBreak, ...props },
   ref
 ) {
+  const { colorScheme } = useColorScheme()
   const [chunks, setChunks] = useState([[value, null, 0]])
   useEffect(() => {
     const lang = { python: pyLang, diff: diffLang }[mode]
@@ -38,7 +45,7 @@ export default forwardRef(function Snippet(
       return
     }
     setChunks([])
-    runmode(value, lang, (text, cls, from) => {
+    runmode(value, lang, colorScheme, (text, cls, from) => {
       if (noBreak && text.includes('\n')) {
         text = (
           <>
@@ -66,7 +73,7 @@ export default forwardRef(function Snippet(
       }
       setChunks(chunks => [...chunks, [text, cls, from]])
     })
-  }, [mode, value, noBreak])
+  }, [mode, value, colorScheme, noBreak])
   return (
     <Box
       ref={ref}

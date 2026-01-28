@@ -6,7 +6,16 @@ import { store } from './store'
 import ThemedApp from './ThemedApp'
 
 store.subscribe(() => {
-  localStorage.setItem('history', JSON.stringify(store.getState().history))
+  const state = store.getState()
+  const history = state.history
+  const spacing = state.spacing
+
+  try {
+    localStorage.setItem('history', JSON.stringify(history))
+    localStorage.setItem('spacing', spacing)
+  } catch (error) {
+    console.warn('Failed to save spacing:', error)
+  }
 })
 
 if (
@@ -21,4 +30,4 @@ if (
   )
 }
 
-export const VERSION = '0.5.7'
+export const VERSION = '0.6.0'

@@ -4,6 +4,8 @@ import React, { useCallback, useRef } from 'react'
 import { useSelector } from 'react-redux'
 import Answer from './Answer'
 import Prompt from './Prompt'
+import { Link } from '@mui/material'
+import { VERSION } from '.'
 
 export default (function Terminal() {
   const scrollback = useSelector(state => state.scrollback)
@@ -27,9 +29,27 @@ export default (function Terminal() {
     >
       <Typography
         variant="h6"
-        sx={{ pt: 1, px: 2, fontSize: '0.75em', color: '#999' }}
+        sx={{
+          pt: 1,
+          px: 2,
+          fontSize: '0.75em',
+          color: theme => theme.vars.palette.neutral.main,
+          display: 'flex',
+          justifyContent: 'space-between',
+        }}
       >
-        Type <code style={{ fontWeight: 600 }}>?help</code> to get some help
+        <Typography variant="body2">
+          <code style={{ fontWeight: 600 }}>?help</code> to get some help
+        </Typography>
+        <Typography variant="body2">
+          Kalong v
+          <Link
+            href="https://github.com/paradoxxxzero/kalong/tags"
+            underline="hover"
+          >
+            {VERSION}
+          </Link>
+        </Typography>
       </Typography>
       {scrollback.map(({ key, ...props }) => (
         <Answer key={key} uid={key} {...props} />

@@ -1,7 +1,7 @@
 import {
-  createTheme,
   StyledEngineProvider,
   ThemeProvider,
+  createTheme,
 } from '@mui/material/styles'
 import {
   blue,
@@ -13,51 +13,75 @@ import {
   pink,
   teal,
 } from '@mui/material/colors'
-import React from 'react'
+import React, { useMemo } from 'react'
 import { useSelector } from 'react-redux'
 import App from './App'
 
-const colorTheme = main =>
-  createTheme({
-    palette: {
-      action: {
-        selectedOpacity: 0.15,
+const colorTheme = (type, spacing) => {
+  return createTheme({
+    spacing: spacing == 'comfortable' ? 8 : spacing == 'compact' ? 4 : 2,
+    colorSchemes: {
+      light: {
+        palette: {
+          primary: {
+            main: {
+              init: blue[500],
+              line: green[600],
+              call: teal[500],
+              return: lightGreen[700],
+              exception: deepOrange[500],
+              shell: indigo[500],
+              dead: grey[600],
+            }[type],
+          },
+          secondary: {
+            main: pink['A400'],
+          },
+          neutral: {
+            main: grey[700],
+          },
+        },
       },
-      primary: {
-        main,
-      },
-      secondary: {
-        main: pink['A400'],
-      },
-      neutral: {
-        main: grey[700],
+      dark: {
+        palette: {
+          primary: {
+            main: {
+              init: blue[500],
+              line: green[600],
+              call: teal[500],
+              return: lightGreen[700],
+              exception: deepOrange[500],
+              shell: indigo[500],
+              dead: grey[600],
+            }[type],
+          },
+          secondary: {
+            main: pink.A200,
+          },
+          neutral: {
+            main: grey[600],
+          },
+        },
       },
     },
-    mixins: {
-      toolbar: {
-        minHeight: 56,
-        // '@media (min-width:0px) and (orientation: landscape)': { minHeight: 48 },
-        '@media (min-width:600px)': { minHeight: 64 },
-      },
+    cssVariables: {
+      colorSchemeSelector: 'class',
     },
   })
-
-export const muiThemes = {
-  init: colorTheme(blue[500]),
-  line: colorTheme(green[600]),
-  call: colorTheme(teal[500]),
-  return: colorTheme(lightGreen[700]),
-  exception: colorTheme(deepOrange[500]),
-  shell: colorTheme(indigo[500]),
-  dead: colorTheme(grey[600]),
 }
 
 export default function ThemedApp() {
-  const theme = useSelector(state => state.theme)
+  const themeType = useSelector(state => state.theme)
+  const spacing = useSelector(state => state.spacing)
+
+  const theme = useMemo(
+    () => colorTheme(themeType || 'line', spacing),
+    [themeType, spacing]
+  )
 
   return (
     <StyledEngineProvider injectFirst>
-      <ThemeProvider theme={muiThemes[theme] || muiThemes.line}>
+      <ThemeProvider theme={theme}>
         <App />
       </ThemeProvider>
     </StyledEngineProvider>

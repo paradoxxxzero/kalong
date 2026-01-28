@@ -1,4 +1,4 @@
-import { completionKeymap, closeBracketsKeymap } from '@codemirror/autocomplete'
+import { closeBracketsKeymap, completionKeymap } from '@codemirror/autocomplete'
 import { defaultKeymap, historyKeymap } from '@codemirror/commands'
 import { foldGutter, foldKeymap } from '@codemirror/language'
 import { lineNumbers } from '@codemirror/view'
@@ -6,10 +6,9 @@ import { python } from '@codemirror/lang-python'
 import { lintKeymap } from '@codemirror/lint'
 import { highlightSelectionMatches, searchKeymap } from '@codemirror/search'
 import { EditorState } from '@codemirror/state'
-import { oneDark } from '@codemirror/theme-one-dark'
 import {
-  drawSelection,
   EditorView,
+  drawSelection,
   highlightSpecialChars,
   keymap,
 } from '@codemirror/view'
@@ -18,6 +17,7 @@ import React, { useEffect, useMemo, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getFile } from './actions'
 import { context, lineWrappingHarder } from './extensions'
+import { materialDark } from '@fsegurai/codemirror-theme-material-dark'
 
 const styleOverrides = EditorView.theme({
   '&,& .cm-content': {
@@ -25,6 +25,10 @@ const styleOverrides = EditorView.theme({
   },
   '& .cm-cursor': {
     display: 'none !important',
+  },
+  '& .cm-scroller .cm-gutters': {
+    borderRight: 'none ',
+    background: 'transparent',
   },
 })
 
@@ -115,7 +119,7 @@ export default function Source({ currentFile }) {
       ref={sourceRef}
       style={{ flex: 1 }}
       basicSetup={false}
-      theme={oneDark}
+      theme={materialDark}
       height="100%"
       extensions={extensions}
       value={source || ''}
