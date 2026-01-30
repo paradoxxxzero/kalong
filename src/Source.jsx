@@ -17,20 +17,8 @@ import React, { useEffect, useMemo, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getFile } from './actions'
 import { context, lineWrappingHarder } from './extensions'
-import { materialDark } from '@fsegurai/codemirror-theme-material-dark'
-
-const styleOverrides = EditorView.theme({
-  '&,& .cm-content': {
-    fontFamily: '"Fira Code", monospace',
-  },
-  '& .cm-cursor': {
-    display: 'none !important',
-  },
-  '& .cm-scroller .cm-gutters': {
-    borderRight: 'none ',
-    background: 'transparent',
-  },
-})
+import { cmTheme } from './codemirror'
+import { Paper, useColorScheme, useTheme } from '@mui/material'
 
 const baseExtensions = [
   lineNumbers(),
@@ -50,13 +38,14 @@ const baseExtensions = [
   EditorState.readOnly.of(true),
   EditorView.lineWrapping,
   lineWrappingHarder,
-  styleOverrides,
   python(),
 ]
 
 export default function Source({ currentFile }) {
   const dispatch = useDispatch()
   const files = useSelector(state => state.files)
+  const theme = useTheme()
+  const { colorScheme } = useColorScheme()
   const {
     absoluteFilename,
     lineNumber,
@@ -114,15 +103,30 @@ export default function Source({ currentFile }) {
     }
   }, [source, lineNumber])
 
+  if (!colorScheme) {
+    return null
+  }
+
   return (
-    <CodeMirror
-      ref={sourceRef}
-      style={{ flex: 1 }}
-      basicSetup={false}
-      theme={materialDark}
-      height="100%"
-      extensions={extensions}
-      value={source || ''}
-    />
+    <Paper
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        height: '100%',
+        minHeight: 0,
+        flex: 1,
+        colorScheme: `${colorScheme} !important`,
+      }}
+    >
+      <CodeMirror
+        ref={sourceRef}
+        style={{ flex: 1 }}
+        basicSetup={false}
+        theme={cmTheme(colorScheme, theme)}
+        height="100%"
+        extensions={extensions}
+        value={source || ''}
+      />
+    </Paper>
   )
 }

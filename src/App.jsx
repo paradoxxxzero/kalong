@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box'
 import CssBaseline from '@mui/material/CssBaseline'
 import GlobalStyles from '@mui/material/GlobalStyles'
-import { useTheme } from '@mui/material/styles'
+import { useColorScheme, useTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -22,6 +22,7 @@ export default function App() {
   const [open, setOpen] = useState(!mobile)
   const [prevMobile, setPrevMobile] = useState(mobile)
   const [prevActiveFrame, setPrevActiveFrame] = useState(activeFrame)
+  const { colorScheme } = useColorScheme()
   if (prevMobile !== mobile) {
     setPrevMobile(mobile)
     setOpen(!mobile)
@@ -47,7 +48,7 @@ export default function App() {
         height: '100vh',
         justifyContent: 'center',
         fontVariant: 'oldstyle-nums',
-        transition: 'filter 500ms ease-in',
+        transition: 'filter 2s ease-in',
         filter: running ? 'grayscale(100%)' : undefined,
       }}
     >
@@ -68,6 +69,9 @@ export default function App() {
                 src: `url(${FiraCodeBold}) format("opentype")`,
               },
             ],
+          },
+          ':root': {
+            colorScheme: `${colorScheme} !important`,
           },
         }}
       />

@@ -16,6 +16,7 @@ import {
   SET_INFO,
   SET_PROMPT,
   SET_SPACING,
+  SET_INVERT,
   SET_SUGGESTION,
   SET_THEME,
   SET_TITLE,
@@ -242,6 +243,15 @@ const spacing = (state = {}, action) => {
       return state
   }
 }
+
+const invert = (state = {}, action) => {
+  switch (action.type) {
+    case SET_INVERT:
+      return action.invert
+    default:
+      return state
+  }
+}
 const main = (state = true, action) => {
   switch (action.type) {
     case SET_INFO:
@@ -262,6 +272,7 @@ export default combineReducers({
   suggestions,
   theme,
   spacing,
+  invert,
   connection,
   loadingLevel,
   recursionLevel,

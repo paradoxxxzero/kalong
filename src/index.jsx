@@ -9,10 +9,12 @@ store.subscribe(() => {
   const state = store.getState()
   const history = state.history
   const spacing = state.spacing
+  const invert = state.invert
 
   try {
     localStorage.setItem('history', JSON.stringify(history))
     localStorage.setItem('spacing', spacing)
+    localStorage.setItem('invert', JSON.stringify(invert))
   } catch (error) {
     console.warn('Failed to save spacing:', error)
   }

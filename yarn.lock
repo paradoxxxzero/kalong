@@ -572,16 +572,6 @@
     "@eslint/core" "^0.17.0"
     levn "^0.4.1"
 
-"@fsegurai/codemirror-theme-material-dark@^6.2.3":
-  version "6.2.3"
-  resolved "https://registry.yarnpkg.com/@fsegurai/codemirror-theme-material-dark/-/codemirror-theme-material-dark-6.2.3.tgz#71834168f18d57903d16081541a475337c799486"
-  integrity sha512-8jw5/mLF/wIGKJ8rmxVWyXnhrRgqm+F7L49UlWd5VHgvny0XFJ45I3Tl8xD3i2kWqDm3TF+C/p86Mq9J6TjWVA==
-
-"@fsegurai/codemirror-theme-material-light@^6.2.3":
-  version "6.2.3"
-  resolved "https://registry.yarnpkg.com/@fsegurai/codemirror-theme-material-light/-/codemirror-theme-material-light-6.2.3.tgz#f4c59b62b81169fcef7e74f1ebbe84547567882f"
-  integrity sha512-/t29bGYA8Yyd94Ecbq/gZ/CA9QKALfr5JXF+G2p31CROEYVG3iV1F4Fp8TteTHAyP3np0dachHcSRNlNB0wftw==
-
 "@humanfs/core@^0.19.1":
   version "0.19.1"
   resolved "https://registry.yarnpkg.com/@humanfs/core/-/core-0.19.1.tgz#17c55ca7d426733fe3c561906b8173c336b40a77"

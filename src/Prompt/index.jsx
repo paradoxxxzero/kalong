@@ -58,9 +58,8 @@ import searchReducer, { initialSearch } from './searchReducer'
 import { lexArgs } from './utils'
 import valueReducer, { commandShortcuts, initialValue } from './valueReducer'
 import Help from './Help'
-import { useColorScheme } from '@mui/material'
-import { materialDark } from '@fsegurai/codemirror-theme-material-dark'
-import { materialLight } from '@fsegurai/codemirror-theme-material-light'
+import { useColorScheme, useTheme } from '@mui/material'
+import { cmTheme } from '../codemirror'
 
 export const promptBus = new EventTarget()
 
@@ -97,20 +96,6 @@ const getHighlighter = re => ({
 })
 
 const styleOverrides = EditorView.theme({
-  '&,& .cm-content': {
-    fontFamily: '"Fira Code", monospace',
-    fontSize: '1.5rem',
-  },
-  '& .cm-tooltip.cm-tooltip-autocomplete > ul': {
-    fontFamily: '"Fira Code", monospace',
-    fontSize: '1rem',
-  },
-  '& .cm-line': {
-    lineHeight: '1.4 !important',
-  },
-  '&.cm-editor': {
-    background: 'transparent',
-  },
   '&.cm-editor.cm-focused': {
     outline: 'none',
     boxShadow: 'none',
@@ -161,6 +146,7 @@ const baseExtensions = [
 export default function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
   const code = useRef()
   const searchCode = useRef()
+  const theme = useTheme()
 
   const history = useSelector(state => state.history)
   const scrollback = useSelector(state => state.scrollback)
@@ -748,6 +734,10 @@ export default function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
     }
   }, [prompt.value, prompt.passive])
 
+  if (!colorScheme) {
+    return null
+  }
+
   return (
     <Grow
       in={grow}
@@ -784,7 +774,7 @@ export default function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
                 ref={code}
                 value={prompt.value}
                 basicSetup={false}
-                theme={colorScheme === 'light' ? materialLight : materialDark}
+                theme={cmTheme(colorScheme, theme)}
                 onChange={handleChange}
                 onCreateEditor={scrollToBottom}
                 height="auto"
@@ -809,9 +799,7 @@ export default function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
                     ref={searchCode}
                     value={search.value}
                     height="auto"
-                    theme={
-                      colorScheme === 'light' ? materialLight : materialDark
-                    }
+                    theme={cmTheme(colorScheme, theme)}
                     autoFocus
                     basicSetup={false}
                     extensions={searchExtensions}

@@ -6,8 +6,7 @@ import React, { forwardRef, useEffect, useState } from 'react'
 import { StreamLanguage } from '@codemirror/language'
 import { diff } from '@codemirror/legacy-modes/mode/diff'
 import { useColorScheme } from '@mui/material'
-import { materialDark } from '@fsegurai/codemirror-theme-material-dark'
-import { materialLight } from '@fsegurai/codemirror-theme-material-light'
+import { cmHighlight } from './codemirror'
 
 function runmode(textContent, language, colorScheme, callback) {
   if (textContent?.length > 100000) {
@@ -17,15 +16,11 @@ function runmode(textContent, language, colorScheme, callback) {
   }
   const tree = language.parser.parse(textContent)
   let pos = 0
-  highlightTree(
-    tree,
-    (colorScheme == 'dark' ? materialDark : materialLight)[1][2].value,
-    (from, to, classes) => {
-      from > pos && callback(textContent.slice(pos, from), null, pos, from)
-      callback(textContent.slice(from, to), classes, from, to)
-      pos = to
-    }
-  )
+  highlightTree(tree, cmHighlight(colorScheme), (from, to, classes) => {
+    from > pos && callback(textContent.slice(pos, from), null, pos, from)
+    callback(textContent.slice(from, to), classes, from, to)
+    pos = to
+  })
   pos !== tree.length &&
     callback(textContent.slice(pos, tree.length), null, pos, tree.length)
 }
@@ -74,6 +69,11 @@ export default forwardRef(function Snippet(
       setChunks(chunks => [...chunks, [text, cls, from]])
     })
   }, [mode, value, colorScheme, noBreak])
+
+  if (!colorScheme) {
+    return null
+  }
+
   return (
     <Box
       ref={ref}

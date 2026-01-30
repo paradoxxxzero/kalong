@@ -5,23 +5,6 @@ const contextLuminance = 0.2
 const borderLuminance = 0.8
 const activeLuminance = 0.5
 
-const contextTheme = EditorView.baseTheme({
-  '& .cm-context-top': {
-    borderTop: `1px solid rgba(0, 0, 0, ${borderLuminance})`,
-  },
-  '& .cm-context-bottom': {
-    borderBottom: `1px solid rgba(0, 0, 0, ${borderLuminance})`,
-  },
-  '& .cm-context': {
-    backgroundColor: `rgba(0, 0, 0, ${contextLuminance})`,
-    borderRight: `1px solid rgba(0, 0, 0, ${borderLuminance})`,
-    borderLeft: `1px solid rgba(0, 0, 0, ${borderLuminance})`,
-  },
-  '& .cm-context-active': {
-    backgroundColor: `rgba(0, 0, 0, ${activeLuminance})`,
-  },
-})
-
 const contextFacet = Facet.define({
   combine: values => {
     return values.reduce(
@@ -92,7 +75,7 @@ const showContext = ViewPlugin.fromClass(
 )
 
 export function context({ active, first, last }) {
-  return [contextTheme, contextFacet.of({ active, first, last }), showContext]
+  return [contextFacet.of({ active, first, last }), showContext]
 }
 
 export const lineWrappingHarder = EditorView.theme({

@@ -34,6 +34,12 @@ export const setSpacing = spacing => ({
   spacing,
 })
 
+export const SET_INVERT = 'SET_INVERT'
+export const setInvert = invert => ({
+  type: SET_INVERT,
+  invert,
+})
+
 export const GET_FRAMES = 'GET_FRAMES'
 export const getFrames = () => ({
   type: GET_FRAMES,

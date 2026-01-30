@@ -9,19 +9,20 @@ import { IconButton, Tooltip } from '@mui/material'
 
 import DarkModeIcon from '@mui/icons-material/DarkMode'
 import LightModeIcon from '@mui/icons-material/LightMode'
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
+import SettingsIcon from '@mui/icons-material/Settings'
 
 import DensityLargeIcon from '@mui/icons-material/DensityLarge'
 import DensityMediumIcon from '@mui/icons-material/DensityMedium'
 import DensitySmallIcon from '@mui/icons-material/DensitySmall'
-import { setSpacing } from './actions'
+import { setInvert, setSpacing } from './actions'
 import { useDispatch, useSelector } from 'react-redux'
 const drawerWidth = 240
 
 export default function SideDrawer({ rtl, open, mobile, onDrawerClose }) {
-  const { mode, setMode } = useColorScheme()
+  const { mode, setMode, colorScheme } = useColorScheme()
   const dispatch = useDispatch()
   const spacing = useSelector(state => state.spacing)
+  const invert = useSelector(state => state.invert)
 
   if (!mode) {
     return null
@@ -75,7 +76,7 @@ export default function SideDrawer({ rtl, open, mobile, onDrawerClose }) {
           <Link
             href="http://github.com/paradoxxxzero/kalong/"
             underline="none"
-            sx={{ flex: 1 }}
+            sx={{ flex: 1, marginRight: 4, marginLeft: 4 }}
           >
             <Typography
               variant="h1"
@@ -98,15 +99,20 @@ export default function SideDrawer({ rtl, open, mobile, onDrawerClose }) {
           >
             <IconButton
               size="small"
-              onClick={() => setMode(mode !== 'dark' ? 'dark' : 'light')}
+              onClick={() => {
+                if (invert) {
+                  dispatch(setInvert(false))
+                } else {
+                  setMode(mode !== 'dark' ? 'dark' : 'light')
+                  dispatch(setInvert(true))
+                }
+              }}
               onContextMenu={evt => {
                 setMode('system')
                 evt.preventDefault()
               }}
             >
-              {mode === 'system' ? (
-                <DarkModeIcon />
-              ) : mode === 'light' ? (
+              {colorScheme === 'dark' ? (
                 <Tooltip title="Switch to Dark Mode. (Right-click to let the system choose)">
                   <DarkModeIcon />
                 </Tooltip>
@@ -115,8 +121,8 @@ export default function SideDrawer({ rtl, open, mobile, onDrawerClose }) {
                   <LightModeIcon />
                 </Tooltip>
               )}
-              {mode !== 'system' && (
-                <MoreHorizIcon
+              {mode === 'system' ? (
+                <SettingsIcon
                   fontSize="small"
                   sx={{
                     position: 'absolute',
@@ -125,7 +131,29 @@ export default function SideDrawer({ rtl, open, mobile, onDrawerClose }) {
                     width: '0.6em',
                   }}
                 />
-              )}
+              ) : invert ? (
+                mode === 'light' ? (
+                  <DarkModeIcon
+                    fontSize="small"
+                    sx={{
+                      position: 'absolute',
+                      top: '1.1em',
+                      left: '1em',
+                      width: '0.6em',
+                    }}
+                  />
+                ) : (
+                  <LightModeIcon
+                    fontSize="small"
+                    sx={{
+                      position: 'absolute',
+                      top: '1.1em',
+                      left: '1em',
+                      width: '0.6em',
+                    }}
+                  />
+                )
+              ) : null}
             </IconButton>
             <IconButton
               size="small"

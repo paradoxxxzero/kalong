@@ -85,11 +85,6 @@ export default memo(function Answer({
       }}
     >
       <CardHeader
-        sx={{
-          '.MuiCardHeader-content': {
-            minWidth: 0,
-          },
-        }}
         slotProps={{
           root: {
             sx: theme => ({
@@ -99,6 +94,11 @@ export default memo(function Answer({
           title: {
             variant: 'h5',
             noWrap: true,
+          },
+          content: {
+            sx: {
+              minWidth: 0,
+            },
           },
         }}
         avatar={
