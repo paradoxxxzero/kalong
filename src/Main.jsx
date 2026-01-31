@@ -5,12 +5,7 @@ import { useSelector } from 'react-redux'
 import Source from './Source'
 import Splitter from './Splitter'
 import Terminal from './Terminal'
-import {
-  createTheme,
-  ThemeProvider,
-  useColorScheme,
-  useTheme,
-} from '@mui/material'
+import { ThemeProvider, useColorScheme, useTheme } from '@mui/material'
 import { colorTheme } from './ThemedApp'
 
 export default function Main() {

@@ -5,7 +5,6 @@ import React, { useCallback } from 'react'
 import { useDispatch } from 'react-redux'
 import { requestInspect } from '../actions'
 import { uid } from '../util'
-import { useTheme } from '@mui/material'
 
 export default function Inspectable({
   id,
@@ -26,13 +25,13 @@ export default function Inspectable({
       sx={[
         ...(type === 'button'
           ? [
-              {
+              theme => ({
                 minWidth: 'auto',
                 textTransform: 'none',
-                padding: 1,
+                padding: theme.spacing(1),
                 backgroundColor: 'rgba(0, 0, 0, .03)',
                 display: 'inline',
-              },
+              }),
               theme =>
                 theme.applyStyles('dark', {
                   backgroundColor: 'rgba(0, 0, 0, .3)',

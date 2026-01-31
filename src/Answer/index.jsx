@@ -94,10 +94,16 @@ export default memo(function Answer({
           title: {
             variant: 'h5',
             noWrap: true,
+            padding: '4px 0', // Fixed as it comes from codemirror
           },
           content: {
             sx: {
               minWidth: 0,
+            },
+          },
+          action: {
+            sx: {
+              alignSelf: 'center',
             },
           },
         }}
@@ -120,8 +126,8 @@ export default memo(function Answer({
           </>
         }
         title={
-          <Tooltip title={prompt}>
-            <Snippet sx={{ p: 0.5 }} value={prompt} noBreak />
+          <Tooltip title={<Snippet value={prompt} forceColorScheme="dark" />}>
+            <Snippet value={prompt} noBreak />
           </Tooltip>
         }
         action={
@@ -204,7 +210,7 @@ export default memo(function Answer({
                 <Visibility />
               </IconButton>
             </Collapse>
-            <IconButton onClick={handleClose} size="large">
+            <IconButton onClick={handleClose} size="small">
               <Close />
             </IconButton>
           </>

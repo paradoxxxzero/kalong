@@ -96,6 +96,9 @@ const getHighlighter = re => ({
 })
 
 const styleOverrides = EditorView.theme({
+  '& .cm-line': {
+    padding: 0,
+  },
   '&.cm-editor.cm-focused': {
     outline: 'none',
     boxShadow: 'none',
@@ -104,10 +107,10 @@ const styleOverrides = EditorView.theme({
 
 const promptCursorStyles = EditorView.theme({
   '& .cm-cursor': {
-    width: '12px',
-    border: 'none',
-    outline: '1px solid rgba(0, 0, 0, .5)',
+    width: '1ch',
+    border: '1px solid rgba(0, 0, 0, .5) !important',
     display: 'block',
+    margin: 0,
   },
   '&.cm-focused .cm-cursor': {
     background: 'rgba(0, 0, 0, .75)',

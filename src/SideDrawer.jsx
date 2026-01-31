@@ -14,6 +14,7 @@ import SettingsIcon from '@mui/icons-material/Settings'
 import DensityLargeIcon from '@mui/icons-material/DensityLarge'
 import DensityMediumIcon from '@mui/icons-material/DensityMedium'
 import DensitySmallIcon from '@mui/icons-material/DensitySmall'
+import FormatAlignJustifyIcon from '@mui/icons-material/FormatAlignJustify'
 import { setInvert, setSpacing } from './actions'
 import { useDispatch, useSelector } from 'react-redux'
 const drawerWidth = 240
@@ -23,6 +24,13 @@ export default function SideDrawer({ rtl, open, mobile, onDrawerClose }) {
   const dispatch = useDispatch()
   const spacing = useSelector(state => state.spacing)
   const invert = useSelector(state => state.invert)
+
+  const SpacingIcon = [
+    FormatAlignJustifyIcon,
+    DensitySmallIcon,
+    DensityMediumIcon,
+    DensityLargeIcon,
+  ][spacing]
 
   if (!mode) {
     return null
@@ -76,19 +84,50 @@ export default function SideDrawer({ rtl, open, mobile, onDrawerClose }) {
           <Link
             href="http://github.com/paradoxxxzero/kalong/"
             underline="none"
-            sx={{ flex: 1, marginRight: 4, marginLeft: 4 }}
+            sx={{
+              flex: 1,
+              marginRight: 4,
+              marginLeft: 4,
+              h1: {
+                transform: 'rotateY(180deg) rotateZ(-90deg)',
+                transition: 'transform 0.4s ease-in-out 0.3s',
+              },
+              h2: {
+                transition: 'transform 0.4s ease-in-out',
+                transform: 'rotateY(90deg)',
+                transformOrigin: 'left',
+              },
+              ':hover h1': {
+                transition: 'transform 0.4s ease-in-out 1s',
+                transform: 'rotateY(0) rotateZ(0)',
+              },
+              ':hover h2': {
+                transition: 'transform 0.4s ease-in-out 1.25s',
+                transform: 'rotateY(0) rotateZ(0)',
+              },
+            }}
           >
             <Typography
               variant="h1"
               sx={{
                 fontFamily: '"Fira Code", monospace',
-                fontSize: '5em',
+                fontSize: '4.25em',
                 lineHeight: '0.7em',
                 textAlign: 'center',
-                transform: 'rotate(-90deg)',
               }}
             >
               K
+              <Typography
+                variant="h2"
+                sx={{
+                  display: 'inline-block',
+                  position: 'absolute',
+                  bottom: '-.25em',
+                  fontSize: '.4em',
+                }}
+              >
+                along
+              </Typography>
             </Typography>
           </Link>
           <Box
@@ -157,24 +196,9 @@ export default function SideDrawer({ rtl, open, mobile, onDrawerClose }) {
             </IconButton>
             <IconButton
               size="small"
-              onClick={() => {
-                const newspacing =
-                  spacing === 'comfortable'
-                    ? 'compact'
-                    : spacing === 'compact'
-                      ? 'spacious'
-                      : 'comfortable'
-
-                dispatch(setSpacing(newspacing))
-              }}
+              onClick={() => dispatch(setSpacing((spacing + 1) % 4))}
             >
-              {spacing === 'comfortable' ? (
-                <DensityLargeIcon />
-              ) : spacing === 'compact' ? (
-                <DensityMediumIcon />
-              ) : (
-                <DensitySmallIcon />
-              )}
+              <SpacingIcon />
             </IconButton>
           </Box>
         </Box>

@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography'
 import React, { forwardRef, useEffect, useState } from 'react'
 import { StreamLanguage } from '@codemirror/language'
 import { diff } from '@codemirror/legacy-modes/mode/diff'
-import { useColorScheme } from '@mui/material'
+import { Tooltip, useColorScheme } from '@mui/material'
 import { cmHighlight } from './codemirror'
 
 function runmode(textContent, language, colorScheme, callback) {
@@ -29,9 +29,19 @@ const pyLang = python().language
 const diffLang = StreamLanguage.define(diff)
 
 export default forwardRef(function Snippet(
-  { sx, value = '', mode = 'python', onClick, noBreak, ...props },
+  {
+    sx,
+    value = '',
+    mode = 'python',
+    onClick,
+    noBreak,
+    noWrap,
+    forceColorScheme,
+    ...props
+  },
   ref
 ) {
+  noBreak = noBreak || noWrap
   const { colorScheme } = useColorScheme()
   const [chunks, setChunks] = useState([[value, null, 0]])
   useEffect(() => {
@@ -40,7 +50,7 @@ export default forwardRef(function Snippet(
       return
     }
     setChunks([])
-    runmode(value, lang, colorScheme, (text, cls, from) => {
+    runmode(value, lang, forceColorScheme || colorScheme, (text, cls, from) => {
       if (noBreak && text.includes('\n')) {
         text = (
           <>
@@ -68,13 +78,13 @@ export default forwardRef(function Snippet(
       }
       setChunks(chunks => [...chunks, [text, cls, from]])
     })
-  }, [mode, value, colorScheme, noBreak])
+  }, [mode, value, colorScheme, forceColorScheme, noBreak])
 
   if (!colorScheme) {
     return null
   }
 
-  return (
+  const snippet = (
     <Box
       ref={ref}
       component="code"
@@ -96,5 +106,17 @@ export default forwardRef(function Snippet(
         </span>
       ))}
     </Box>
+  )
+
+  if (!noWrap) {
+    return snippet
+  }
+
+  return (
+    <Typography noWrap component="span" sx={{ display: 'block' }}>
+      <Tooltip title={<Snippet value={value} forceColorScheme="dark" />}>
+        {snippet}
+      </Tooltip>
+    </Typography>
   )
 })

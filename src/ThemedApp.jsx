@@ -19,7 +19,7 @@ import App from './App'
 
 export const colorTheme = (type, spacing, other) => {
   return createTheme({
-    spacing: spacing == 'comfortable' ? 8 : spacing == 'compact' ? 4 : 2,
+    spacing: [1, 2, 4, 8][spacing],
     colorSchemes: {
       light: {
         palette: {
@@ -39,6 +39,9 @@ export const colorTheme = (type, spacing, other) => {
           },
           neutral: {
             main: grey[700],
+          },
+          Tooltip: {
+            bg: grey[900],
           },
         },
       },
@@ -62,6 +65,11 @@ export const colorTheme = (type, spacing, other) => {
             main: grey[600],
           },
         },
+      },
+    },
+    mixins: {
+      toolbar: {
+        minHeight: 48 + 4 * spacing,
       },
     },
     cssVariables: {

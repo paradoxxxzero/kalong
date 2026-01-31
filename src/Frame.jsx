@@ -31,22 +31,26 @@ export default memo(function Frame({ frame, last }) {
       disablePadding
     >
       <ListItemButton
+        sx={theme => ({
+          paddingTop: theme.spacing(2),
+          paddingBottom: theme.spacing(2),
+          paddingLeft: theme.spacing(4),
+          paddingRight: theme.spacing(4),
+        })}
         divider={!last}
         selected={frame.key === activeFrame}
         onClick={handleClick}
       >
         <ListItemText
+          sx={{
+            margin: 0,
+          }}
           primary={frame.function}
           secondary={
             <>
-              <Snippet value={frame.lineSource} />
+              <Snippet value={frame.lineSource} noWrap />
               <Tooltip title={frame.absoluteFilename}>
-                <Typography
-                  variant="body2"
-                  display="block"
-                  component="span"
-                  noWrap
-                >
+                <Typography variant="body2" noWrap component="span">
                   {frame.filename}:{frame.lineNumber}
                 </Typography>
               </Tooltip>

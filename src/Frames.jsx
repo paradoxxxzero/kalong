@@ -7,7 +7,6 @@ import { scrollIntoViewIfNeeded } from './util'
 export default function Frames() {
   const frames = useSelector(state => state.frames)
   const activeFrame = useSelector(state => state.activeFrame)
-  const spacing = useSelector(state => state.spacing)
   const listRef = useRef()
 
   useEffect(() => {
@@ -20,7 +19,7 @@ export default function Frames() {
   }, [activeFrame])
 
   return (
-    <List ref={listRef} sx={{ p: 0 }} dense={spacing !== 'comfortable'}>
+    <List ref={listRef} sx={{ p: 0 }}>
       {frames.map((frame, i) => (
         <Frame key={frame.key} frame={frame} last={i === frames.length - 1} />
       ))}
