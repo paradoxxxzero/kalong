@@ -182,7 +182,7 @@ export default memo(function Answer({
                 open={actionExpanded}
                 onClick={handleView}
                 title={`Locate ${currentFrame.absoluteFilename}:${currentFrame.lineNumber}`}
-                icon={<ContentCopyIcon />}
+                icon={<MapIcon />}
               />
             ) : null}
             <ActionIcon

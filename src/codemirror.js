@@ -52,16 +52,13 @@ const colors = {
 const style = ({
   mono1,
   mono2,
-  mono3,
   hue1,
   hue2,
   hue3,
   hue4,
   hue5,
-  hue5_2,
   hue6,
   hue6_2,
-  bg,
   accent,
 }) =>
   HighlightStyle.define([
@@ -130,24 +127,7 @@ const style = ({
     { tag: tags.invalid, color: accent },
   ])
 
-const editorTheme = (
-  {
-    mono1,
-    mono2,
-    mono3,
-    hue1,
-    hue2,
-    hue3,
-    hue4,
-    hue5,
-    hue5_2,
-    hue6,
-    hue6_2,
-    bg,
-    accent,
-  },
-  muiTheme
-) =>
+const editorTheme = ({ mono1, mono2, accent }, muiTheme) =>
   EditorView.theme(
     {
       '&': {

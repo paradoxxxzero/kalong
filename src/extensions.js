@@ -1,10 +1,6 @@
 import { Facet, RangeSetBuilder } from '@codemirror/state'
 import { Decoration, EditorView, ViewPlugin } from '@codemirror/view'
 
-const contextLuminance = 0.2
-const borderLuminance = 0.8
-const activeLuminance = 0.5
-
 const contextFacet = Facet.define({
   combine: values => {
     return values.reduce(
