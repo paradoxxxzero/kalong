@@ -20,6 +20,7 @@ const storageGet = (key, defaultValue) => {
 const spacing = storageGet('spacing', 2)
 const invert = storageGet('invert', true)
 const history = storageGet('history', [])
+const scrollback = storageGet('scrollback', [])
 
 export const store = createStore(
   reducer,
@@ -27,6 +28,7 @@ export const store = createStore(
     history,
     spacing,
     invert,
+    scrollback,
   },
   (window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose)(
     applyMiddleware(websocketMiddleware, watchingMiddleware)

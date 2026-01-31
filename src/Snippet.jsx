@@ -46,7 +46,7 @@ export default forwardRef(function Snippet(
   const [chunks, setChunks] = useState([[value, null, 0]])
   useEffect(() => {
     const lang = { python: pyLang, diff: diffLang }[mode]
-    if (!lang || !value) {
+    if (!lang || !value || !colorScheme) {
       return
     }
     setChunks([])

@@ -7,8 +7,8 @@ export default function watchingMiddleware(store) {
       const { scrollback, activeFrame } = store.getState()
       scrollback.forEach(({ key, prompt, command, frame, watching }) => {
         if (
-          watching === 'all' ||
-          (watching === 'frame' && activeFrame === frame)
+          watching?.includes('all') ||
+          (watching?.includes('frame') && activeFrame === frame)
         ) {
           store.dispatch(refreshPrompt(key, prompt, command, frame))
         }

@@ -92,7 +92,7 @@ export default function SideDrawer({ rtl, open, mobile, onDrawerClose }) {
                 transform: 'rotateY(180deg) rotateZ(-90deg)',
                 transition: 'transform 0.4s ease-in-out 0.3s',
               },
-              h2: {
+              small: {
                 transition: 'transform 0.4s ease-in-out',
                 transform: 'rotateY(90deg)',
                 transformOrigin: 'left',
@@ -101,7 +101,7 @@ export default function SideDrawer({ rtl, open, mobile, onDrawerClose }) {
                 transition: 'transform 0.4s ease-in-out 1s',
                 transform: 'rotateY(0) rotateZ(0)',
               },
-              ':hover h2': {
+              ':hover small': {
                 transition: 'transform 0.4s ease-in-out 1.25s',
                 transform: 'rotateY(0) rotateZ(0)',
               },
@@ -118,12 +118,12 @@ export default function SideDrawer({ rtl, open, mobile, onDrawerClose }) {
             >
               K
               <Typography
-                variant="h2"
+                component="small"
                 sx={{
                   display: 'inline-block',
                   position: 'absolute',
                   bottom: '-.25em',
-                  fontSize: '.4em',
+                  fontSize: '.3em',
                 }}
               >
                 along

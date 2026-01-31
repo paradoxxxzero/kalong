@@ -1,9 +1,10 @@
-import Close from '@mui/icons-material/Close'
-import ContentCopy from '@mui/icons-material/ContentCopy'
-import ExpandMore from '@mui/icons-material/ExpandMore'
-import Map from '@mui/icons-material/Map'
-import Refresh from '@mui/icons-material/Refresh'
-import Visibility from '@mui/icons-material/Visibility'
+import CloseIcon from '@mui/icons-material/Close'
+import ContentCopyIcon from '@mui/icons-material/ContentCopy'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+import MapIcon from '@mui/icons-material/Map'
+import RefreshIcon from '@mui/icons-material/Refresh'
+import VisibilityIcon from '@mui/icons-material/Visibility'
+import PushPinIcon from '@mui/icons-material/PushPin'
 
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
@@ -26,6 +27,23 @@ import {
 import Snippet from '../Snippet'
 import { prettyTime } from '../util'
 import AnswerDispatch from './AnswerDispatch'
+
+const ActionIcon = ({ open, onClick, title, color, icon }) => (
+  <Collapse
+    mountOnEnter
+    unmountOnExit
+    in={open}
+    sx={{ display: 'inline-flex' }}
+    // direction="up"
+    orientation="horizontal"
+  >
+    <Tooltip title={title}>
+      <IconButton sx={{ color }} onClick={onClick} size="small">
+        {icon}
+      </IconButton>
+    </Tooltip>
+  </Collapse>
+)
 
 export default memo(function Answer({
   uid,
@@ -54,7 +72,15 @@ export default memo(function Answer({
       dispatch(
         setWatching(
           uid,
-          watching === 'frame' ? 'all' : watching === 'all' ? null : 'frame'
+          watching === 'frame'
+            ? 'all'
+            : watching === 'all'
+              ? 'pin.frame'
+              : watching === 'pin.frame'
+                ? 'pin.all'
+                : watching === 'pin.all'
+                  ? undefined
+                  : 'frame'
         )
       ),
     [dispatch, uid, watching]
@@ -120,7 +146,7 @@ export default memo(function Answer({
               onClick={handleExpand}
               size="small"
             >
-              <ExpandMore />
+              <ExpandMoreIcon />
             </IconButton>
             {command && <Chip label={command} />}
           </>
@@ -141,77 +167,51 @@ export default memo(function Answer({
               onClick={handleActionExpand}
               size="small"
             >
-              <ExpandMore />
+              <ExpandMoreIcon />
             </IconButton>
-            <Collapse
-              mountOnEnter
-              unmountOnExit
-              in={actionExpanded}
-              sx={{ display: 'inline-flex' }}
-              // direction="up"
-              orientation="horizontal"
-            >
-              <IconButton onClick={handleCopy} size="small">
-                <ContentCopy />
-              </IconButton>
-            </Collapse>
+
+            <ActionIcon
+              open={actionExpanded}
+              onClick={handleCopy}
+              title="Copy"
+              icon={<ContentCopyIcon />}
+            />
 
             {currentFrame ? (
-              <Collapse
-                mountOnEnter
-                unmountOnExit
-                in={actionExpanded}
-                sx={{ display: 'inline-flex' }}
-                // direction="up"
-                orientation="horizontal"
-              >
-                <Tooltip
-                  title={`${currentFrame.absoluteFilename}:${currentFrame.lineNumber}`}
-                >
-                  <IconButton onClick={handleView} size="small">
-                    <Map />
-                  </IconButton>
-                </Tooltip>
-              </Collapse>
+              <ActionIcon
+                open={actionExpanded}
+                onClick={handleView}
+                title={`Locate ${currentFrame.absoluteFilename}:${currentFrame.lineNumber}`}
+                icon={<ContentCopyIcon />}
+              />
             ) : null}
-            <Collapse
-              mountOnEnter
-              unmountOnExit
-              in={actionExpanded}
-              sx={{ display: 'inline-flex' }}
-              // direction="up"
-              orientation="horizontal"
-            >
-              <IconButton onClick={handleRefresh} size="small">
-                <Refresh />
-              </IconButton>
-            </Collapse>
-
-            <Collapse
-              mountOnEnter
-              unmountOnExit
-              in={actionExpanded || watching}
-              sx={{ display: 'inline-flex' }}
-              // direction="up"
-              orientation="horizontal"
-            >
-              <IconButton
-                onClick={handleWatch}
-                size="small"
-                sx={{
-                  color:
-                    watching === 'all'
-                      ? 'warning.main'
-                      : watching === 'frame'
-                        ? 'info.main'
-                        : undefined,
-                }}
-              >
-                <Visibility />
-              </IconButton>
-            </Collapse>
+            <ActionIcon
+              open={actionExpanded}
+              onClick={handleRefresh}
+              title="Refresh eval"
+              icon={<RefreshIcon />}
+            />
+            <ActionIcon
+              open={actionExpanded || watching}
+              onClick={handleWatch}
+              title="Watch frame/always/global pin frame/global pin always"
+              color={
+                watching?.includes('all')
+                  ? 'warning.main'
+                  : watching?.includes('frame')
+                    ? 'info.main'
+                    : undefined
+              }
+              icon={
+                watching?.includes('pin.') ? (
+                  <PushPinIcon />
+                ) : (
+                  <VisibilityIcon />
+                )
+              }
+            />
             <IconButton onClick={handleClose} size="small">
-              <Close />
+              <CloseIcon />
             </IconButton>
           </>
         }

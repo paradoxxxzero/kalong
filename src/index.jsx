@@ -5,19 +5,27 @@ import { Provider } from 'react-redux'
 import { store } from './store'
 import ThemedApp from './ThemedApp'
 
+const storageSet = (key, value) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(value))
+  } catch (error) {
+    console.warn(`Failed to save ${key} to localStorage:`, error)
+  }
+}
 store.subscribe(() => {
   const state = store.getState()
-  const history = state.history
-  const spacing = state.spacing
-  const invert = state.invert
-
-  try {
-    localStorage.setItem('history', JSON.stringify(history))
-    localStorage.setItem('spacing', spacing)
-    localStorage.setItem('invert', JSON.stringify(invert))
-  } catch (error) {
-    console.warn('Failed to save spacing:', error)
-  }
+  storageSet('history', state.history)
+  storageSet('spacing', state.spacing)
+  storageSet('invert', state.invert)
+  storageSet(
+    'scrollback',
+    state.scrollback
+      .filter(({ watching }) => watching?.includes('pin.'))
+      .map(answer => ({
+        ...answer,
+        prompt: answer.prompt.replace(/…$/, ''),
+      }))
+  )
 })
 
 if (
