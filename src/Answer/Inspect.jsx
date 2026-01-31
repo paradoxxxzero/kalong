@@ -29,6 +29,7 @@ export default function Inspect({ attributes, doc, source, infos }) {
         textColor="secondary"
         variant="scrollable"
         scrollButtons="auto"
+        sx={{ height: 48 }}
       >
         <Tab label="infos" value={0} />
         {Object.entries(attributes)
@@ -47,7 +48,11 @@ export default function Inspect({ attributes, doc, source, infos }) {
         )}
       </Tabs>
       <SwipeableViews axis="x" index={tab} onChangeIndex={setTab}>
-        <Box sx={{ maxHeight: '400px' }}>
+        <Box
+          sx={theme => ({
+            maxHeight: `calc(40vh - 48px - ${theme.spacing(3)})`,
+          })}
+        >
           <Table>
             <TableBody>
               {infos.type ? (
@@ -160,7 +165,12 @@ export default function Inspect({ attributes, doc, source, infos }) {
           </Table>
         </Box>
         {Object.entries(attributes).map(([attr, values]) => (
-          <Box key={attr} sx={{ maxHeight: '400px' }}>
+          <Box
+            key={attr}
+            sx={theme => ({
+              maxHeight: `calc(40vh - 48px - ${theme.spacing(3)})`,
+            })}
+          >
             <Table>
               <TableBody>
                 {values.map(({ key, value, id, signature }) => (
@@ -181,20 +191,20 @@ export default function Inspect({ attributes, doc, source, infos }) {
           </Box>
         ))}
         <Box
-          sx={{
+          sx={theme => ({
             p: 3,
             fontSize: '.7em',
-            maxHeight: '400px',
-          }}
+            maxHeight: `calc(40vh - 48px - ${theme.spacing(3)})`,
+          })}
         >
           <Snippet value={doc} mode="text" />
         </Box>
         <Box
-          sx={{
+          sx={theme => ({
             p: 3,
             fontSize: '.9em',
-            maxHeight: '400px',
-          }}
+            maxHeight: `calc(40vh - 48px - ${theme.spacing(3)})`,
+          })}
         >
           <Snippet value={source} />
         </Box>

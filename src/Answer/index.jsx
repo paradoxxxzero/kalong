@@ -239,7 +239,7 @@ export default memo(function Answer({
             <CardContent
               sx={theme => ({
                 display: 'flex',
-                maxHeight: '50vh',
+                maxHeight: '40vh',
                 overflow: 'auto',
                 padding: theme.spacing(2),
                 '&:last-child': {
