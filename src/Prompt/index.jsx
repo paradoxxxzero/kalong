@@ -693,6 +693,7 @@ export default function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
       EditorView.domEventHandlers({
         blur: handleSearchClose,
       }),
+      styleOverrides,
       Prec.highest(
         keymap.of([
           { key: 'Enter', run: handleSearchClose, preventDefault: true },
@@ -722,7 +723,6 @@ export default function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
           },
         ])
       ),
-      ...baseExtensions,
     ]
   }, [handleSearch, handleSearchClose])
 
@@ -798,17 +798,19 @@ export default function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
                     {search.insensitive && 'I-'}Search{' '}
                     {search.reverse ? 'backward' : 'forward'}:
                   </Box>
-                  <CodeMirror
-                    ref={searchCode}
-                    value={search.value}
-                    height="auto"
-                    theme={cmTheme(colorScheme, theme)}
-                    autoFocus
-                    basicSetup={false}
-                    extensions={searchExtensions}
-                    width="100%"
-                    onChange={handleIncrementalSearch}
-                  />
+                  <Box sx={{ flex: 1 }}>
+                    <CodeMirror
+                      ref={searchCode}
+                      value={search.value}
+                      height="auto"
+                      theme={cmTheme(colorScheme, theme)}
+                      autoFocus
+                      basicSetup={false}
+                      extensions={searchExtensions}
+                      width="100%"
+                      onChange={handleIncrementalSearch}
+                    />
+                  </Box>
                 </Box>
               )}
             </>
