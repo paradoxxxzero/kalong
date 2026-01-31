@@ -19,6 +19,9 @@ import App from './App'
 
 export const colorTheme = (type, spacing, other) => {
   return createTheme({
+    typography: {
+      fontFamily: ['Fira Code', 'monospace'].join(','),
+    },
     spacing: [1, 2, 4, 8][spacing],
     colorSchemes: {
       light: {
