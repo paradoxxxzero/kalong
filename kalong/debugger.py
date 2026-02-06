@@ -318,8 +318,11 @@ def serialize_inspect(key, frame):
         }
     ]
     for frame_ in iter_frame(frame):
-        if obj in frame_.f_locals.values():
-            break
+        try:
+            if obj in frame_.f_locals.values():
+                break
+        except Exception:
+            pass
     else:
         frame_ = None
 
