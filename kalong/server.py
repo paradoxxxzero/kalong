@@ -140,7 +140,8 @@ def serve():
     app["back"] = {}
     app.on_shutdown.append(shutdown)
     app.router.add_get(r"/{side:(front|back)}/{origin}", websocket)
-    app.router.add_static("/assets/", Path(__file__).parent / "static" / "assets")
+    assets = Path(__file__).parent / "static" / "assets"
+    app.router.add_static("/front/assets/", assets)
     try:
         loop = asyncio.get_event_loop()
     except RuntimeError:
