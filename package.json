@@ -8,7 +8,7 @@
     "preview": "vite preview",
     "lint": "eslint src --fix",
     "shell": "uv run python -m kalong",
-    "start": "concurrently --kill-others \"env KALONG_WS_PORT=59999 yarn dev\" \"wait-port 59998 && uv run kalong --front-port=59998 --detached ${FILE:-test.py}\""
+    "start": "concurrently --kill-others \"env KALONG_VERSION=dev KALONG_WS_PORT=59999 yarn dev\" \"wait-port 59998 && uv run kalong --front-port=59998 --detached ${FILE:-test.py}\""
   },
   "license": "GPL-3.0-or-later",
   "private": true,

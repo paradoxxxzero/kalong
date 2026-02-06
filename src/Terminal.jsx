@@ -5,7 +5,6 @@ import { useSelector } from 'react-redux'
 import Answer from './Answer'
 import Prompt from './Prompt'
 import { Link } from '@mui/material'
-import { VERSION } from '.'
 
 export default (function Terminal() {
   const scrollback = useSelector(state => state.scrollback)
@@ -47,7 +46,7 @@ export default (function Terminal() {
             href="https://github.com/paradoxxxzero/kalong/tags"
             underline="hover"
           >
-            {VERSION}
+            {window.KALONG_VERSION || import.meta.env.KALONG_VERSION}
           </Link>
         </Typography>
       </Typography>

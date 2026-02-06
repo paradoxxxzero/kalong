@@ -1,5 +1,4 @@
 import { Box } from '@mui/material'
-import { VERSION } from '..'
 import { diffSeparator, tableSeparator } from './valueReducer'
 
 const Kbd = ({ title, children }) => (
@@ -89,7 +88,10 @@ const Shortcut = ({ children }) => (
 export default function Help() {
   return (
     <aside style={{ paddingBottom: '16px', fontSize: '.9em' }}>
-      <h2>Welcome to Kalong v{VERSION}</h2>
+      <h2>
+        Welcome to Kalong v
+        {window.KALONG_VERSION || import.meta.env.KALONG_VERSION}
+      </h2>
       <p>
         <strong>Keyboard shortcuts</strong>
       </p>

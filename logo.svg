@@ -1,53 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
 <svg
    width="512"
    height="512"
    viewBox="0 0 512 512"
    version="1.1"
-   id="svg5"
-   inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20, custom)"
-   sodipodi:docname="logo.svg"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg">
-  <sodipodi:namedview
-     id="namedview7"
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1.0"
-     inkscape:pageshadow="2"
-     inkscape:pageopacity="0.0"
-     inkscape:pagecheckerboard="0"
-     inkscape:document-units="px"
-     showgrid="false"
-     inkscape:zoom="1.7050781"
-     inkscape:cx="136.06415"
-     inkscape:cy="255.70676"
-     inkscape:window-width="3440"
-     inkscape:window-height="1403"
-     inkscape:window-x="26"
-     inkscape:window-y="23"
-     inkscape:window-maximized="0"
-     inkscape:current-layer="layer1" />
-  <defs
-     id="defs2" />
-  <g
-     inkscape:label="Layer 1"
-     inkscape:groupmode="layer"
-     id="layer1">
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:682.667px;line-height:1.25;font-family:'Fira Code';-inkscape-font-specification:'Fira Code';fill:#43a047;fill-opacity:1;stroke:none"
-       x="-498.08423"
-       y="497.03397"
-       id="text3663"
-       transform="rotate(-90)"><tspan
-         sodipodi:role="line"
-         id="tspan3661"
-         x="-498.08423"
-         y="497.03397">K</tspan></text>
-  </g>
+  <text
+     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:682.667px;line-height:1.25;font-family:'sans-serif';fill:#43a047;fill-opacity:1;stroke:none"
+     x="-500.39465"
+     y="981.78027"
+     transform="matrix(0,-1,-1,0,0,0)">
+    <tspan
+       x="-500.39465"
+       y="-12.287644"
+       >
+       K
+    </tspan>
+  </text>
 </svg>

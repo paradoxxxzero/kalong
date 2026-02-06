@@ -9,7 +9,7 @@ from pathlib import Path
 from aiohttp import WSMsgType, web
 from aiohttp.web_runner import GracefulExit
 
-from . import config
+from . import __version__, config
 from .errors import NoClientFoundError
 from .utils import USER_SIGNAL, basicConfig, human_readable_side, parse_origin
 from .websockets import websocket_options
@@ -34,17 +34,23 @@ def index():
     if not index.__content__:
         with open(Path(__file__).parent / "static" / "index.html", "rb") as f:
             index.__content__ = f.read()
+
+        vars = [
+            f'window.KALONG_VERSION = "{__version__}"',
+        ]
         if config.ws_port != config.port or config.ws_host != config.host:
-            index.__content__ = index.__content__.replace(
-                b"</body>",
-                f"""
-            <script>
-                window.KALONG_WS_HOST = "{config.ws_host}";
-                window.KALONG_WS_PORT = {config.ws_port};
-            </script>
-        </body>
-        """.encode(),
-            )
+            vars.append(f'window.KALONG_WS_HOST = "{config.ws_host}"')
+            vars.append(f"window.KALONG_WS_PORT = {config.ws_port}")
+
+        index.__content__ = index.__content__.replace(
+            b"</body>",
+            f"""
+          <script>
+            {";".join(vars)}
+          </script>
+      </body>
+      """.encode(),
+        )
     return web.Response(body=index.__content__, content_type="text/html")
 
 

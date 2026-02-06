@@ -2,6 +2,8 @@ import logging
 import os
 from argparse import REMAINDER, ArgumentParser
 
+from . import __version__
+
 defaults = {
     "server": False,
     "protocol": "http",
@@ -94,6 +96,11 @@ class Config:
             "--urlsocket",
             type=str,
             help="Path of the socket into which to feed the url for docker browser opening",
+        )
+        parser.add_argument(
+            "--version",
+            action="version",
+            version=f"kalong {__version__}",
         )
         parser.add_argument(
             "command",
