@@ -13,6 +13,7 @@ defaults = {
     "front_port": 59999,
     "ws_host": "localhost",
     "ws_port": 59999,
+    "base_path": "/",
     "log": "warn",
     "detached": False,
     "command": [],
@@ -93,8 +94,15 @@ class Config:
             help="Break at the start of the python file",
         )
         parser.add_argument(
+            "--base-path",
+            type=str,
+            default=self.base_path,
+            help="Base path of the frontend url (for use with a proxy for instance)",
+        )
+        parser.add_argument(
             "--urlsocket",
             type=str,
+            default=self.urlsocket,
             help="Path of the socket into which to feed the url for docker browser opening",
         )
         parser.add_argument(

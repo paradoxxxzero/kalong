@@ -15,7 +15,7 @@ def forkserver():
     kalong_dir = Path(__file__).parent.parent
     env = dict(os.environ)
     env["PYTHONPATH"] = (
-        f'{kalong_dir}:{env["PYTHONPATH"]}' if env.get("PYTHONPATH") else kalong_dir
+        f"{kalong_dir}:{env['PYTHONPATH']}" if env.get("PYTHONPATH") else kalong_dir
     )
 
     popen_args = (

@@ -1,12 +1,12 @@
 import asyncio
 import logging
 import os
-import webbrowser
 import socket
+import webbrowser
 from threading import Lock
 
 from aiohttp import ClientSession
-from aiohttp.client_exceptions import ClientConnectorError
+from aiohttp.client_exceptions import ClientConnectorError, WSServerHandshakeError
 
 from .errors import NoServerFoundError
 from .forking import forkserver
@@ -41,7 +41,7 @@ async def websocket_state():
         try:
             ws = await sessions[origin].ws_connect(url("back"), **websocket_options)
             log.info("Found existing kalong server")
-        except ClientConnectorError:
+        except (ClientConnectorError, WSServerHandshakeError):
             # If there are no server available, fork one
             log.info("No kalong server, starting one")
             forkserver()
@@ -57,18 +57,20 @@ async def websocket_state():
             else:
                 raise NoServerFoundError()
 
+        external_url = url("front")
+
         if os.getenv("KALONG_URLSOCKET"):
             try:
                 sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
                 sock.connect(os.getenv("KALONG_URLSOCKET"))
-                sock.send(url("front").encode("utf-8"))
+                sock.send(external_url.encode("utf-8"))
                 sock.shutdown(socket.SHUT_WR)
             finally:
                 sock.close()
         # webbrowser.open should be in the mutex too, it's not thread safe
-        elif os.getenv("KALONG_NO_BROWSER") or not webbrowser.open(url("front")):
+        elif os.getenv("KALONG_NO_BROWSER") or not webbrowser.open(external_url):
             log.warning(
-                f"Please open your browser to the following url: {url('front')}"
+                f"Please open your browser to the following url: {external_url}"
             )
 
     websockets[origin] = ws

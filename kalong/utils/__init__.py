@@ -61,7 +61,8 @@ def url(side):
     host = config.front_host if side == "front" else config.host
     port = config.front_port if side == "front" else config.port
     protocol = config.protocol
-    return f"{protocol}://{host}:{port}/{side}/{origin}"
+    base_path = f"/{config.base_path.strip('/')}/".replace("//", "/")
+    return f"{protocol}://{host}:{port}{base_path}{side}/{origin}"
 
 
 def human_readable_side(side):
