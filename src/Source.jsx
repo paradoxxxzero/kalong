@@ -16,7 +16,11 @@ import CodeMirror from '@uiw/react-codemirror'
 import React, { useEffect, useMemo, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getFile } from './actions'
-import { context, lineWrappingHarder } from './extensions'
+import {
+  context,
+  highlightDebuggerActiveLine,
+  lineWrappingHarder,
+} from './extensions'
 import { cmTheme } from './codemirror'
 import { Paper, useColorScheme, useTheme } from '@mui/material'
 
@@ -69,6 +73,7 @@ export default function Source({ currentFile }) {
         first: firstFunctionLineNumber,
         last: lastFunctionLineNumber,
       }),
+      highlightDebuggerActiveLine(),
     ]
   }, [lineNumber, firstFunctionLineNumber, lastFunctionLineNumber])
 

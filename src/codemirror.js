@@ -222,6 +222,13 @@ const editorTheme = ({ mono1, mono2, accent }, muiTheme) =>
         ),
         border: `1px solid ${muiTheme.alpha(muiTheme.vars.palette.primary.main, 0.1)}`,
       },
+      '.cm-debuggerActiveLine': {
+        backgroundColor: muiTheme.alpha(
+          muiTheme.vars.palette.primary.main,
+          0.5
+        ),
+        color: muiTheme.vars.palette.background.paper,
+      },
     },
     { dark: true }
   )

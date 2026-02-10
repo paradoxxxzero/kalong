@@ -1,5 +1,11 @@
-import { Facet, RangeSetBuilder } from '@codemirror/state'
-import { Decoration, EditorView, ViewPlugin } from '@codemirror/view'
+import { Facet, RangeSet, RangeSetBuilder } from '@codemirror/state'
+import {
+  Decoration,
+  EditorView,
+  gutterLineClass,
+  GutterMarker,
+  ViewPlugin,
+} from '@codemirror/view'
 
 const contextFacet = Facet.define({
   combine: values => {
@@ -72,6 +78,27 @@ const showContext = ViewPlugin.fromClass(
 
 export function context({ active, first, last }) {
   return [contextFacet.of({ active, first, last }), showContext]
+}
+
+const debuggerActiveLineMarker = new (class extends GutterMarker {
+  elementClass = 'cm-debuggerActiveLine'
+})()
+
+const debuggerActiveLineGutterHighlighter = gutterLineClass.compute(
+  [contextFacet],
+  state => {
+    const active = state.facet(contextFacet).active
+    let marks = []
+    if (state.doc.lines > active) {
+      const linePos = state.doc.line(active)
+      marks.push(debuggerActiveLineMarker.range(linePos.from))
+    }
+    return RangeSet.of(marks)
+  }
+)
+
+export function highlightDebuggerActiveLine() {
+  return debuggerActiveLineGutterHighlighter
 }
 
 export const lineWrappingHarder = EditorView.theme({
