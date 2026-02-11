@@ -250,6 +250,20 @@ export default function Help() {
         <Item
           shortcut={
             <>
+              <Command>?breakpoint &lt;filename:lno&gt;</Command>
+              <Shortcut>
+                <Alt /> + <Key chr="b" />
+              </Shortcut>
+            </>
+          }
+        >
+          Toggle a breakpoint for filename at lno line number. If filename is
+          omitted, current file will be used. If no argument is given, list
+          currently set breakpoints.
+        </Item>
+        <Item
+          shortcut={
+            <>
               <Command>?diff &lt;v1&gt; ? &lt;v2&gt;</Command>
               <Shortcut>
                 <Alt /> + <Key chr="d" />

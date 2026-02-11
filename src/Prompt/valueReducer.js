@@ -6,6 +6,7 @@ export const commandShortcuts = {
   d: 'diff',
   t: 'table',
   r: 'recursive_debug',
+  b: 'breakpoint',
 }
 
 export const diffSeparator = '≏'

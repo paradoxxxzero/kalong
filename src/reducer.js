@@ -10,6 +10,7 @@ import {
   REQUEST_INSPECT,
   SET_ACTIVE_FRAME,
   SET_ANSWER,
+  SET_BREAKPOINTS,
   SET_CONNECTION_STATE,
   SET_FILE,
   SET_FRAMES,
@@ -197,8 +198,8 @@ const history = (state = [], action) => {
       }
       const prompt =
         action.command && action.command !== 'condition'
-          ? `?${action.command} ${action.prompt}`
-          : action.prompt
+          ? `?${action.command} ${action.prompt || ''}`
+          : action.prompt || ''
       return [
         prompt,
         ...state.filter(historyPrompt => historyPrompt !== prompt),
@@ -252,6 +253,16 @@ const invert = (state = {}, action) => {
       return state
   }
 }
+
+const breakpoints = (state = {}, action) => {
+  switch (action.type) {
+    case SET_BREAKPOINTS:
+      return action.breakpoints
+    default:
+      return state
+  }
+}
+
 const main = (state = true, action) => {
   switch (action.type) {
     case SET_INFO:
@@ -273,6 +284,7 @@ export default combineReducers({
   theme,
   spacing,
   invert,
+  breakpoints,
   connection,
   loadingLevel,
   recursionLevel,

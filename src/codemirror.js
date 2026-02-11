@@ -202,25 +202,40 @@ const editorTheme = ({ mono1, mono2, accent }, muiTheme) =>
         },
       },
       '& .cm-context-top': {
-        borderTop: `1px solid ${muiTheme.alpha(muiTheme.vars.palette.primary.main, 0.125)}`,
+        borderTop: `1px solid ${muiTheme.alpha(
+          muiTheme.vars.palette.primary.main,
+          0.125
+        )}`,
       },
       '& .cm-context-bottom': {
-        borderBottom: `1px solid ${muiTheme.alpha(muiTheme.vars.palette.primary.main, 0.125)}`,
+        borderBottom: `1px solid ${muiTheme.alpha(
+          muiTheme.vars.palette.primary.main,
+          0.125
+        )}`,
       },
       '& .cm-context': {
         backgroundColor: muiTheme.alpha(
           muiTheme.vars.palette.primary.main,
           0.03
         ),
-        borderRight: `1px solid ${muiTheme.alpha(muiTheme.vars.palette.primary.main, 0.125)}`,
-        borderLeft: `1px solid ${muiTheme.alpha(muiTheme.vars.palette.primary.main, 0.125)}`,
+        borderRight: `1px solid ${muiTheme.alpha(
+          muiTheme.vars.palette.primary.main,
+          0.125
+        )}`,
+        borderLeft: `1px solid ${muiTheme.alpha(
+          muiTheme.vars.palette.primary.main,
+          0.125
+        )}`,
       },
       '& .cm-context-active': {
         backgroundColor: muiTheme.alpha(
           muiTheme.vars.palette.primary.main,
           0.2
         ),
-        border: `1px solid ${muiTheme.alpha(muiTheme.vars.palette.primary.main, 0.1)}`,
+        border: `1px solid ${muiTheme.alpha(
+          muiTheme.vars.palette.primary.main,
+          0.1
+        )}`,
       },
       '& .cm-gutter-active': {
         backgroundColor: muiTheme.alpha(
@@ -228,6 +243,16 @@ const editorTheme = ({ mono1, mono2, accent }, muiTheme) =>
           0.45
         ),
         color: muiTheme.vars.palette.background.paper,
+      },
+      '& .cm-gutterElement': {
+        cursor: 'pointer',
+      },
+      '& .cm-breakpoint-gutter .cm-gutterElement': {
+        color: muiTheme.alpha(muiTheme.vars.palette.error.main, 0.6),
+        cursor: 'default',
+      },
+      '& .cm-breakpoint-gutter .cm-gutterElement svg': {
+        verticalAlign: 'middle',
       },
     },
     { dark: true }

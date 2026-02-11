@@ -166,3 +166,17 @@ export const CLEAR_SUGGESTION = 'CLEAR_SUGGESTION'
 export const clearSuggestion = () => ({
   type: CLEAR_SUGGESTION,
 })
+
+export const TOGGLE_BREAKPOINT = 'TOGGLE_BREAKPOINT'
+export const toggleBreakpoint = (filename, line) => ({
+  type: TOGGLE_BREAKPOINT,
+  filename,
+  line,
+  remote: true,
+})
+
+export const SET_BREAKPOINTS = 'SET_BREAKPOINTS'
+export const setBreakpoints = breakpoints => ({
+  type: SET_BREAKPOINTS,
+  breakpoints,
+})

@@ -6,7 +6,10 @@ import webbrowser
 from threading import Lock
 
 from aiohttp import ClientSession
-from aiohttp.client_exceptions import ClientConnectorError, WSServerHandshakeError
+from aiohttp.client_exceptions import (
+    ClientConnectorError,
+    WSServerHandshakeError,
+)
 
 from .errors import NoServerFoundError
 from .forking import forkserver

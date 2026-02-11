@@ -1,0 +1,16 @@
+# Configuration for known file extensions
+[*.{css,less,md,py,rst,sass,scss,xml}]
+charset = utf-8
+end_of_line = lf
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{js,jsx,json,yml,yaml,rst,md}]
+charset = utf-8
+end_of_line = lf
+indent_size = 2
+indent_style = space
+insert_final_newline = true
+trim_trailing_whitespace = true

@@ -10,6 +10,7 @@ import {
   gutterLineClass,
   GutterMarker,
   ViewPlugin,
+  gutter,
 } from '@codemirror/view'
 
 const activeCls = Decoration.line({
@@ -43,11 +44,7 @@ export const contextState = StateField.define({
   update(value, transaction) {
     for (let e of transaction.effects) {
       if (e.is(contextEffect)) {
-        value.active = e.value.active
-        value.first = e.value.first
-        value.last = e.value.last
-        value.filename = e.value.filename
-        value.dispatch = e.value.dispatch
+        value = e.value
       }
     }
     return value
@@ -98,7 +95,7 @@ const activeLineMarker = new (class extends GutterMarker {
 })()
 
 const activeLineGutterHighlighter = gutterLineClass.compute(
-  [contextState, 'doc'],
+  [contextState, 'doc', 'selection'],
   state => {
     const active = state.field(contextState).active
     let marks = []
@@ -119,3 +116,50 @@ export const lineWrappingHarder = EditorView.theme({
     wordBreak: 'break-all',
   },
 })
+
+export const breakpointEffect = StateEffect.define({
+  map: (val, mapping) => ({ pos: mapping.mapPos(val.pos), on: val.on }),
+})
+
+export const breakpointState = StateField.define({
+  create() {
+    return RangeSet.empty
+  },
+  update(set, transaction) {
+    set = set.map(transaction.changes)
+    for (let e of transaction.effects) {
+      if (e.is(breakpointEffect)) {
+        if (e.value.on)
+          set = set.update({ add: [breakpointMarker.range(e.value.pos)] })
+        else set = set.update({ filter: from => from != e.value.pos })
+      }
+    }
+    return set
+  },
+})
+
+const breakpointMarker = new (class extends GutterMarker {
+  toDOM() {
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+    circle.setAttribute('viewBox', '0 0 16 16')
+    circle.setAttribute('width', '16')
+    circle.setAttribute('height', '16')
+    const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
+    c.setAttribute('cx', '8')
+    c.setAttribute('cy', '8')
+    c.setAttribute('r', '6')
+    c.setAttribute('fill', 'currentColor')
+    circle.appendChild(c)
+    return circle
+  }
+})()
+
+export const breakpointGutter = args => [
+  breakpointState,
+  gutter({
+    class: 'cm-breakpoint-gutter',
+    markers: v => v.state.field(breakpointState),
+    initialSpacer: () => breakpointMarker,
+    ...args,
+  }),
+]

@@ -50,6 +50,7 @@ import {
   removePromptAnswer,
   requestSuggestion,
   setPrompt,
+  toggleBreakpoint,
 } from '../actions'
 import { lineWrappingHarder } from '../extensions'
 import { store } from '../store'
@@ -60,6 +61,7 @@ import valueReducer, { commandShortcuts, initialValue } from './valueReducer'
 import Help from './Help'
 import { useColorScheme, useTheme } from '@mui/material'
 import { cmTheme } from '../codemirror'
+import Breakpoints from './Breakpoints'
 
 export const promptBus = new EventTarget()
 
@@ -153,7 +155,9 @@ export default function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
 
   const history = useSelector(state => state.history)
   const scrollback = useSelector(state => state.scrollback)
+  const frames = useSelector(state => state.frames)
   const activeFrame = useSelector(state => state.activeFrame)
+  const currentFile = frames.find(({ key }) => key === activeFrame)
   const recursionLevel = useSelector(state => state.recursionLevel)
 
   const { colorScheme } = useColorScheme()
@@ -237,25 +241,97 @@ export default function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
     view => {
       if (
         (completionStatus(view.state) === 'active' && acceptCompletion(view)) ||
-        !prompt.value
+        (!prompt.value && !['breakpoint', 'help'].includes(prompt.command))
       ) {
         return true
       }
       const key = uid()
-      dispatch(
-        setPrompt(
+      if (prompt.command === 'breakpoint') {
+        const key = uid()
+        dispatch({
+          type: 'SET_PROMPT',
           key,
-          prompt.value,
-          prompt.command,
-          activeFrame,
-          recursionLevel
+          frame: null,
+          prompt: prompt.value,
+          command: prompt.command,
+        })
+
+        if (prompt.value) {
+          let file, line, error
+          try {
+            if (prompt.value.includes(':')) {
+              ;[file, line] = prompt.value.split(':')
+              file = file.trim()
+              line = parseInt(line.trim(), 10)
+            } else {
+              file = currentFile.absoluteFilename
+              line = parseInt(prompt.value.trim(), 10)
+            }
+          } catch (e) {
+            error = e
+          }
+          let content =
+            `Invalid breakpoint${error ? `: ${error.message}` : ''}. ` +
+            `Use "file.py:line" or "line".`
+          if (file && !isNaN(line)) {
+            dispatch(toggleBreakpoint(file, line))
+            content = 'ok'
+          }
+          dispatch({
+            type: 'SET_ANSWER',
+            key,
+            frame: null,
+            prompt: prompt.value,
+            command: prompt.command,
+            duration: 0,
+            answer: [
+              {
+                type: 'raw',
+                value: content,
+              },
+            ],
+          })
+          valueDispatch({ type: 'reset' })
+          return true
+        } else {
+          dispatch({
+            type: 'SET_ANSWER',
+            key,
+            frame: null,
+            prompt: prompt.value,
+            command: prompt.command,
+            duration: 0,
+            answer: [
+              {
+                type: 'raw',
+                value: <Breakpoints />,
+              },
+            ],
+          })
+        }
+      } else {
+        dispatch(
+          setPrompt(
+            key,
+            prompt.value,
+            prompt.command,
+            activeFrame,
+            recursionLevel
+          )
         )
-      )
+      }
 
       valueDispatch({ type: 'reset' })
       return true
     },
-    [activeFrame, dispatch, prompt.command, prompt.value, recursionLevel]
+    [
+      activeFrame,
+      dispatch,
+      prompt.command,
+      prompt.value,
+      recursionLevel,
+      currentFile,
+    ]
   )
 
   const handleCommand = useMemo(
@@ -330,7 +406,7 @@ export default function Prompt({ onScrollUp, onScrollDown, scrollToBottom }) {
         console.error(error)
       }
     }
-  }, [code])
+  }, [code, scrollToBottom])
 
   const handleBackspace = useCallback(
     view => {

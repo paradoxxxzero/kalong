@@ -4,7 +4,7 @@ import threading
 from multiprocessing import process
 from pathlib import Path
 
-from .communication import communicate
+from .communication import breakpoints, communicate
 from .stepping import steppings, stop_trace
 from .utils.iterators import iter_frame
 from .websockets import die
@@ -15,6 +15,17 @@ kalong_dir = str(Path(__file__).resolve().parent)
 
 
 def trace(origin, frame, event, arg):
+    filename = frame.f_code.co_filename
+    flno = frame.f_lineno
+    lnobreaks = breakpoints.get(filename, set())
+    if event == "line" and flno in lnobreaks:
+        # Breakpoint takes precedence over stepping
+        steppings[origin] = {
+            "type": "break",
+            "frame": frame,
+            "lno": flno,
+        }
+
     stepping = steppings.get(origin)
     if not stepping:
         return
@@ -24,7 +35,6 @@ def trace(origin, frame, event, arg):
     baseFrame = stepping.get("base_frame", originalFrame)
     lno = stepping.get("lno")
     skip_frames = stepping.get("skip_frames")
-    filename = frame.f_code.co_filename
     into_type = None
     pending = None
 
@@ -99,8 +109,10 @@ def trace(origin, frame, event, arg):
         return sys.gettrace()
 
     if (
+        # Break: We are at a breakpoint
+        type == "break"
         # Trace: This is an exception: stop
-        type == "trace"
+        or type == "trace"
         # Continue: This is an exception at current frame: stop
         or type == "continue"
         # Step: Normal stepping

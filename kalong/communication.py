@@ -4,6 +4,7 @@ import linecache
 import logging
 import sys
 import threading
+from collections import defaultdict
 
 from aiohttp import WSMsgType
 
@@ -29,6 +30,10 @@ from .websockets import adie, die, websocket_state
 
 log = logging.getLogger(__name__)
 basicConfig(level=config.log_level)
+
+# We keep track of breakpoints in memory for now,
+# but we might persist them in a file
+breakpoints = defaultdict(set)
 
 
 def exception_handler(loop, context):
@@ -57,6 +62,15 @@ async def init(ws, frame, event, arg):
             "frames": list(serialize_frames(frame, tb)) if event != "shell" else [],
         }
     )
+    if breakpoints:
+        await ws.send_json(
+            {
+                "type": "SET_BREAKPOINTS",
+                "breakpoints": {
+                    filename: sorted(list(bps)) for filename, bps in breakpoints.items()
+                },
+            }
+        )
 
 
 async def handle_message(ws, data, frame, event, arg):
@@ -150,6 +164,20 @@ async def handle_message(ws, data, frame, event, arg):
                 data["cursor"],
                 get_frame(frame, data.get("frame"), tb),
             ),
+        }
+
+    elif data["type"] == "TOGGLE_BREAKPOINT":
+        filename = data["filename"]
+        line = data["line"]
+        if line in breakpoints[filename]:
+            breakpoints[filename].remove(line)
+        else:
+            breakpoints[filename].add(line)
+        response = {
+            "type": "SET_BREAKPOINTS",
+            "breakpoints": {
+                filename: sorted(list(bps)) for filename, bps in breakpoints.items()
+            },
         }
 
     elif data["type"] == "DO_COMMAND":
