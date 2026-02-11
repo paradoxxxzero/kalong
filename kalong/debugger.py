@@ -1,5 +1,4 @@
 import difflib
-import dis
 import linecache
 import logging
 import os
@@ -88,19 +87,18 @@ def serialize_frames(current_frame, current_tb):
         linecache.checkcache(filename)
         line = linecache.getline(filename, lno, frame.f_globals)
         line = line and line.strip()
-        startlnos = dis.findlinestarts(code)
-        lnos = list(startlnos)
-        lastlineno = None
-        if lnos:
-            lastlineno = lnos[-1][1]
+        lnos = [lno for (_, _, lno) in code.co_lines() if lno is not None]
+
+        startlno = min(lnos) if lnos else code.co_firstlineno or lno
+        endlno = max(lnos) if lnos else lno
 
         yield {
             "key": id(frame),
             "absoluteFilename": str(fn),
             "filename": fn.name,
             "function": code.co_name,
-            "firstFunctionLineNumber": code.co_firstlineno,
-            "lastFunctionLineNumber": lastlineno,
+            "firstFunctionLineNumber": startlno,
+            "lastFunctionLineNumber": endlno,
             "lineNumber": lno,
             "lineSource": line,
             "active": frame == current_frame,

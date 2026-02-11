@@ -13,19 +13,30 @@ import {
   keymap,
 } from '@codemirror/view'
 import CodeMirror from '@uiw/react-codemirror'
-import React, { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getFile } from './actions'
 import {
-  context,
   highlightActiveLineGutter,
   lineWrappingHarder,
+  contextState,
+  showContext,
+  contextEffect,
 } from './extensions'
 import { cmTheme } from './codemirror'
 import { Paper, useColorScheme, useTheme } from '@mui/material'
 
+const mousedown = (view, line) => {
+  view.state
+    .field(contextState)
+    .dispatch(
+      toggleBreakpoint(
+        view.state.field(contextState).filename,
+        view.state.doc.lineAt(line.from).number
+      )
+    )
+}
 const baseExtensions = [
-  lineNumbers(),
   highlightSpecialChars(),
   foldGutter(),
   drawSelection(),
@@ -44,6 +55,13 @@ const baseExtensions = [
   EditorView.lineWrapping,
   lineWrappingHarder,
   python(),
+  lineNumbers({
+    domEventHandlers: {
+      mousedown,
+    },
+  }),
+  contextState,
+  showContext,
 ]
 
 export default function Source({ currentFile }) {
@@ -66,16 +84,45 @@ export default function Source({ currentFile }) {
     }
   }, [dispatch, files, absoluteFilename, source])
 
-  const extensions = useMemo(() => {
-    return [
-      ...baseExtensions,
-      context({
-        active: lineNumber,
-        first: firstFunctionLineNumber,
-        last: lastFunctionLineNumber,
-      }),
-    ]
-  }, [lineNumber, firstFunctionLineNumber, lastFunctionLineNumber])
+  useEffect(() => {
+    let timeout = null
+    if (sourceRef.current) {
+      // Use a timeout here because view is null while file is loading.
+      const setLine = () => {
+        if (
+          sourceRef.current.view &&
+          sourceRef.current.view.state.doc.lines >= lineNumber
+        ) {
+          const { view } = sourceRef.current
+          view.dispatch({
+            effects: contextEffect.of({
+              active: lineNumber,
+              first: firstFunctionLineNumber,
+              last: lastFunctionLineNumber,
+              filename: absoluteFilename,
+              dispatch,
+            }),
+          })
+        } else {
+          timeout = setTimeout(() => {
+            timeout = null
+            setLine()
+          }, 10)
+        }
+      }
+
+      setLine()
+    }
+    return () => {
+      timeout && clearTimeout(timeout)
+    }
+  }, [
+    absoluteFilename,
+    lineNumber,
+    firstFunctionLineNumber,
+    lastFunctionLineNumber,
+    dispatch,
+  ])
 
   useEffect(() => {
     let timeout = null
@@ -129,7 +176,7 @@ export default function Source({ currentFile }) {
         basicSetup={false}
         theme={cmTheme(colorScheme, theme)}
         height="100%"
-        extensions={extensions}
+        extensions={baseExtensions}
         value={source || ''}
       />
     </Paper>

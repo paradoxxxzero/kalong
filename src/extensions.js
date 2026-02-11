@@ -1,4 +1,9 @@
-import { Facet, RangeSet, RangeSetBuilder } from '@codemirror/state'
+import {
+  StateEffect,
+  StateField,
+  RangeSet,
+  RangeSetBuilder,
+} from '@codemirror/state'
 import {
   Decoration,
   EditorView,
@@ -6,23 +11,6 @@ import {
   GutterMarker,
   ViewPlugin,
 } from '@codemirror/view'
-
-const contextFacet = Facet.define({
-  combine: values => {
-    return values.reduce(
-      (acc, val) => ({
-        active: val.active,
-        first: Math.min(val.first, acc.first),
-        last: Math.max(val.last, acc.last),
-      }),
-      {
-        active: 0,
-        first: Infinity,
-        last: 0,
-      }
-    )
-  },
-})
 
 const activeCls = Decoration.line({
   attributes: { class: 'cm-context-active' },
@@ -37,8 +25,37 @@ const bottomCls = Decoration.line({
   attributes: { class: 'cm-context-bottom' },
 })
 
+export const contextEffect = StateEffect.define({
+  map: (val, mapping) => ({ pos: mapping.mapPos(val.pos), on: val.on }),
+})
+
+export const contextState = StateField.define({
+  create() {
+    return {
+      active: 1,
+      first: 1,
+      last: 1,
+      filename: '',
+      dispatch: () => {},
+    }
+  },
+
+  update(value, transaction) {
+    for (let e of transaction.effects) {
+      if (e.is(contextEffect)) {
+        value.active = e.value.active
+        value.first = e.value.first
+        value.last = e.value.last
+        value.filename = e.value.filename
+        value.dispatch = e.value.dispatch
+      }
+    }
+    return value
+  },
+})
+
 function contextPaint(view) {
-  let { active, first, last } = view.state.facet(contextFacet)
+  let { active, first, last } = view.state.field(contextState)
   let builder = new RangeSetBuilder()
   for (let { from, to } of view.visibleRanges) {
     for (let pos = from; pos <= to; ) {
@@ -61,7 +78,7 @@ function contextPaint(view) {
   return builder.finish()
 }
 
-const showContext = ViewPlugin.fromClass(
+export const showContext = ViewPlugin.fromClass(
   class {
     constructor(view) {
       this.decorations = contextPaint(view)
@@ -76,18 +93,14 @@ const showContext = ViewPlugin.fromClass(
   }
 )
 
-export function context({ active, first, last }) {
-  return [contextFacet.of({ active, first, last }), showContext]
-}
-
 const activeLineMarker = new (class extends GutterMarker {
   elementClass = 'cm-gutter-active'
 })()
 
 const activeLineGutterHighlighter = gutterLineClass.compute(
-  [contextFacet, 'doc'],
+  [contextState, 'doc'],
   state => {
-    const active = state.facet(contextFacet).active
+    const active = state.field(contextState).active
     let marks = []
     if (state.doc.lines > active) {
       const linePos = state.doc.line(active)
