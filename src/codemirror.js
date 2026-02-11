@@ -218,14 +218,14 @@ const editorTheme = ({ mono1, mono2, accent }, muiTheme) =>
       '& .cm-context-active': {
         backgroundColor: muiTheme.alpha(
           muiTheme.vars.palette.primary.main,
-          0.1
+          0.2
         ),
         border: `1px solid ${muiTheme.alpha(muiTheme.vars.palette.primary.main, 0.1)}`,
       },
-      '.cm-debuggerActiveLine': {
+      '& .cm-gutter-active': {
         backgroundColor: muiTheme.alpha(
           muiTheme.vars.palette.primary.main,
-          0.5
+          0.45
         ),
         color: muiTheme.vars.palette.background.paper,
       },

@@ -80,25 +80,25 @@ export function context({ active, first, last }) {
   return [contextFacet.of({ active, first, last }), showContext]
 }
 
-const debuggerActiveLineMarker = new (class extends GutterMarker {
-  elementClass = 'cm-debuggerActiveLine'
+const activeLineMarker = new (class extends GutterMarker {
+  elementClass = 'cm-gutter-active'
 })()
 
-const debuggerActiveLineGutterHighlighter = gutterLineClass.compute(
-  [contextFacet],
+const activeLineGutterHighlighter = gutterLineClass.compute(
+  [contextFacet, 'doc'],
   state => {
     const active = state.facet(contextFacet).active
     let marks = []
     if (state.doc.lines > active) {
       const linePos = state.doc.line(active)
-      marks.push(debuggerActiveLineMarker.range(linePos.from))
+      marks.push(activeLineMarker.range(linePos.from))
     }
     return RangeSet.of(marks)
   }
 )
 
-export function highlightDebuggerActiveLine() {
-  return debuggerActiveLineGutterHighlighter
+export function highlightActiveLineGutter() {
+  return activeLineGutterHighlighter
 }
 
 export const lineWrappingHarder = EditorView.theme({

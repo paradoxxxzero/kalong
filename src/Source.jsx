@@ -18,7 +18,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { getFile } from './actions'
 import {
   context,
-  highlightDebuggerActiveLine,
+  highlightActiveLineGutter,
   lineWrappingHarder,
 } from './extensions'
 import { cmTheme } from './codemirror'
@@ -30,6 +30,7 @@ const baseExtensions = [
   foldGutter(),
   drawSelection(),
   highlightSelectionMatches(),
+  highlightActiveLineGutter(),
   keymap.of([
     ...closeBracketsKeymap,
     ...defaultKeymap,
@@ -73,7 +74,6 @@ export default function Source({ currentFile }) {
         first: firstFunctionLineNumber,
         last: lastFunctionLineNumber,
       }),
-      highlightDebuggerActiveLine(),
     ]
   }, [lineNumber, firstFunctionLineNumber, lastFunctionLineNumber])
 
