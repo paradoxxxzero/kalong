@@ -4,6 +4,8 @@
 
 Kalong is a modern, web-based Python debugger that provides a rich, interactive interface for inspecting and controlling your Python programs. It combines a powerful Python backend with a reactive frontend to offer a seamless debugging experience.
 
+[![Kalong Screenshot](https://raw.githubusercontent.com/paradoxxxzero/kalong/refs/heads/master/screen.png)](https://raw.githubusercontent.com/paradoxxxzero/kalong/refs/heads/master/screen.png)
+
 ## Features
 
 - **Web-Based Interface**: A clean, modern UI built with React and CodeMirror.
