@@ -16,18 +16,14 @@ Kalong is a modern, web-based Python debugger that provides a rich, interactive 
 
 ## Installation
 
-### From Source
-
 ```bash
-git clone https://github.com/paradoxxxzero/kalong.git
-cd kalong
-pip install .
+pip install kalong
 ```
 
 To include optional dependencies for code disassembly or recursive debugging:
 
 ```bash
-pip install ".[disassembly,recursive]"
+pip install "kalong[disassembly,recursive]"
 ```
 
 ## Usage
