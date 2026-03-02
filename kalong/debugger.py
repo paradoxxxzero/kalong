@@ -21,7 +21,7 @@ from pprint import pformat
 from jedi import Interpreter
 
 from .errors import SetFrameError
-from .utils import cutter_mock, dedent, discompile, universal_travel
+from .utils import cutter_mock, dedent, discompile, get_frame_context, universal_travel
 from .utils.io import capture_display, capture_exception, capture_std
 from .utils.iterators import force_iterable, iter_cause, iter_frame, iter_stack
 from .utils.obj import (
@@ -87,10 +87,8 @@ def serialize_frames(current_frame, current_tb):
         linecache.checkcache(filename)
         line = linecache.getline(filename, lno, frame.f_globals)
         line = line and line.strip()
-        lnos = [lno for (_, _, lno) in code.co_lines() if lno is not None]
 
-        startlno = min(lnos) if lnos else code.co_firstlineno or lno
-        endlno = max(lnos) if lnos else lno
+        startlno, endlno = get_frame_context(frame, lno)
 
         yield {
             "key": id(frame),

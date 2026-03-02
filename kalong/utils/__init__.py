@@ -146,3 +146,17 @@ def dedent(code):
         default=0,
     )
     return "\n".join(line[indent:] for line in lines)
+
+
+def get_frame_context(frame, current=None):
+    code = frame.f_code
+    if hasattr(code, "co_lines"):
+        lnos = [lno for (_, _, lno) in code.co_lines() if lno is not None]
+    else:
+        import dis
+
+        lnos = [lno for (_, lno) in dis.findlinestarts(code)]
+
+    startlno = min(lnos) if lnos else code.co_firstlineno or current
+    endlno = max(lnos) if lnos else current
+    return startlno, endlno
